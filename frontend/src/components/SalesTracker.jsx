@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 
-const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, deleteSaleRecord, fuelSettings, selectedDate, creditData, incomeData, expenseData, formResetKey, editingRecord, onRecordSaved, hideRecordsList }) => {
+const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, deleteSaleRecord, fuelSettings, selectedDate, creditData, incomeData, expenseData, formResetKey, editingRecord, onRecordSaved, hideRecordsList, customers }) => {
   const [formData, setFormData] = useState({
     nozzle: '',
     fuelType: '',
@@ -30,14 +30,12 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
     mpp: false // Mobile Petrol Pump tag
   });
   const [editingId, setEditingId] = useState(null);
-  const [isMPPVisible, setIsMPPVisible] = useState(false);
   const { toast } = useToast();
   
-  // Check if MPP checkbox should be visible - check on every data change
-  React.useEffect(() => {
-    const localStorageService = require('../services/localStorage').default;
-    setIsMPPVisible(localStorageService.isMPPVisible());
-  }, [salesData, formResetKey]); // Recheck when sales data or form reset happens
+  // Check if MPP checkbox should be visible based on customers
+  const isMPPVisible = React.useMemo(() => {
+    return customers && customers.some(c => c.isMPP === true);
+  }, [customers]);
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
