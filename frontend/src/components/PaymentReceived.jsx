@@ -652,19 +652,43 @@ const PaymentReceived = ({
               />
             </div>
 
-            <div>
-              <Label htmlFor="editAmount" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
-                Amount
-              </Label>
-              <Input
-                id="editAmount"
-                type="number"
-                step="0.01"
-                value={editAmount}
-                onChange={(e) => setEditAmount(e.target.value)}
-                placeholder="Enter amount"
-                className={isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}
-              />
+            {/* Amount and Mode in same row */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label htmlFor="editAmount" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                  Amount
+                </Label>
+                <Input
+                  id="editAmount"
+                  type="number"
+                  step="0.01"
+                  value={editAmount}
+                  onChange={(e) => setEditAmount(e.target.value)}
+                  placeholder="Enter amount"
+                  className={isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}
+                />
+              </div>
+              <div>
+                <Label htmlFor="editPaymentMode" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                  Mode
+                </Label>
+                <select
+                  id="editPaymentMode"
+                  value={editPaymentMode}
+                  onChange={(e) => setEditPaymentMode(e.target.value)}
+                  className={`w-full h-10 px-3 rounded-md border text-sm ${
+                    isDarkMode 
+                      ? 'bg-gray-700 border-gray-600 text-white' 
+                      : 'bg-white border-gray-300 text-gray-900'
+                  }`}
+                >
+                  <option value="cash">Cash</option>
+                  <option value="card">Card</option>
+                  <option value="wallet">Wallet</option>
+                  <option value="bank">Bank</option>
+                  <option value="dtp">DTP</option>
+                </select>
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4">
