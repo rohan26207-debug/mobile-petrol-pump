@@ -2053,59 +2053,20 @@ window.onload = function() {
             } border-0 shadow-lg cursor-pointer transition-colors`}
             onClick={() => {
               setEditingSettlementData(null);
-              setSettlementDialogOpen(true);
+              setEditingIncomeExpenseData(null);
+              setSettleIncExpActiveTab('settlement');
+              setSettleIncExpDialogOpen(true);
             }}
           >
             <CardContent className="p-2 sm:p-3">
               <div className="flex items-center justify-center gap-2">
                 <ArrowRightLeft className="w-4 h-4 text-white" />
-                <span className="text-xs sm:text-sm font-semibold text-white">T.Settlement</span>
+                <span className="text-xs sm:text-sm font-semibold text-white">Settle/Inc./Exp</span>
               </div>
             </CardContent>
           </Card>
           
-          <Sheet open={settlementDialogOpen} onOpenChange={setSettlementDialogOpen}>
-            <SheetContent side="bottom" className={`h-[90vh] ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
-              <SheetHeader className="px-2">
-                <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
-                  {editingSettlementData ? 'Edit Settlement' : 'Add Settlement'}
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
-                <Settlement 
-                  isDarkMode={isDarkMode}
-                  settlementData={settlementData}
-                  addSettlementRecord={addSettlementRecord}
-                  updateSettlementRecord={updateSettlementRecord}
-                  deleteSettlementRecord={deleteSettlementRecord}
-                  selectedDate={selectedDate}
-                  formResetKey={formResetKey}
-                  editingRecord={editingSettlementData}
-                  onRecordSaved={handleCloseDialogs}
-                  hideRecordsList={true}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
-
-          <Card 
-            className={`${
-              isDarkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'
-            } border-0 shadow-lg cursor-pointer transition-colors`}
-            onClick={() => {
-              setEditingIncomeExpenseData(null);
-              setIncomeExpenseDialogOpen(true);
-            }}
-          >
-            <CardContent className="p-2 sm:p-3">
-              <div className="flex items-center justify-center gap-2">
-                <TrendingDown className="w-4 h-4 text-white" />
-                <span className="text-xs sm:text-sm font-semibold text-white">Inc./Exp.</span>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Sheet open={incomeExpenseDialogOpen} onOpenChange={setIncomeExpenseDialogOpen}>
+          <Sheet open={settleIncExpDialogOpen} onOpenChange={setSettleIncExpDialogOpen}>
             <SheetContent side="bottom" className={`h-[90vh] ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
               <SheetHeader className="px-2">
                 <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
