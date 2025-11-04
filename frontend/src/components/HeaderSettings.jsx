@@ -573,6 +573,16 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
+              <TabsContent value="settlement" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+                <SettlementManagement
+                  settlementTypes={settlementTypes}
+                  onAddSettlementType={handleAddSettlementType}
+                  onDeleteSettlementType={handleDeleteSettlementType}
+                  onUpdateSettlementType={handleUpdateSettlementType}
+                  isDarkMode={isDarkMode}
+                />
+              </TabsContent>
+              
               <TabsContent value="incexp" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
                 <IncomeExpenseCategories
                   incomeCategories={incomeCategories}
