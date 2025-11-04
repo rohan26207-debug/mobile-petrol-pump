@@ -2141,13 +2141,19 @@ window.onload = function() {
           <TabsList className={`flex w-full mb-4 ${
             isDarkMode ? 'bg-gray-800' : 'bg-slate-100'
           }`}>
-            <TabsTrigger value="all" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[50%]">
+            <TabsTrigger value="all" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
               <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
               <span>All</span>
             </TabsTrigger>
-            <TabsTrigger value="c-sales" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[50%]">
+            <TabsTrigger value="c-sales" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[34%]">
               <CreditCard className="w-3 h-3 sm:w-4 sm:h-4" />
-              <span>Manage Credit</span>
+              <span className="hidden sm:inline">Manage Credit</span>
+              <span className="sm:hidden">Credit</span>
+            </TabsTrigger>
+            <TabsTrigger value="receipt" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
+              <Receipt className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">Receipt</span>
+              <span className="sm:hidden">Rcpt</span>
             </TabsTrigger>
           </TabsList>
 
@@ -2177,6 +2183,18 @@ window.onload = function() {
               selectedDate={selectedDate}
               onEditCredit={handleEditCredit}
               onDeleteCredit={deleteCreditRecord}
+              isDarkMode={isDarkMode}
+            />
+          </TabsContent>
+
+          <TabsContent value="receipt">
+            <PaymentReceived
+              customers={customers}
+              payments={payments}
+              selectedDate={selectedDate}
+              onAddPayment={handleAddPayment}
+              onUpdatePayment={handleUpdatePayment}
+              onDeletePayment={handleDeletePayment}
               isDarkMode={isDarkMode}
             />
           </TabsContent>
