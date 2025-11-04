@@ -26,13 +26,20 @@ const Settlement = ({
   formResetKey,
   editingRecord,
   onRecordSaved,
-  hideRecordsList 
+  hideRecordsList,
+  customers
 }) => {
   const [formData, setFormData] = useState({
     date: selectedDate,
     amount: '',
-    description: ''
+    description: '',
+    mpp: false
   });
+  
+  // Check if MPP checkbox should be visible based on customers
+  const isMPPVisible = React.useMemo(() => {
+    return customers && customers.some(c => c.isMPP === true);
+  }, [customers]);
 
   const [editingId, setEditingId] = useState(null);
   const [settlementTypes, setSettlementTypes] = useState([]);
