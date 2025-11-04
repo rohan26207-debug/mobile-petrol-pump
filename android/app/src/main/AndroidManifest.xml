@@ -2,11 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mobilepetrolpump.app">
 
-    <!-- 🌐 Network + Wake permissions -->
+    <!-- 🌐 Network permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
 
     <!-- 📂 Optional legacy storage for Android 10 and below -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -34,27 +34,22 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
 
-            <!-- 🚀 Main launcher -->
+            <!-- 🚀 App launcher -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- ✅ Handle Google OAuth redirect for localhost-based flow -->
-            <!-- Must match your Google Cloud Console web client redirect URI -->
+            <!-- ✅ OAuth redirect for localhost-based flow -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
-                <!-- Matches REDIRECT_URI = "http://localhost" used in MainActivity.java -->
                 <data android:scheme="http" android:host="localhost" />
-                <data android:scheme="http" android:host="127.0.0.1" />
             </intent-filter>
-
         </activity>
 
-        <!-- ✅ File Provider for JSON / PDF backups -->
+        <!-- ✅ File provider for Drive backup file -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
