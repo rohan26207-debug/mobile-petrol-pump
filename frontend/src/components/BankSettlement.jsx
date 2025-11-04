@@ -224,6 +224,9 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
                         })}
                       </td>
                       <td className="px-3 py-2 text-right font-mono">
+                        {row.cashAmount > 0 ? row.cashAmount.toFixed(2) : '-'}
+                      </td>
+                      <td className="px-3 py-2 text-right font-mono">
                         {row.cardAmount > 0 ? row.cardAmount.toFixed(2) : '-'}
                       </td>
                       <td className="px-3 py-2 text-right font-mono">
@@ -234,11 +237,6 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
                       </td>
                       <td className="px-3 py-2 text-right font-mono">
                         {row.dtpAmount > 0 ? row.dtpAmount.toFixed(2) : '-'}
-                      </td>
-                      <td className={`px-3 py-2 text-right font-mono font-bold ${
-                        isDarkMode ? 'text-green-400' : 'text-green-600'
-                      }`}>
-                        {row.total > 0 ? row.total.toFixed(2) : '-'}
                       </td>
                     </tr>
                   ))
