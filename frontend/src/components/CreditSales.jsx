@@ -44,6 +44,11 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
   const [tempExpense, setTempExpense] = useState({ description: '', amount: '' });
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, credit: null });
   const { toast } = useToast();
+  
+  // Check if MPP checkbox should be visible based on customers
+  const isMPPVisible = React.useMemo(() => {
+    return customers && customers.some(c => c.isMPP === true);
+  }, [customers]);
 
   // Generate fuel types with date-specific rates
   const fuelTypes = React.useMemo(() => {
