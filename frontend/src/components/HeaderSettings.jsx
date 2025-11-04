@@ -949,6 +949,31 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                         >
                           📊 Check Storage Usage
                         </Button>
+
+                        <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+
+                        {/* QR Code Transfer Buttons */}
+                        <div className="grid grid-cols-2 gap-3">
+                          <Button 
+                            variant="outline" 
+                            className="w-full bg-green-600 hover:bg-green-700 text-white border-green-600"
+                            onClick={() => {
+                              const backupData = localStorageService.exportAllData();
+                              setShowQRSender(true);
+                            }}
+                          >
+                            📤 Send via QR
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                            onClick={() => {
+                              setShowQRScanner(true);
+                            }}
+                          >
+                            📥 Receive via QR
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
