@@ -501,7 +501,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
             <div className="flex-1 overflow-hidden">
               <Tabs defaultValue="customer" className="w-full h-full flex flex-col">
                 <TabsList 
-                  className={`grid w-full grid-cols-5 ${
+                  className={`grid w-full grid-cols-6 ${
                     isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                   }`}
                   style={{ height: '48px', gap: '4px', padding: '4px' }}
@@ -510,6 +510,11 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Customer</span>
                     <span className="sm:hidden">Cust</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="incexp" className="flex items-center gap-1 text-xs sm:text-sm px-2">
+                    <Receipt className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Inc/Exp</span>
+                    <span className="sm:hidden">I/E</span>
                   </TabsTrigger>
                   <TabsTrigger value="fuel" className="flex items-center gap-1 text-xs sm:text-sm px-2">
                     <Fuel className="w-3 h-3 sm:w-4 sm:h-4" />
