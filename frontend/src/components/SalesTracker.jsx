@@ -388,9 +388,9 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
           </Select>
         </div>
 
-        <div className="flex flex-col justify-end pb-1">
-          <div className="flex items-center gap-2">
-            <Label className="text-xs font-semibold whitespace-nowrap">MPP</Label>
+        <div className="space-y-1">
+          <Label className="text-xs font-semibold whitespace-nowrap">MPP</Label>
+          <div className="flex items-center justify-center h-10 -mt-1">
             <input
               type="checkbox"
               checked={formData.mpp}
