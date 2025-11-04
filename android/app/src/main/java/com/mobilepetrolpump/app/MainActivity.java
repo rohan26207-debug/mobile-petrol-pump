@@ -139,9 +139,15 @@ public class MainActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                android.util.Log.d("OAuthRedirect", "URL: " + url);
-                
-                // Intercept redirect from OAuth flow
+                android.util.Log.d("OAuthRedirect", "Intercepted URL: " + url);
+
+                // ✅ If Google OAuth redirect comes back to app, launch intent
+                if (url.startsWith("com.mobilepetrolpump.app:/oauth2redirect")) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                    return true; // prevent WebView reload
+                }
+
                 if (url.startsWith("http://localhost") || url.startsWith("http://127.0.0.1")) {
                     if (url.contains("access_token=")) {
                         Uri uri = Uri.parse(url.replace("#", "?"));
@@ -155,7 +161,6 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
 
-                // Open Google OAuth login in external browser
                 if (url.contains("accounts.google.com/o/oauth2")) {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     startActivity(intent);
