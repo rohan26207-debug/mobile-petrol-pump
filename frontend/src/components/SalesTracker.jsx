@@ -325,8 +325,10 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
       fuelType: sale.fuelType,
       startReading: sale.startReading.toString(),
       endReading: sale.endReading.toString(),
+      testing: sale.testing?.toString() || '',
       rate: sale.rate.toString(),
-      type: sale.type
+      type: sale.type,
+      mpp: sale.mpp || false
     });
     setEditingId(sale.id);
   };
