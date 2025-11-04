@@ -486,8 +486,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
 
           {/* Multi-Row Entry Form */}
           <div className="space-y-2">
-            {/* Row 2: Date and Fuel Type */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* Row 2: Date, Fuel Type, and MPP */}
+            <div className={`grid ${isMPPVisible ? 'grid-cols-[1fr,1fr,auto]' : 'grid-cols-2'} gap-2`}>
               <div className="space-y-1">
                 <Label className="text-sm font-medium">Date *</Label>
                 <Input
@@ -517,6 +517,20 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
                   ))}
                 </select>
               </div>
+              
+              {isMPPVisible && (
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium whitespace-nowrap">MPP</Label>
+                  <div className="flex items-center justify-center h-10 -mt-1">
+                    <input
+                      type="checkbox"
+                      checked={formData.mpp}
+                      onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
+                      className="w-5 h-5 cursor-pointer accent-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Row 3: Liters and Rate */}
