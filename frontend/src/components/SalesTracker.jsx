@@ -33,11 +33,11 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
   const [isMPPVisible, setIsMPPVisible] = useState(false);
   const { toast } = useToast();
   
-  // Check if MPP checkbox should be visible
+  // Check if MPP checkbox should be visible - check on every data change
   React.useEffect(() => {
     const localStorageService = require('../services/localStorage').default;
     setIsMPPVisible(localStorageService.isMPPVisible());
-  }, []);
+  }, [salesData, formResetKey]); // Recheck when sales data or form reset happens
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
