@@ -686,6 +686,7 @@ class LocalStorageService {
       customerName: paymentData.customerName,
       amount: parseFloat(paymentData.amount),
       date: paymentData.date,
+      mode: paymentData.mode || 'cash', // Payment mode (cash/card/wallet/bank)
       timestamp: new Date().toISOString()
     };
     
@@ -704,6 +705,7 @@ class LocalStorageService {
         customerName: paymentData.customerName,
         amount: parseFloat(paymentData.amount),
         date: paymentData.date,
+        mode: paymentData.mode || payments[index].mode || 'cash', // Update mode if provided
         timestamp: new Date().toISOString()
       };
       this.setPayments(payments);
