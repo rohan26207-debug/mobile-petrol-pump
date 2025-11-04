@@ -315,7 +315,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
         amount: parseFloat(entry.amount)
       })),
       amount: parseFloat(calculateTotalAmount()),
-      status: 'pending'
+      status: 'pending',
+      mpp: formData.mpp || false
     };
   };
 
