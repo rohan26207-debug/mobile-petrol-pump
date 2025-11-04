@@ -1,26 +1,33 @@
 /**
- * Google Drive Export Module
- * Works with Android WebView + native uploadBackupToDrive()
- * Authorizes user, gets token, uploads backup.json automatically
+ * === Google Drive Export Integration (Final Unified Version) ===
+ * Works in both Web and Android WebView builds.
+ * - Android uses redirect URI: com.mobilepetrolpump:/oauth2redirect
+ * - Web uses redirect URI: http://localhost
  */
-
-// Drive OAuth configuration (must match your Google Console web client)
-const GOOGLE_OAUTH = {
-  client_id: window.ANDROID_OAUTH_CLIENT_ID || '411840168577-hqpoggit0nncfetfgtu4g465udsbuhla.apps.googleusercontent.com',
-  redirect_uri: 'http://localhost', // Do NOT change — this matches Android WebView intercept
-  scope: 'https://www.googleapis.com/auth/drive.file',
-  response_type: 'token',
-  include_granted_scopes: 'true'
-};
 
 // Global token cache
 let googleAccessToken = null;
 
 /**
+ * Get platform-specific OAuth configuration
+ */
+function getGoogleOAuthConfig() {
+  const isAndroid = !!window.MPumpCalcAndroid;
+  return {
+    client_id: window.ANDROID_OAUTH_CLIENT_ID || '411840168577-hqpoggit0nncfetfgtu4g465udsbuhla.apps.googleusercontent.com',
+    redirect_uri: isAndroid ? 'com.mobilepetrolpump:/oauth2redirect' : 'http://localhost',
+    scope: 'https://www.googleapis.com/auth/drive.file',
+    response_type: 'token',
+    include_granted_scopes: 'true',
+    prompt: 'consent'
+  };
+}
+
+/**
  * Build the OAuth URL for login
  */
 function buildGoogleOAuthUrl() {
-  const params = new URLSearchParams(GOOGLE_OAUTH).toString();
+  const params = new URLSearchParams(getGoogleOAuthConfig()).toString();
   return `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
 }
 
