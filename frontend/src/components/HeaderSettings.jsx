@@ -1481,9 +1481,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                       Online Access and Delete Data sections<br/>have been moved to the Contact tab
                     </p>
                   </div>
-                  {/* Old content removed - now in Contact tab */}
-                  <div style={{ display: 'none' }}>
-                  <div className="text-center mb-4">
                   
                   {/* URL Input Section */}
                   <div className={`border rounded-lg p-4 ${
