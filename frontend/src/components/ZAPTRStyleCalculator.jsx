@@ -26,7 +26,8 @@ import {
   Minus,
   Users,
   Wallet,
-  Package
+  Package,
+  ArrowRightLeft
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import useAutoBackup from '../hooks/use-auto-backup';
