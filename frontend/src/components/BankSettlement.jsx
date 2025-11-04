@@ -194,11 +194,11 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
                 <tr>
                   <th className="px-3 py-2 text-left font-semibold">Sr. No</th>
                   <th className="px-3 py-2 text-left font-semibold">Date</th>
+                  <th className="px-3 py-2 text-right font-semibold">Cash (₹)</th>
                   <th className="px-3 py-2 text-right font-semibold">Card (₹)</th>
                   <th className="px-3 py-2 text-right font-semibold">Paytm (₹)</th>
                   <th className="px-3 py-2 text-right font-semibold">PhonePe (₹)</th>
                   <th className="px-3 py-2 text-right font-semibold">DTP (₹)</th>
-                  <th className="px-3 py-2 text-right font-semibold">Total (₹)</th>
                 </tr>
               </thead>
               <tbody className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
