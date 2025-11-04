@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { Card, CardContent } from './ui/card';
 import { Button } from './ui/button';
 import { Label } from './ui/label';
-import { FileText, Printer } from 'lucide-react';
+import { FileText, Printer, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
