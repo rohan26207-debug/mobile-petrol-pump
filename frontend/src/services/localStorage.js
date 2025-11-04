@@ -670,16 +670,26 @@ class LocalStorageService {
     return true;
   }
 
-  updateCustomer(id, startingBalance) {
+  updateCustomer(id, startingBalance, isMPP) {
     const customers = this.getCustomers();
     const updated = customers.map(c => {
       if (c.id === id) {
-        return { ...c, startingBalance: parseFloat(startingBalance) || 0 };
+        const updatedCustomer = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
+        if (isMPP !== undefined) {
+          updatedCustomer.isMPP = isMPP;
+        }
+        return updatedCustomer;
       }
       return c;
     });
     this.setCustomers(updated);
     return updated.find(c => c.id === id);
+  }
+  
+  // Check if MPP checkbox should be visible (any customer has isMPP = true)
+  isMPPVisible() {
+    const customers = this.getCustomers();
+    return customers.some(c => c.isMPP === true);
   }
 
   // Payment Methods
