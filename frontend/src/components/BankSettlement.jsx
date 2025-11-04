@@ -412,18 +412,31 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
             </div>
           </div>
           
-          {/* Print Button */}
-          <Button
-            onClick={handlePrint}
-            className={`w-full ${
-              isDarkMode 
-                ? 'bg-green-700 hover:bg-green-600 text-white' 
-                : 'bg-green-600 hover:bg-green-700 text-white'
-            }`}
-          >
-            <Printer className="w-4 h-4 mr-2" />
-            Print Outs
-          </Button>
+          {/* Print and Excel Buttons */}
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              onClick={handlePrint}
+              className={`${
+                isDarkMode 
+                  ? 'bg-green-700 hover:bg-green-600 text-white' 
+                  : 'bg-green-600 hover:bg-green-700 text-white'
+              }`}
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Print Outs
+            </Button>
+            <Button
+              onClick={handleExcelExport}
+              className={`${
+                isDarkMode 
+                  ? 'bg-blue-700 hover:bg-blue-600 text-white' 
+                  : 'bg-blue-600 hover:bg-blue-700 text-white'
+              }`}
+            >
+              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              Excel
+            </Button>
+          </div>
         </div>
 
         {/* Summary Cards */}
