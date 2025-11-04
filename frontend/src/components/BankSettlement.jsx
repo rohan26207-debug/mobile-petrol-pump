@@ -3,7 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
-import { Wallet, Calendar } from 'lucide-react';
+import { Button } from './ui/button';
+import { Wallet, Calendar, Printer } from 'lucide-react';
 
 const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, salesData, selectedDate }) => {
   // Initialize date range with current selected date
