@@ -17,6 +17,7 @@ import {
   Receipt
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import localStorageService from '../services/localStorage';
 
 const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRecord, deleteIncomeRecord, expenseData, addExpenseRecord, updateExpenseRecord, deleteExpenseRecord, selectedDate, salesData, creditData, formResetKey, editingRecord, onRecordSaved, hideRecordsList }) => {
   const [activeType, setActiveType] = useState('income');
