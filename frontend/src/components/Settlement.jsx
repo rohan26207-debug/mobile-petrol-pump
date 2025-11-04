@@ -79,7 +79,8 @@ const Settlement = ({
     setFormData({
       date: selectedDate,
       amount: '',
-      description: ''
+      description: '',
+      mpp: false
     });
     setEditingId(null);
   };
