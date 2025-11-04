@@ -22,109 +22,164 @@
         
         <!-- Google Drive Export Integration -->
         <script>
-        /**
-         * === Google Drive Export Integration ===
-         * Works in both Web and Android WebView builds.
-         * Uses http://localhost redirect URI (Web OAuth Client)
-         */
+/**
+ * Mobile Petrol Pump
+ * Google Drive Export (Final Clean Version)
+ * Matches MainActivity.java + Manifest
+ */
 
-        // Google OAuth config
-        function getGoogleOAuthConfig() {
-          return {
-            client_id: window.ANDROID_OAUTH_CLIENT_ID || '411840168577-hqpoggit0nncfetfgtu4g465udsbuhla.apps.googleusercontent.com',
-            redirect_uri: 'http://localhost',
-            scope: 'https://www.googleapis.com/auth/drive.file',
-            response_type: 'token',
-            include_granted_scopes: 'true',
-            prompt: 'consent'
-          };
-        }
+// 🔧 CONFIG — Google Web Client ID
+const CLIENT_ID = window.ANDROID_OAUTH_CLIENT_ID || "411840168577-hqpoggit0nncfetfgtu4g465udsbuhla.apps.googleusercontent.com";
+const REDIRECT_URI = "http://localhost";
+const SCOPES = "https://www.googleapis.com/auth/drive.file";
 
-        // 1️⃣ Build OAuth URL
-        function buildOAuthUrl() {
-          const params = new URLSearchParams(getGoogleOAuthConfig()).toString();
-          return `https://accounts.google.com/o/oauth2/v2/auth?${params}`;
-        }
+// 🔹 Builds the Google OAuth 2.0 URL
+function buildAuthUrl() {
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    redirect_uri: REDIRECT_URI,
+    response_type: "token",
+    scope: SCOPES,
+    include_granted_scopes: "true",
+    state: "mpumpcalc",
+    prompt: "consent"
+  });
+  return `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`;
+}
 
-        // 2️⃣ Called by your "Export" button
-        function exportToGoogleDrive() {
-          try {
-            const authUrl = buildOAuthUrl();
-            console.log("OAuth flow started:", authUrl);
+/**
+ * 🔹 Main Export Trigger
+ * Called when user clicks "Export Data to Google Drive"
+ */
+async function exportToGoogleDrive() {
+  try {
+    const authUrl = buildAuthUrl();
 
-            if (window.MPumpCalcAndroid && window.MPumpCalcAndroid.openGoogleOAuth) {
-              window.MPumpCalcAndroid.openGoogleOAuth(authUrl);
-            } else {
-              // For web testing
-              window.location.href = authUrl;
-            }
-          } catch (err) {
-            console.error("Failed to start Drive export:", err);
-            alert("Drive export failed: " + err.message);
-          }
-        }
+    if (typeof MPumpCalcAndroid !== "undefined" && MPumpCalcAndroid.openGoogleOAuth) {
+      // 🚀 Android WebView flow — handled in MainActivity.java
+      MPumpCalcAndroid.openGoogleOAuth(authUrl);
+    } else {
+      // 🌐 Web fallback (runs in browser)
+      window.location.href = authUrl;
+    }
+  } catch (err) {
+    console.error("Export error:", err);
+    if (typeof MPumpCalcAndroid !== "undefined" && MPumpCalcAndroid.showToast) {
+      MPumpCalcAndroid.showToast("Export failed: " + err.message);
+    } else {
+      alert("Export failed: " + err.message);
+    }
+  }
+}
 
-        // 3️⃣ Called by MainActivity.java when access_token received
-        function onGoogleDriveTokenReceived(token) {
-          if (!token) {
-            alert("Failed to connect to Google Drive.");
-            return;
-          }
-          console.log("✅ Token received from Android:", token.substring(0, 15) + "...");
-          alert("Connected to Google Drive. Uploading backup...");
+/**
+ * 🔹 Called automatically from Android after successful OAuth login
+ * MainActivity.java invokes:
+ *   webView.loadUrl("javascript:onGoogleDriveTokenReceived('" + token + "')");
+ */
+async function onGoogleDriveTokenReceived(token) {
+  console.log("✅ Token received from Android:", token);
 
-          // Optionally trigger local JS upload (browser fallback)
-          // uploadBackupToDrive(token);
+  // Show status to user
+  showStatus("🔄 Backing up data to Google Drive...");
 
-          // On Android, MainActivity will auto-upload backup.json
-        }
+  try {
+    // Step 1: Create backup.json from your app data
+    const data = await buildBackupData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
 
-        // 4️⃣ Fallback JS upload (used if running web-only build)
-        async function uploadBackupToDrive(token) {
-          try {
-            const data = localStorage.getItem("mpump_backup") || "{}";
-            const blob = new Blob([data], { type: "application/json" });
+    // Step 2: Upload or overwrite backup.json on Google Drive
+    const existingFileId = await findExistingBackup(token);
+    await uploadToDrive(token, blob, existingFileId);
 
-            const metadata = {
-              name: "backup.json",
-              mimeType: "application/json"
-            };
+    showStatus("✅ Backup successfully uploaded to Google Drive.");
+    if (typeof MPumpCalcAndroid !== "undefined" && MPumpCalcAndroid.showToast)
+      MPumpCalcAndroid.showToast("Backup uploaded to Google Drive!");
+  } catch (err) {
+    console.error("Upload error:", err);
+    showStatus("❌ Upload failed: " + err.message);
+    if (typeof MPumpCalcAndroid !== "undefined" && MPumpCalcAndroid.showToast)
+      MPumpCalcAndroid.showToast("Upload failed: " + err.message);
+  }
+}
 
-            const boundary = "-------MPumpBoundary" + Date.now();
-            const body =
-              `--${boundary}\r\n` +
-              "Content-Type: application/json; charset=UTF-8\r\n\r\n" +
-              JSON.stringify(metadata) + "\r\n" +
-              `--${boundary}\r\n` +
-              "Content-Type: application/json\r\n\r\n";
+/**
+ * 🔹 Create your backup data object (replace this with your real data logic)
+ */
+async function buildBackupData() {
+  // Get data from localStorage or app state
+  const storedBackup = localStorage.getItem("mpump_backup");
+  if (storedBackup) {
+    try {
+      return JSON.parse(storedBackup);
+    } catch (e) {
+      console.warn("Failed to parse stored backup, creating new one");
+    }
+  }
+  
+  // Fallback: collect all localStorage data
+  const data = {
+    timestamp: new Date().toISOString(),
+    appData: {}
+  };
+  
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    data.appData[key] = localStorage.getItem(key);
+  }
+  
+  return data;
+}
 
-            const end = `\r\n--${boundary}--`;
+/**
+ * 🔹 Find if "backup.json" already exists
+ */
+async function findExistingBackup(token) {
+  const query = encodeURIComponent("name='backup.json' and trashed=false");
+  const res = await fetch(`https://www.googleapis.com/drive/v3/files?q=${query}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+  const data = await res.json();
+  return data.files && data.files.length > 0 ? data.files[0].id : null;
+}
 
-            const fullBody = new Blob([body, await blob.arrayBuffer(), end], {
-              type: "multipart/related; boundary=" + boundary
-            });
+/**
+ * 🔹 Upload (or overwrite) backup.json to Google Drive
+ */
+async function uploadToDrive(token, blob, fileId = null) {
+  const metadata = { name: "backup.json", mimeType: "application/json" };
 
-            const res = await fetch("https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart", {
-              method: "POST",
-              headers: {
-                Authorization: "Bearer " + token,
-                "Content-Type": "multipart/related; boundary=" + boundary
-              },
-              body: fullBody
-            });
+  const form = new FormData();
+  form.append("metadata", new Blob([JSON.stringify(metadata)], { type: "application/json" }));
+  form.append("file", blob);
 
-            if (res.ok) {
-              alert("✅ Backup uploaded to Google Drive!");
-            } else {
-              const err = await res.text();
-              console.error("Drive upload failed:", err);
-              alert("Upload failed: " + err);
-            }
-          } catch (e) {
-            console.error("Upload error:", e);
-            alert("Drive upload error: " + e.message);
-          }
-        }
+  const method = fileId ? "PATCH" : "POST";
+  const url = fileId
+    ? `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=multipart`
+    : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
+
+  const res = await fetch(url, {
+    method,
+    headers: { Authorization: `Bearer ${token}` },
+    body: form
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    throw new Error(`Drive upload failed (${res.status}): ${errText}`);
+  }
+
+  return await res.json();
+}
+
+/**
+ * 🔹 Simple status display helper
+ */
+function showStatus(msg) {
+  const el = document.getElementById("status");
+  if (el) el.textContent = msg;
+  console.log(msg);
+}
         </script>
         
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
