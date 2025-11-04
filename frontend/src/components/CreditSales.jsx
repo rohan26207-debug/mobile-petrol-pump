@@ -375,7 +375,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
       creditDate: selectedDate, // Reset to current selected date
       fuelEntries: [{ fuelType: '', liters: '', rate: '' }],
       incomeEntries: [],
-      expenseEntries: []
+      expenseEntries: [],
+      mpp: false
     });
     setCustomerSearch(''); // Reset customer search field
     setEditingId(null);
