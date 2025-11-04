@@ -311,8 +311,10 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
       fuelType: '',
       startReading: '',
       endReading: '',
+      testing: '',
       rate: '',
-      type: 'cash'
+      type: 'cash',
+      mpp: false
     });
     setEditingId(null);
   };
