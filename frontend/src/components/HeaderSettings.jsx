@@ -1238,22 +1238,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                           fileInput.click();
                         }}
                       >
-                        🔀 Merge Manual Data Back
+                        🔀 Merge Manual Data
                       </Button>
-                      
-                      <div className={`p-3 rounded-lg border ${
-                        isDarkMode ? 'bg-yellow-900/20 border-yellow-800' : 'bg-yellow-50 border-yellow-200'
-                      }`}>
-                        <p className={`text-xs ${isDarkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>
-                          ℹ️ <strong>How Merge Works:</strong>
-                        </p>
-                        <ul className={`text-xs mt-2 space-y-1 ${isDarkMode ? 'text-yellow-300' : 'text-yellow-600'}`}>
-                          <li>• Adds new records from backup file</li>
-                          <li>• Keeps your existing data unchanged</li>
-                          <li>• In case of conflicts (same ID), old data is preserved</li>
-                          <li>• Perfect for combining data from multiple devices</li>
-                        </ul>
-                      </div>
                     </div>
                   </div>
                 </div>
