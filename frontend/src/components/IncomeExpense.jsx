@@ -276,9 +276,16 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
                 type="text"
                 value={formData.description}
                 onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={`Enter ${activeType} details...`}
+                placeholder={`Select or enter ${activeType} category...`}
                 className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
+                list={`${activeType}-categories`}
+                autoComplete="off"
               />
+              <datalist id={`${activeType}-categories`}>
+                {(activeType === 'income' ? incomeCategories : expenseCategories).map((category) => (
+                  <option key={category.id} value={category.name} />
+                ))}
+              </datalist>
             </div>
 
             {/* Amount - 5 cols */}
