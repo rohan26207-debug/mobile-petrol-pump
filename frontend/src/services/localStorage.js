@@ -818,6 +818,94 @@ class LocalStorageService {
     this.setExpenseCategories(updated);
     return updated.find(c => c.id === id);
   }
+
+  // Settlement Methods
+  getSettlements() {
+    return this.getItem(this.keys.settlements) || [];
+  }
+
+  setSettlements(settlements) {
+    return this.setItem(this.keys.settlements, settlements);
+  }
+
+  addSettlement(settlementData) {
+    const settlements = this.getSettlements();
+    const newSettlement = {
+      id: Date.now().toString(),
+      date: settlementData.date,
+      amount: parseFloat(settlementData.amount),
+      description: settlementData.description || '',
+      timestamp: new Date().toISOString()
+    };
+    settlements.push(newSettlement);
+    this.setSettlements(settlements);
+    return newSettlement;
+  }
+
+  updateSettlement(id, settlementData) {
+    const settlements = this.getSettlements();
+    const index = settlements.findIndex(s => s.id === id);
+    if (index !== -1) {
+      settlements[index] = {
+        ...settlements[index],
+        date: settlementData.date,
+        amount: parseFloat(settlementData.amount),
+        description: settlementData.description || '',
+        timestamp: new Date().toISOString()
+      };
+      this.setSettlements(settlements);
+      return settlements[index];
+    }
+    return null;
+  }
+
+  deleteSettlement(id) {
+    const settlements = this.getSettlements();
+    const updated = settlements.filter(s => s.id !== id);
+    this.setSettlements(updated);
+    return true;
+  }
+
+  // Settlement Type Methods
+  getSettlementTypes() {
+    return this.getItem(this.keys.settlementTypes) || [];
+  }
+
+  setSettlementTypes(types) {
+    return this.setItem(this.keys.settlementTypes, types);
+  }
+
+  addSettlementType(name) {
+    const types = this.getSettlementTypes();
+    const newType = {
+      id: Date.now().toString(),
+      name: name
+    };
+    types.push(newType);
+    types.sort((a, b) => a.name.localeCompare(b.name));
+    this.setSettlementTypes(types);
+    return newType;
+  }
+
+  deleteSettlementType(id) {
+    const types = this.getSettlementTypes();
+    const updated = types.filter(t => t.id !== id);
+    this.setSettlementTypes(updated);
+    return true;
+  }
+
+  updateSettlementType(id, name) {
+    const types = this.getSettlementTypes();
+    const updated = types.map(t => {
+      if (t.id === id) {
+        return { ...t, name: name };
+      }
+      return t;
+    });
+    updated.sort((a, b) => a.name.localeCompare(b.name));
+    this.setSettlementTypes(updated);
+    return updated.find(t => t.id === id);
+  }
 }
 
 // Export singleton instance
