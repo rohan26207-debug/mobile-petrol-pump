@@ -311,32 +311,47 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Date Range Selector */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-1">
-            <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-              <Calendar className="w-3 h-3" />
-              From Date
-            </Label>
-            <Input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
-            />
+        {/* Date Range Selector and Print Button */}
+        <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1">
+              <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                <Calendar className="w-3 h-3" />
+                From Date
+              </Label>
+              <Input
+                type="date"
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+              />
+            </div>
+            <div className="space-y-1">
+              <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                <Calendar className="w-3 h-3" />
+                To Date
+              </Label>
+              <Input
+                type="date"
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+              />
+            </div>
           </div>
-          <div className="space-y-1">
-            <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-              <Calendar className="w-3 h-3" />
-              To Date
-            </Label>
-            <Input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
-            />
-          </div>
+          
+          {/* Print Button */}
+          <Button
+            onClick={handlePrint}
+            className={`w-full ${
+              isDarkMode 
+                ? 'bg-green-700 hover:bg-green-600 text-white' 
+                : 'bg-green-600 hover:bg-green-700 text-white'
+            }`}
+          >
+            <Printer className="w-4 h-4 mr-2" />
+            Print Outs
+          </Button>
         </div>
 
         {/* Summary Cards */}
