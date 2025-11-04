@@ -1,0 +1,17 @@
+// Top-level build file
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.2.0'
+    }
+}
+
+// Repositories are now managed in settings.gradle
+// allprojects block removed to prevent conflict with RepositoriesMode.FAIL_ON_PROJECT_REPOS
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
