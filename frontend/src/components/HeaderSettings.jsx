@@ -1081,6 +1081,123 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                       </div>
                     </>
                   )}
+
+                  {/* Merge Manual Data Back Button */}
+                  <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                  
+                  <div className={`border rounded-lg p-4 ${
+                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                  }`}>
+                    <div className="space-y-3">
+                      <h4 className={`font-medium ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Merge Backup Data
+                      </h4>
+                      
+                      <p className={`text-sm ${
+                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>
+                        Import and merge data from backup file while keeping existing data
+                      </p>
+                      
+                      <Button 
+                        variant="outline" 
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white border-orange-600"
+                        onClick={() => {
+                          // Use standard file input - works in both browser and Android WebView
+                          const fileInput = document.createElement('input');
+                          fileInput.type = 'file';
+                          fileInput.accept = '.json,application/json';
+                          
+                          fileInput.onchange = (e) => {
+                            const file = e.target.files[0];
+                            if (!file) return;
+                            
+                            // Check file type
+                            if (!file.name.endsWith('.json')) {
+                              toast({
+                                title: "Invalid File",
+                                description: "Please select a valid JSON backup file",
+                                variant: "destructive",
+                              });
+                              return;
+                            }
+                            
+                            // Read file
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                              try {
+                                const importedData = JSON.parse(event.target.result);
+                                
+                                // Validate data structure
+                                if (!importedData.salesData && !importedData.creditData && 
+                                    !importedData.incomeData && !importedData.expenseData) {
+                                  toast({
+                                    title: "Invalid Backup File",
+                                    description: "The file doesn't contain valid backup data",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
+                                
+                                // Confirm merge
+                                if (window.confirm('This will merge the backup data with your existing data. In case of conflicts, your existing data will be kept. Continue?')) {
+                                  const success = localStorageService.mergeAllData(importedData);
+                                  
+                                  if (success) {
+                                    toast({
+                                      title: "Data Merged Successfully",
+                                      description: "Backup data has been merged with existing data. Refreshing...",
+                                    });
+                                    
+                                    // Refresh page after 2 seconds
+                                    setTimeout(() => {
+                                      window.location.reload();
+                                    }, 2000);
+                                  } else {
+                                    toast({
+                                      title: "Merge Failed",
+                                      description: "Failed to merge data. Please try again.",
+                                      variant: "destructive",
+                                    });
+                                  }
+                                }
+                              } catch (error) {
+                                toast({
+                                  title: "Merge Error",
+                                  description: "Failed to read backup file. Please ensure it's a valid JSON file.",
+                                  variant: "destructive",
+                                });
+                                console.error('Merge error:', error);
+                              }
+                            };
+                            
+                            reader.readAsText(file);
+                          };
+                          
+                          // Trigger file selection
+                          fileInput.click();
+                        }}
+                      >
+                        🔀 Merge Manual Data Back
+                      </Button>
+                      
+                      <div className={`p-3 rounded-lg border ${
+                        isDarkMode ? 'bg-yellow-900/20 border-yellow-800' : 'bg-yellow-50 border-yellow-200'
+                      }`}>
+                        <p className={`text-xs ${isDarkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                          ℹ️ <strong>How Merge Works:</strong>
+                        </p>
+                        <ul className={`text-xs mt-2 space-y-1 ${isDarkMode ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                          <li>• Adds new records from backup file</li>
+                          <li>• Keeps your existing data unchanged</li>
+                          <li>• In case of conflicts (same ID), old data is preserved</li>
+                          <li>• Perfect for combining data from multiple devices</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
               
