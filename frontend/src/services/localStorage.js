@@ -13,7 +13,9 @@ class LocalStorageService {
       fuelSettings: 'mpump_fuel_settings',
       rates: 'mpump_rates_by_date', // New: date-specific rates
       customers: 'mpump_customers', // New: customer list
-      payments: 'mpump_payments' // New: payments received
+      payments: 'mpump_payments', // New: payments received
+      incomeCategories: 'mpump_income_categories', // Income categories
+      expenseCategories: 'mpump_expense_categories' // Expense categories
     };
     
     this.initializeDefaultData();
