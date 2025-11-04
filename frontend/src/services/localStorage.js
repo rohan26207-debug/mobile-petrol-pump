@@ -707,3 +707,4 @@ export default localStorageService;
 // Export utility functions for sync
 export const exportAllData = () => localStorageService.exportAllData();
 export const importAllData = (data) => localStorageService.importAllData(data);
+export const mergeAllData = (data) => localStorageService.mergeAllData(data);
