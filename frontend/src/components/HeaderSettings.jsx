@@ -51,10 +51,14 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
 
-  // Load categories on mount
+  // Settlement Types state
+  const [settlementTypes, setSettlementTypes] = useState([]);
+
+  // Load categories and settlement types on mount
   React.useEffect(() => {
     setIncomeCategories(localStorageService.getIncomeCategories());
     setExpenseCategories(localStorageService.getExpenseCategories());
+    setSettlementTypes(localStorageService.getSettlementTypes());
   }, []);
 
   // Category management functions
