@@ -1,0 +1,211 @@
+import React, { useState } from 'react';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Label } from './ui/label';
+import { Badge } from './ui/badge';
+import { Separator } from './ui/separator';
+import { Plus, Trash2, Edit, X, Check } from 'lucide-react';
+import { useToast } from '../hooks/use-toast';
+
+const SettlementManagement = ({ 
+  settlementTypes, 
+  onAddSettlementType, 
+  onDeleteSettlementType, 
+  onUpdateSettlementType,
+  isDarkMode 
+}) => {
+  const [newTypeName, setNewTypeName] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState('');
+  const { toast } = useToast();
+
+  const handleAddType = () => {
+    if (!newTypeName.trim()) {
+      toast({
+        title: "Invalid Input",
+        description: "Please enter a settlement type name",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const types = settlementTypes || [];
+    if (types.some(t => t.name.toLowerCase() === newTypeName.toLowerCase())) {
+      toast({
+        title: "Duplicate Type",
+        description: "This settlement type already exists",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onAddSettlementType(newTypeName);
+    setNewTypeName('');
+    toast({
+      title: "Settlement Type Added",
+      description: `${newTypeName} has been added successfully`,
+    });
+  };
+
+  const startEditing = (id, name) => {
+    setEditingId(id);
+    setEditingName(name);
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditingName('');
+  };
+
+  const saveEditing = (id) => {
+    if (!editingName.trim()) {
+      toast({
+        title: "Invalid Input",
+        description: "Settlement type name cannot be empty",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    onUpdateSettlementType(id, editingName);
+    setEditingId(null);
+    setEditingName('');
+    toast({
+      title: "Settlement Type Updated",
+      description: "Settlement type has been updated successfully",
+    });
+  };
+
+  const handleDelete = (id, name) => {
+    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+      onDeleteSettlementType(id);
+      toast({
+        title: "Settlement Type Deleted",
+        description: `${name} has been removed`,
+      });
+    }
+  };
+
+  const currentTypes = settlementTypes || [];
+
+  return (
+    <div className="space-y-4">
+      {/* Add New Settlement Type */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">
+          Add New Settlement Type
+        </Label>
+        <div className="flex gap-2">
+          <Input
+            value={newTypeName}
+            onChange={(e) => setNewTypeName(e.target.value)}
+            placeholder="Enter settlement type name"
+            className="flex-1"
+            autoComplete="off"
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') handleAddType();
+            }}
+          />
+          <Button onClick={handleAddType} size="sm">
+            <Plus className="w-4 h-4" />
+          </Button>
+        </div>
+      </div>
+
+      <Separator className="my-4" />
+
+      {/* Settlement Types List */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium">
+          Manage Settlement Types
+        </Label>
+        
+        {currentTypes.length === 0 ? (
+          <div className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+            <p className="text-sm">No settlement types added yet</p>
+            <p className="text-xs mt-1">Add your first settlement type above</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {currentTypes.map((type) => (
+              <div 
+                key={type.id}
+                className={`border rounded-lg p-3 ${
+                  isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                }`}
+              >
+                {editingId === type.id ? (
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={editingName}
+                      onChange={(e) => setEditingName(e.target.value)}
+                      className="flex-1"
+                      autoFocus
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') saveEditing(type.id);
+                        if (e.key === 'Escape') cancelEditing();
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => saveEditing(type.id)}
+                      className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                    >
+                      <Check className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={cancelEditing}
+                      className="text-gray-600 hover:text-gray-700 hover:bg-gray-50"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between">
+                    <Badge className="bg-orange-100 text-orange-800 border-0">
+                      {type.name}
+                    </Badge>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => startEditing(type.id, type.name)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        <Edit className="w-3 h-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(type.id, type.name)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <div className={`p-4 rounded-lg border mt-4 ${
+        isDarkMode ? 'bg-blue-900/20 border-blue-800' : 'bg-blue-50 border-blue-200'
+      }`}>
+        <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+          ℹ️ <strong>About Settlements:</strong>
+        </p>
+        <p className={`text-xs mt-1 ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
+          Settlements are amounts transferred from cash sales to bank. This reduces your cash in hand but doesn't affect total sales.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+export default SettlementManagement;
