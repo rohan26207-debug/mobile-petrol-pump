@@ -348,7 +348,7 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
   // Render form content function (similar to CreditSales pattern)
   const renderFormContent = () => (
     <div className="p-0.5 gap-0.5 space-y-2">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-[1fr,1fr,auto] gap-2 items-end">
         <div className="space-y-1">
           <Label className="text-xs font-semibold">Fuel Type</Label>
           <Select key={`fuel-${editingId || 'new'}`} value={formData.fuelType} onValueChange={handleFuelChange}>
@@ -367,7 +367,7 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
           </Select>
         </div>
 
-        <div className="space-y-1 flex-1">
+        <div className="space-y-1">
           <Label className="text-xs font-semibold">Nozzle</Label>
           <Select 
             key={`nozzle-${editingId || 'new'}`}
@@ -388,20 +388,14 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
           </Select>
         </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-semibold">MPP</Label>
-          <div className={`h-10 flex items-center justify-center border rounded-md ${
-            isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-white'
-          }`}>
-            <label className="flex items-center cursor-pointer">
-              <input
-                type="checkbox"
-                checked={formData.mpp}
-                onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
-                className="w-5 h-5 cursor-pointer"
-              />
-            </label>
-          </div>
+        <div className="flex items-center gap-2 pb-0.5">
+          <Label className="text-xs font-semibold whitespace-nowrap">MPP</Label>
+          <input
+            type="checkbox"
+            checked={formData.mpp}
+            onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
+            className="w-5 h-5 cursor-pointer accent-blue-500"
+          />
         </div>
       </div>
 
