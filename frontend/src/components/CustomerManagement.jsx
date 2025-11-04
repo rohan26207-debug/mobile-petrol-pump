@@ -175,16 +175,29 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
                       : 'bg-slate-50 border-slate-200'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-1">
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                       isDarkMode ? 'bg-blue-900 text-blue-300' : 'bg-blue-100 text-blue-600'
                     }`}>
                       {customer.name.charAt(0).toUpperCase()}
                     </div>
-                    <div>
-                      <span className={`font-medium block ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-                        {customer.name}
-                      </span>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className={`font-medium block ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                          {customer.name}
+                        </span>
+                        <label className="flex items-center gap-1 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={customer.isMPP || false}
+                            onChange={(e) => onUpdateCustomer(customer.id, customer.startingBalance, e.target.checked)}
+                            className="w-4 h-4 cursor-pointer accent-blue-500"
+                          />
+                          <span className={`text-xs font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                            MPP
+                          </span>
+                        </label>
+                      </div>
                       <span className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
                         Balance: ₹{(customer.startingBalance || 0).toFixed(2)}
                       </span>
