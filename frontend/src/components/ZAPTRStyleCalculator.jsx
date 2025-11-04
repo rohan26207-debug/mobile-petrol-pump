@@ -548,6 +548,19 @@ const ZAPTRStyleCalculator = () => {
     return null;
   };
 
+  const updateSettlementRecord = (id, updatedData) => {
+    try {
+      const updatedSettlement = localStorageService.updateSettlement(id, updatedData);
+      if (updatedSettlement) {
+        setSettlementData(prev => prev.map(settlement => settlement.id === id ? updatedSettlement : settlement));
+        return updatedSettlement;
+      }
+    } catch (error) {
+      console.error('Failed to update settlement record:', error);
+    }
+    return null;
+  };
+
   const updateFuelRate = (fuelType, rate, date = selectedDate) => {
     try {
       // Save rate for the specific date
