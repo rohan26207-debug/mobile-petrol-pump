@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useAutoBackupWeekly } from '../hooks/use-auto-backup-weekly';
-import localStorageService, { exportAllData, importAllData } from '../services/localStorage';
+import localStorageService, { exportAllData, importAllData, mergeAllData } from '../services/localStorage';
 import CustomerManagement from './CustomerManagement';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
