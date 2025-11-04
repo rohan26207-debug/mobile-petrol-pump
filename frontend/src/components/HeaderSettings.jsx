@@ -544,6 +544,20 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
+              <TabsContent value="incexp" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+                <IncomeExpenseCategories
+                  incomeCategories={incomeCategories}
+                  expenseCategories={expenseCategories}
+                  onAddIncomeCategory={handleAddIncomeCategory}
+                  onDeleteIncomeCategory={handleDeleteIncomeCategory}
+                  onUpdateIncomeCategory={handleUpdateIncomeCategory}
+                  onAddExpenseCategory={handleAddExpenseCategory}
+                  onDeleteExpenseCategory={handleDeleteExpenseCategory}
+                  onUpdateExpenseCategory={handleUpdateExpenseCategory}
+                  isDarkMode={isDarkMode}
+                />
+              </TabsContent>
+              
               <TabsContent value="fuel" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
                 {/* Add New Fuel Type */}
                 <div className="space-y-3 mb-4">
