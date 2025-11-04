@@ -1467,21 +1467,23 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
               
               <TabsContent value="online" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
                 <div className="space-y-4">
-                  <div className="text-center mb-4">
-                    <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-green-100 rounded-full">
-                      <Globe className="w-8 h-8 text-green-600" />
-                    </div>
-                    <h3 className={`text-lg font-semibold ${
-                      isDarkMode ? 'text-white' : 'text-slate-800'
-                    }`}>
-                      Online Access
-                    </h3>
-                    <p className={`text-sm mt-2 ${
+                  {/* Online tab content moved to Contact tab */}
+                  <div className="text-center py-12">
+                    <Globe className={`w-16 h-16 mx-auto mb-4 ${isDarkMode ? 'text-gray-600' : 'text-slate-300'}`} />
+                    <h3 className={`text-lg font-semibold mb-2 ${
                       isDarkMode ? 'text-gray-400' : 'text-slate-600'
                     }`}>
-                      Save your webpage URL to access the app online
+                      Content Moved
+                    </h3>
+                    <p className={`text-sm ${
+                      isDarkMode ? 'text-gray-500' : 'text-slate-500'
+                    }`}>
+                      Online Access and Delete Data sections<br/>have been moved to the Contact tab
                     </p>
                   </div>
+                  {/* Old content removed - now in Contact tab */}
+                  <div style={{ display: 'none' }}>
+                  <div className="text-center mb-4">
                   
                   {/* URL Input Section */}
                   <div className={`border rounded-lg p-4 ${
