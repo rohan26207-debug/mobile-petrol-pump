@@ -44,6 +44,24 @@ class LocalStorageService {
     if (!this.getExpenseData()) this.setExpenseData([]);
     if (!this.getCustomers()) this.setCustomers([]);
     if (!this.getPayments()) this.setPayments([]);
+    
+    // Initialize default income/expense categories
+    if (!this.getIncomeCategories()) {
+      this.setIncomeCategories([
+        { id: '1', name: 'Other Income' },
+        { id: '2', name: 'Commission' },
+        { id: '3', name: 'Interest' }
+      ]);
+    }
+    if (!this.getExpenseCategories()) {
+      this.setExpenseCategories([
+        { id: '1', name: 'Salary' },
+        { id: '2', name: 'Rent' },
+        { id: '3', name: 'Electricity' },
+        { id: '4', name: 'Maintenance' },
+        { id: '5', name: 'Other' }
+      ]);
+    }
   }
 
   // Generic localStorage methods
