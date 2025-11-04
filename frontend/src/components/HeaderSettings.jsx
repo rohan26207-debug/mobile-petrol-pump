@@ -587,10 +587,64 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
-              <TabsContent value="backup" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+              <TabsContent value="contact" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
                 <div className="space-y-4">
-                  {/* Manual Backup, Auto Backup, and Merge sections will be here */}
-                  {/* Content moved from Contact and Online tabs */}
+                  {/* Contact Information Display */}
+                  <div className="text-center mb-4">
+                    <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full">
+                      <Phone className="w-8 h-8 text-blue-600" />
+                    </div>
+                    <h3 className={`text-lg font-semibold ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Contact Information
+                    </h3>
+                  </div>
+                  
+                  <div className={`border rounded-lg p-4 ${
+                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                  }`}>
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3">
+                        <User className="w-5 h-5 text-blue-600 mt-0.5" />
+                        <div>
+                          <div className={`text-xs font-medium ${
+                            isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
+                            Owner
+                          </div>
+                          <div className={`font-medium ${
+                            isDarkMode ? 'text-white' : 'text-slate-800'
+                          }`}>
+                            {contactInfo.dealerName}
+                          </div>
+                          <div className={`text-sm ${
+                            isDarkMode ? 'text-gray-300' : 'text-slate-600'
+                          }`}>
+                            {contactInfo.pumpName}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                      
+                      <div className="flex items-start gap-3">
+                        <Mail className="w-5 h-5 text-red-600 mt-0.5" />
+                        <div>
+                          <div className={`text-xs font-medium ${
+                            isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
+                            Email
+                          </div>
+                          <div className={`font-medium break-all ${
+                            isDarkMode ? 'text-white' : 'text-slate-800'
+                          }`}>
+                            {contactInfo.email}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
               
