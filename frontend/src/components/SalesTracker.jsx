@@ -26,7 +26,8 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
     endReading: '',
     testing: '',
     rate: '',
-    type: 'cash'
+    type: 'cash',
+    mpp: false // Mobile Petrol Pump tag
   });
   const [editingId, setEditingId] = useState(null);
   const { toast } = useToast();
