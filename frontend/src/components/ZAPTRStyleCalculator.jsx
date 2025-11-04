@@ -2068,12 +2068,47 @@ window.onload = function() {
           
           <Sheet open={settleIncExpDialogOpen} onOpenChange={setSettleIncExpDialogOpen}>
             <SheetContent side="bottom" className={`h-[90vh] ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
-              <SheetHeader className="px-2">
-                <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
-                  {editingIncomeExpenseData ? 'Edit Income/Expense' : 'Add Income/Expense'}
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
+              <Tabs value={settleIncExpActiveTab} onValueChange={setSettleIncExpActiveTab} className="w-full h-full flex flex-col">
+                <TabsList className={`grid w-full grid-cols-2 mx-2 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                  <TabsTrigger value="settlement" className="flex items-center gap-2">
+                    <ArrowRightLeft className="w-4 h-4" />
+                    Settlement
+                  </TabsTrigger>
+                  <TabsTrigger value="incexp" className="flex items-center gap-2">
+                    <TrendingDown className="w-4 h-4" />
+                    Inc./Exp.
+                  </TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="settlement" className="flex-1 overflow-hidden">
+                  <SheetHeader className="px-2">
+                    <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+                      {editingSettlementData ? 'Edit Settlement' : 'Add Settlement'}
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
+                    <Settlement 
+                      isDarkMode={isDarkMode}
+                      settlementData={settlementData}
+                      addSettlementRecord={addSettlementRecord}
+                      updateSettlementRecord={updateSettlementRecord}
+                      deleteSettlementRecord={deleteSettlementRecord}
+                      selectedDate={selectedDate}
+                      formResetKey={formResetKey}
+                      editingRecord={editingSettlementData}
+                      onRecordSaved={handleCloseDialogs}
+                      hideRecordsList={true}
+                    />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="incexp" className="flex-1 overflow-hidden">
+                  <SheetHeader className="px-2">
+                    <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+                      {editingIncomeExpenseData ? 'Edit Income/Expense' : 'Add Income/Expense'}
+                    </SheetTitle>
+                  </SheetHeader>
+                  <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
                 <IncomeExpense 
                   isDarkMode={isDarkMode}
                   incomeData={incomeData}
