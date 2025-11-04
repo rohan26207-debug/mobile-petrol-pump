@@ -166,9 +166,10 @@ const Settlement = ({
           
           {/* Main Entry Row */}
           <div className={`p-0.5 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'}`}>
-            <div className="grid grid-cols-12 gap-0.5 items-start">
-              {/* Description - 7 cols */}
-              <div className="col-span-7">
+            <div className={`grid ${isMPPVisible ? 'grid-cols-[1fr,1fr,auto]' : 'grid-cols-2'} gap-2 items-end p-2`}>
+              {/* Description */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Description</Label>
                 <Input
                   type="text"
                   value={formData.description}
@@ -185,8 +186,9 @@ const Settlement = ({
                 </datalist>
               </div>
 
-              {/* Amount - 5 cols */}
-              <div className="col-span-5">
+              {/* Amount */}
+              <div className="space-y-1">
+                <Label className="text-sm font-medium">Amount</Label>
                 <Input
                   type="number"
                   step="0.01"
@@ -196,6 +198,21 @@ const Settlement = ({
                   className={`text-sm font-medium ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
                 />
               </div>
+              
+              {/* MPP Checkbox */}
+              {isMPPVisible && (
+                <div className="space-y-1">
+                  <Label className="text-sm font-medium whitespace-nowrap">MPP</Label>
+                  <div className="flex items-center justify-center h-10 -mt-1">
+                    <input
+                      type="checkbox"
+                      checked={formData.mpp}
+                      onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
+                      className="w-5 h-5 cursor-pointer accent-blue-500"
+                    />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
