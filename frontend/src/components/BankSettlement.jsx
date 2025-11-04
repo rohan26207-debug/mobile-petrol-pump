@@ -4,7 +4,8 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
-import { Wallet, Calendar, Printer } from 'lucide-react';
+import { Wallet, Calendar, Printer, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, salesData, selectedDate }) => {
   // Initialize date range with current selected date
