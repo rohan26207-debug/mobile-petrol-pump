@@ -47,6 +47,7 @@ import CreditSalesManagement from './CreditSalesManagement';
 import OutstandingReport from './OutstandingReport';
 import OutstandingPDFReport from './OutstandingPDFReport';
 import CustomerLedger from './CustomerLedger';
+import BankSettlement from './BankSettlement';
 import MPPStock from './MPPStock';
 import localStorageService from '../services/localStorage';
 
