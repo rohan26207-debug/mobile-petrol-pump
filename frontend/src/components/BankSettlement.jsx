@@ -101,13 +101,13 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
   const totals = useMemo(() => {
     return bankSettlementData.reduce(
       (acc, row) => ({
+        cashAmount: acc.cashAmount + row.cashAmount,
         cardAmount: acc.cardAmount + row.cardAmount,
         paytmAmount: acc.paytmAmount + row.paytmAmount,
         phonepeAmount: acc.phonepeAmount + row.phonepeAmount,
-        dtpAmount: acc.dtpAmount + row.dtpAmount,
-        total: acc.total + row.total
+        dtpAmount: acc.dtpAmount + row.dtpAmount
       }),
-      { cardAmount: 0, paytmAmount: 0, phonepeAmount: 0, dtpAmount: 0, total: 0 }
+      { cashAmount: 0, cardAmount: 0, paytmAmount: 0, phonepeAmount: 0, dtpAmount: 0 }
     );
   }, [bankSettlementData]);
 
