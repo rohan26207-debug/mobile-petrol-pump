@@ -411,6 +411,63 @@ const PaymentReceived = ({
           
           <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
             <div className="space-y-3">
+              {/* Payment Mode */}
+              <div>
+                <Label className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                  Mode
+                </Label>
+                <div className="grid grid-cols-4 gap-2 mt-1">
+                  <Button
+                    type="button"
+                    variant={paymentMode === 'cash' ? 'default' : 'outline'}
+                    className={`w-full ${
+                      paymentMode === 'cash' 
+                        ? 'bg-green-600 hover:bg-green-700 text-white' 
+                        : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
+                    }`}
+                    onClick={() => setPaymentMode('cash')}
+                  >
+                    Cash
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={paymentMode === 'card' ? 'default' : 'outline'}
+                    className={`w-full ${
+                      paymentMode === 'card' 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
+                    }`}
+                    onClick={() => setPaymentMode('card')}
+                  >
+                    Card
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={paymentMode === 'wallet' ? 'default' : 'outline'}
+                    className={`w-full ${
+                      paymentMode === 'wallet' 
+                        ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                        : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
+                    }`}
+                    onClick={() => setPaymentMode('wallet')}
+                  >
+                    Wallet
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={paymentMode === 'bank' ? 'default' : 'outline'}
+                    className={`w-full ${
+                      paymentMode === 'bank' 
+                        ? 'bg-orange-600 hover:bg-orange-700 text-white' 
+                        : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
+                    }`}
+                    onClick={() => setPaymentMode('bank')}
+                  >
+                    Bank
+                  </Button>
+                </div>
+              </div>
+
               {/* Customer Search */}
               <div className="relative" ref={customerDropdownRef}>
                 <Label htmlFor="customer" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
