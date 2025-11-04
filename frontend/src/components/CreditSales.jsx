@@ -29,7 +29,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
     creditDate: selectedDate, // Add date field
     fuelEntries: [{ fuelType: '', liters: '', rate: '' }], // Array of fuel entries
     incomeEntries: [], // Array of income entries
-    expenseEntries: [] // Array of expense entries (discounts, etc.)
+    expenseEntries: [], // Array of expense entries (discounts, etc.)
+    mpp: false // Mobile Petrol Pump tag
   });
   const [editingId, setEditingId] = useState(null);
   const [customerSearch, setCustomerSearch] = useState('');
