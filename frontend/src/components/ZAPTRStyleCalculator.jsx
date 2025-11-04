@@ -588,9 +588,9 @@ const ZAPTRStyleCalculator = () => {
   };
 
   // Customer Management Handlers
-  const handleAddCustomer = (name, startingBalance = 0) => {
+  const handleAddCustomer = (name, startingBalance = 0, isMPP = false) => {
     try {
-      const newCustomer = localStorageService.addCustomer(name, startingBalance);
+      const newCustomer = localStorageService.addCustomer(name, startingBalance, isMPP);
       setCustomers(localStorageService.getCustomers()); // Reload sorted list
       return newCustomer;
     } catch (error) {
@@ -607,9 +607,9 @@ const ZAPTRStyleCalculator = () => {
     }
   };
 
-  const handleUpdateCustomer = (id, startingBalance) => {
+  const handleUpdateCustomer = (id, startingBalance, isMPP) => {
     try {
-      localStorageService.updateCustomer(id, startingBalance);
+      localStorageService.updateCustomer(id, startingBalance, isMPP);
       setCustomers(localStorageService.getCustomers());
     } catch (error) {
       console.error('Error updating customer:', error);
