@@ -1465,27 +1465,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 </div>
               </TabsContent>
               
-              <TabsContent value="online" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
-                <div className="space-y-4">
-                  {/* Online tab content moved to Contact tab */}
-                  <div className="text-center py-12">
-                    <Globe className={`w-16 h-16 mx-auto mb-4 ${isDarkMode ? 'text-gray-600' : 'text-slate-300'}`} />
-                    <h3 className={`text-lg font-semibold mb-2 ${
-                      isDarkMode ? 'text-gray-400' : 'text-slate-600'
-                    }`}>
-                      Content Moved
-                    </h3>
-                    <p className={`text-sm ${
-                      isDarkMode ? 'text-gray-500' : 'text-slate-500'
-                    }`}>
-                      Online Access and Delete Data sections<br/>have been moved to the Contact tab
-                    </p>
-                  </div>
-                  
-                  {/* URL Input Section */}
-                  <div className={`border rounded-lg p-4 ${
-                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
-                  }`}>
+              
+              {/* Cloud Sync Tab removed - local backup only */}
+              
+            </Tabs>
                     <div className="space-y-3">
                       <Label className="text-sm font-medium">Webpage URL</Label>
                       <Input
