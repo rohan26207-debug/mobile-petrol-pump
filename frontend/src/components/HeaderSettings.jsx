@@ -587,18 +587,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
-              <TabsContent value="incexp" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
-                <IncomeExpenseCategories
-                  incomeCategories={incomeCategories}
-                  expenseCategories={expenseCategories}
-                  onAddIncomeCategory={handleAddIncomeCategory}
-                  onDeleteIncomeCategory={handleDeleteIncomeCategory}
-                  onUpdateIncomeCategory={handleUpdateIncomeCategory}
-                  onAddExpenseCategory={handleAddExpenseCategory}
-                  onDeleteExpenseCategory={handleDeleteExpenseCategory}
-                  onUpdateExpenseCategory={handleUpdateExpenseCategory}
-                  isDarkMode={isDarkMode}
-                />
+              <TabsContent value="backup" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+                <div className="space-y-4">
+                  {/* BACKUP TAB CONTENT WILL BE ADDED HERE */}
+                </div>
               </TabsContent>
               
               <TabsContent value="fuel" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
