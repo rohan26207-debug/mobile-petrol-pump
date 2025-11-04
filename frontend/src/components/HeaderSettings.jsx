@@ -39,10 +39,14 @@ import localStorageService, { exportAllData, importAllData, mergeAllData } from 
 import CustomerManagement from './CustomerManagement';
 import IncomeExpenseCategories from './IncomeExpenseCategories';
 import SettlementManagement from './SettlementManagement';
+import QRCodeSender from './QRCodeSender';
+import QRCodeScanner from './QRCodeScanner';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
   const [settingsOpen, setSettingsOpen] = useState(false); // For Sheet open state
+  const [showQRSender, setShowQRSender] = useState(false);
+  const [showQRScanner, setShowQRScanner] = useState(false);
   const { toast } = useToast();
   
   // Auto-backup weekly hook
