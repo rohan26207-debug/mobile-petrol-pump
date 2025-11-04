@@ -1462,6 +1462,26 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* QR Code Sender Modal */}
+      {showQRSender && (
+        <QRCodeSender
+          isDarkMode={isDarkMode}
+          data={localStorageService.exportAllData()}
+          onClose={() => setShowQRSender(false)}
+        />
+      )}
+
+      {/* QR Code Scanner Modal */}
+      {showQRScanner && (
+        <QRCodeScanner
+          isDarkMode={isDarkMode}
+          onClose={() => setShowQRScanner(false)}
+          onDataReceived={() => {
+            setShowQRScanner(false);
+          }}
+        />
+      )}
     </>
   );
 };
