@@ -810,68 +810,21 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                               const dataStr = JSON.stringify(backupData, null, 2);
                               const fileName = `mpump-backup-${new Date().toISOString().split('T')[0]}.json`;
                               
-                              // Check if running in Android WebView
-                              const isAndroid = typeof window.MPumpCalcAndroid !== 'undefined';
-                              
-                              if (isAndroid && window.MPumpCalcAndroid.saveJsonBackup) {
-                                // For Android app - use native method
-                                window.MPumpCalcAndroid.saveJsonBackup(dataStr, fileName);
-                                return;
-                              }
-                              
-                              // Method 1: Try modern File System Access API (for Chrome/Edge)
-                              if ('showSaveFilePicker' in window) {
-                                try {
-                                  const handle = await window.showSaveFilePicker({
-                                    suggestedName: fileName,
-                                    types: [{
-                                      description: 'JSON Backup File',
-                                      accept: { 'application/json': ['.json'] }
-                                    }]
-                                  });
-                                  const writable = await handle.createWritable();
-                                  await writable.write(dataStr);
-                                  await writable.close();
-                                  
-                                  toast({
-                                    title: "Data Exported",
-                                    description: "Your backup file has been saved successfully",
-                                  });
-                                  return;
-                                } catch (err) {
-                                  if (err.name === 'AbortError') {
-                                    toast({
-                                      title: "Export Cancelled",
-                                      description: "You cancelled the file save",
-                                    });
-                                    return;
-                                  }
-                                  console.log('File System API failed, trying fallback:', err);
-                                }
-                              }
-                              
-                              // Method 2: Traditional download link (fallback)
-                              const dataBlob = new Blob([dataStr], {type: 'application/json'});
-                              const url = URL.createObjectURL(dataBlob);
+                              // Simple download method - works everywhere
+                              const blob = new Blob([dataStr], { type: 'application/json' });
+                              const url = URL.createObjectURL(blob);
                               const link = document.createElement('a');
                               link.href = url;
                               link.download = fileName;
-                              link.style.display = 'none';
-                              
                               document.body.appendChild(link);
                               link.click();
-                              
-                              // Cleanup
-                              setTimeout(() => {
-                                document.body.removeChild(link);
-                                URL.revokeObjectURL(url);
-                              }, 100);
+                              document.body.removeChild(link);
+                              URL.revokeObjectURL(url);
                               
                               toast({
-                                title: "Data Exported",
-                                description: "Your backup file has been downloaded",
+                                title: "✓ Backup Exported",
+                                description: `Check your Downloads folder for ${fileName}`,
                               });
-                              
                             } catch (error) {
                               console.error('Export error:', error);
                               toast({
