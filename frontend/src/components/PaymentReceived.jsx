@@ -578,63 +578,6 @@ const PaymentReceived = ({
           </SheetHeader>
           
           <div className="mt-6 space-y-4 px-2">
-            {/* Payment Mode */}
-            <div>
-              <Label className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
-                Mode
-              </Label>
-              <div className="grid grid-cols-4 gap-2 mt-1">
-                <Button
-                  type="button"
-                  variant={editPaymentMode === 'cash' ? 'default' : 'outline'}
-                  className={`w-full ${
-                    editPaymentMode === 'cash' 
-                      ? 'bg-green-600 hover:bg-green-700 text-white' 
-                      : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
-                  }`}
-                  onClick={() => setEditPaymentMode('cash')}
-                >
-                  Cash
-                </Button>
-                <Button
-                  type="button"
-                  variant={editPaymentMode === 'card' ? 'default' : 'outline'}
-                  className={`w-full ${
-                    editPaymentMode === 'card' 
-                      ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                      : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
-                  }`}
-                  onClick={() => setEditPaymentMode('card')}
-                >
-                  Card
-                </Button>
-                <Button
-                  type="button"
-                  variant={editPaymentMode === 'wallet' ? 'default' : 'outline'}
-                  className={`w-full ${
-                    editPaymentMode === 'wallet' 
-                      ? 'bg-purple-600 hover:bg-purple-700 text-white' 
-                      : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
-                  }`}
-                  onClick={() => setEditPaymentMode('wallet')}
-                >
-                  Wallet
-                </Button>
-                <Button
-                  type="button"
-                  variant={editPaymentMode === 'bank' ? 'default' : 'outline'}
-                  className={`w-full ${
-                    editPaymentMode === 'bank' 
-                      ? 'bg-orange-600 hover:bg-orange-700 text-white' 
-                      : isDarkMode ? 'border-gray-600 hover:bg-gray-700' : ''
-                  }`}
-                  onClick={() => setEditPaymentMode('bank')}
-                >
-                  Bank
-                </Button>
-              </div>
-            </div>
-
             <div className="relative" ref={editCustomerDropdownRef}>
               <Label htmlFor="editCustomer" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
                 Customer
