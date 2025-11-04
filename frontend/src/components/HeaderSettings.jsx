@@ -560,11 +560,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <span className="hidden sm:inline">Backup</span>
                     <span className="sm:hidden">Bkup</span>
                   </TabsTrigger>
-                  <TabsTrigger value="online" className="flex items-center gap-1 text-xs sm:text-sm px-2">
-                    <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Online</span>
-                    <span className="sm:hidden">URL</span>
-                  </TabsTrigger>
                 </TabsList>
               
               <TabsContent value="customer" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
