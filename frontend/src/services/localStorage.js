@@ -718,6 +718,92 @@ class LocalStorageService {
     this.setPayments(updated);
     return true;
   }
+
+  // Income Category Methods
+  getIncomeCategories() {
+    return this.getItem(this.keys.incomeCategories) || [];
+  }
+
+  setIncomeCategories(categories) {
+    return this.setItem(this.keys.incomeCategories, categories);
+  }
+
+  addIncomeCategory(name) {
+    const categories = this.getIncomeCategories();
+    const newCategory = {
+      id: Date.now().toString(),
+      name: name
+    };
+    categories.push(newCategory);
+    // Sort alphabetically by name
+    categories.sort((a, b) => a.name.localeCompare(b.name));
+    this.setIncomeCategories(categories);
+    return newCategory;
+  }
+
+  deleteIncomeCategory(id) {
+    const categories = this.getIncomeCategories();
+    const updated = categories.filter(c => c.id !== id);
+    this.setIncomeCategories(updated);
+    return true;
+  }
+
+  updateIncomeCategory(id, name) {
+    const categories = this.getIncomeCategories();
+    const updated = categories.map(c => {
+      if (c.id === id) {
+        return { ...c, name: name };
+      }
+      return c;
+    });
+    // Sort alphabetically by name
+    updated.sort((a, b) => a.name.localeCompare(b.name));
+    this.setIncomeCategories(updated);
+    return updated.find(c => c.id === id);
+  }
+
+  // Expense Category Methods
+  getExpenseCategories() {
+    return this.getItem(this.keys.expenseCategories) || [];
+  }
+
+  setExpenseCategories(categories) {
+    return this.setItem(this.keys.expenseCategories, categories);
+  }
+
+  addExpenseCategory(name) {
+    const categories = this.getExpenseCategories();
+    const newCategory = {
+      id: Date.now().toString(),
+      name: name
+    };
+    categories.push(newCategory);
+    // Sort alphabetically by name
+    categories.sort((a, b) => a.name.localeCompare(b.name));
+    this.setExpenseCategories(categories);
+    return newCategory;
+  }
+
+  deleteExpenseCategory(id) {
+    const categories = this.getExpenseCategories();
+    const updated = categories.filter(c => c.id !== id);
+    this.setExpenseCategories(updated);
+    return true;
+  }
+
+  updateExpenseCategory(id, name) {
+    const categories = this.getExpenseCategories();
+    const updated = categories.map(c => {
+      if (c.id === id) {
+        return { ...c, name: name };
+      }
+      return c;
+    });
+    // Sort alphabetically by name
+    updated.sort((a, b) => a.name.localeCompare(b.name));
+    this.setExpenseCategories(updated);
+    return updated.find(c => c.id === id);
+  }
 }
 
 // Export singleton instance
