@@ -491,20 +491,43 @@ const PaymentReceived = ({
                 />
               </div>
 
-              {/* Amount */}
-              <div>
-                <Label htmlFor="amount" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
-                  Amount Received
-                </Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount"
-                  className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
-                />
+              {/* Amount and Mode in same row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="amount" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                    Amount Received
+                  </Label>
+                  <Input
+                    id="amount"
+                    type="number"
+                    step="0.01"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                    placeholder="Enter amount"
+                    className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="paymentMode" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                    Mode
+                  </Label>
+                  <select
+                    id="paymentMode"
+                    value={paymentMode}
+                    onChange={(e) => setPaymentMode(e.target.value)}
+                    className={`mt-1 w-full h-10 px-3 rounded-md border text-sm ${
+                      isDarkMode 
+                        ? 'bg-gray-700 border-gray-600 text-white' 
+                        : 'bg-white border-gray-300 text-gray-900'
+                    }`}
+                  >
+                    <option value="cash">Cash</option>
+                    <option value="card">Card</option>
+                    <option value="wallet">Wallet</option>
+                    <option value="bank">Bank</option>
+                    <option value="dtp">DTP</option>
+                  </select>
+                </div>
               </div>
 
               {/* Record Receipt & Add More */}
