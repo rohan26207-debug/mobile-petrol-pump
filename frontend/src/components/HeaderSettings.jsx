@@ -544,10 +544,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <span className="hidden sm:inline">Settlement</span>
                     <span className="sm:hidden">Sett</span>
                   </TabsTrigger>
-                  <TabsTrigger value="backup" className="flex items-center gap-1 text-xs sm:text-sm px-2">
-                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Backup</span>
-                    <span className="sm:hidden">Bkup</span>
+                  <TabsTrigger value="contact" className="flex items-center gap-1 text-xs sm:text-sm px-2">
+                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Contact</span>
+                    <span className="sm:hidden">Info</span>
                   </TabsTrigger>
                   <TabsTrigger value="fuel" className="flex items-center gap-1 text-xs sm:text-sm px-2">
                     <Fuel className="w-3 h-3 sm:w-4 sm:h-4" />
@@ -555,10 +555,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <span className="sm:hidden">Fuel</span>
                   </TabsTrigger>
                   {/* Cloud Sync tab removed */}
-                  <TabsTrigger value="contact" className="flex items-center gap-1 text-xs sm:text-sm px-2">
-                    <User className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Contact</span>
-                    <span className="sm:hidden">Info</span>
+                  <TabsTrigger value="backup" className="flex items-center gap-1 text-xs sm:text-sm px-2">
+                    <Download className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Backup</span>
+                    <span className="sm:hidden">Bkup</span>
                   </TabsTrigger>
                   <TabsTrigger value="online" className="flex items-center gap-1 text-xs sm:text-sm px-2">
                     <Globe className="w-3 h-3 sm:w-4 sm:h-4" />
