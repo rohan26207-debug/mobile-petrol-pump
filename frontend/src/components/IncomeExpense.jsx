@@ -27,7 +27,15 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     type: 'income'
   });
   const [editingId, setEditingId] = useState(null);
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState([]);
   const { toast } = useToast();
+
+  // Load categories on mount
+  useEffect(() => {
+    setIncomeCategories(localStorageService.getIncomeCategories());
+    setExpenseCategories(localStorageService.getExpenseCategories());
+  }, []);
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
