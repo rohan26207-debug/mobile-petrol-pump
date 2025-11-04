@@ -366,7 +366,7 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
           </Select>
         </div>
 
-        <div className="space-y-1">
+        <div className="space-y-1 flex-1">
           <Label className="text-xs font-semibold">Nozzle</Label>
           <Select 
             key={`nozzle-${editingId || 'new'}`}
@@ -385,6 +385,22 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
               ))}
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="space-y-1">
+          <Label className="text-xs font-semibold">MPP</Label>
+          <div className={`h-10 flex items-center justify-center border rounded-md ${
+            isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-gray-300 bg-white'
+          }`}>
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                checked={formData.mpp}
+                onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
+                className="w-5 h-5 cursor-pointer"
+              />
+            </label>
+          </div>
         </div>
       </div>
 
