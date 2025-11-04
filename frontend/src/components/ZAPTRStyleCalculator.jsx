@@ -1992,6 +1992,7 @@ window.onload = function() {
                   editingRecord={editingSaleData}
                   onRecordSaved={handleCloseDialogs}
                   hideRecordsList={true}
+                  customers={customers}
                 />
               </div>
             </SheetContent>
