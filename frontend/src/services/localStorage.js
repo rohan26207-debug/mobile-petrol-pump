@@ -15,7 +15,9 @@ class LocalStorageService {
       customers: 'mpump_customers', // New: customer list
       payments: 'mpump_payments', // New: payments received
       incomeCategories: 'mpump_income_categories', // Income categories
-      expenseCategories: 'mpump_expense_categories' // Expense categories
+      expenseCategories: 'mpump_expense_categories', // Expense categories
+      settlements: 'mpump_settlements', // Settlements (bank transfers)
+      settlementTypes: 'mpump_settlement_types' // Settlement types/categories
     };
     
     this.initializeDefaultData();
