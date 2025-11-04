@@ -5,7 +5,7 @@ import { Label } from './ui/label';
 import { Badge } from './ui/badge';
 import { Wallet, Calendar } from 'lucide-react';
 
-const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, selectedDate }) => {
+const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, salesData, selectedDate }) => {
   // Initialize date range with current selected date
   const [fromDate, setFromDate] = useState(selectedDate);
   const [toDate, setToDate] = useState(selectedDate);
