@@ -388,6 +388,22 @@ const ZAPTRStyleCalculator = () => {
     }
   };
 
+  const addSettlementRecord = (settlementData) => {
+    try {
+      const newSettlement = localStorageService.addSettlement({
+        ...settlementData,
+        date: selectedDate
+      });
+      
+      // Update local state immediately
+      setSettlementData(prev => [...prev, newSettlement]);
+      
+      return newSettlement;
+    } catch (error) {
+      console.error('Failed to add settlement record:', error);
+    }
+  };
+
   // Delete functions
   const deleteSaleRecord = (id) => {
     try {
