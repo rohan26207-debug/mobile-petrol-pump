@@ -82,61 +82,103 @@ function handleGoogleOAuthCallback(token) {
 }
 
 /**
- * Upload backup.json to Google Drive (browser-side upload)
- * This runs in JavaScript after receiving the token
+ * Get local backup data
+ */
+async function getBackupData() {
+  const backup = localStorage.getItem('mpump_backup');
+  if (backup) {
+    try {
+      return JSON.parse(backup);
+    } catch (e) {
+      console.warn('Failed to parse mpump_backup, using raw data');
+    }
+  }
+  
+  // Fallback: collect all localStorage data
+  const data = {};
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    data[key] = localStorage.getItem(key);
+  }
+  return data;
+}
+
+/**
+ * === Upload or Overwrite backup.json ===
+ * 1. Searches Drive for existing file
+ * 2. If found → update existing file
+ * 3. Else → create new one
  */
 async function uploadBackupToDrive(token) {
   try {
     console.log('📤 Starting backup upload to Drive...');
     
-    // Get your backup data from app's local storage
-    const backupData = localStorage.getItem('mpump_backup') || 
-                       localStorage.getItem('petrol_pump_data') || 
-                       JSON.stringify({
-                         timestamp: new Date().toISOString(),
-                         message: 'Backup from Mobile Petrol Pump',
-                         sales: [],
-                         credit: [],
-                         income: [],
-                         expenses: []
-                       });
-    
-    const blob = new Blob([backupData], { type: 'application/json' });
-
-    const metadata = {
-      name: `backup_${new Date().toISOString().replace(/[:.]/g, '_')}.json`,
-      mimeType: 'application/json'
+    const headers = {
+      'Authorization': 'Bearer ' + token
     };
 
-    const boundary = '-------MPumpCalcFormBoundary' + Date.now();
-    
-    // Build multipart request body
-    const body =
-      `--${boundary}\r\n` +
-      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-      JSON.stringify(metadata) + '\r\n' +
-      `--${boundary}\r\n` +
-      'Content-Type: application/json\r\n\r\n';
-
-    const end = `\r\n--${boundary}--`;
-
-    // Combine all parts
-    const blobArrayBuffer = await blob.arrayBuffer();
-    const formData = new Blob(
-      [body, blobArrayBuffer, end], 
-      { type: 'multipart/related; boundary=' + boundary }
+    // 🔸 Step 1: Search for existing backup.json
+    const searchRes = await fetch(
+      "https://www.googleapis.com/drive/v3/files?q=name='backup.json' and trashed=false&fields=files(id,name)",
+      { headers }
     );
 
-    // Upload to Drive REST API
-    console.log('📡 Uploading to Google Drive API...');
-    const res = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + token,
-        'Content-Type': 'multipart/related; boundary=' + boundary
-      },
-      body: formData
-    });
+    const searchData = await searchRes.json();
+    const existingFile = searchData.files?.[0];
+
+    // 🔸 Step 2: Get backup data
+    const jsonData = await getBackupData();
+
+    // 🔸 Step 3: Build multipart upload body
+    const metadata = {
+      name: 'backup.json',
+      mimeType: 'application/json'
+    };
+    
+    const boundary = 'mpumpBoundary' + Date.now();
+    const delimiter = '--' + boundary + '\r\n';
+    const closeDelimiter = '--' + boundary + '--';
+
+    const body =
+      delimiter +
+      'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
+      JSON.stringify(metadata) +
+      '\r\n' +
+      delimiter +
+      'Content-Type: application/json\r\n\r\n' +
+      JSON.stringify(jsonData) +
+      '\r\n' +
+      closeDelimiter;
+
+    // 🔸 Step 4: Upload or Update
+    let res;
+    if (existingFile) {
+      console.log('📄 Found existing backup.json, updating:', existingFile.id);
+      res = await fetch(
+        `https://www.googleapis.com/upload/drive/v3/files/${existingFile.id}?uploadType=multipart`,
+        {
+          method: 'PATCH',
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/related; boundary=' + boundary
+          },
+          body: body
+        }
+      );
+    } else {
+      console.log('🆕 Creating new backup.json file...');
+      res = await fetch(
+        'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+        {
+          method: 'POST',
+          headers: {
+            ...headers,
+            'Content-Type': 'multipart/related; boundary=' + boundary
+          },
+          body: body
+        }
+      );
+    }
 
     if (res.ok) {
       const result = await res.json();
