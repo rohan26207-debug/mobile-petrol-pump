@@ -30,7 +30,14 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
     mpp: false // Mobile Petrol Pump tag
   });
   const [editingId, setEditingId] = useState(null);
+  const [isMPPVisible, setIsMPPVisible] = useState(false);
   const { toast } = useToast();
+  
+  // Check if MPP checkbox should be visible
+  React.useEffect(() => {
+    const localStorageService = require('../services/localStorage').default;
+    setIsMPPVisible(localStorageService.isMPPVisible());
+  }, []);
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
