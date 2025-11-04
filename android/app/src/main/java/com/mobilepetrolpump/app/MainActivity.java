@@ -63,11 +63,14 @@ public class MainActivity extends AppCompatActivity {
                         view.loadUrl("javascript:onGoogleDriveTokenReceived('" + token + "')");
 
                         // Optionally trigger native upload
-                        File backupFile = new File(getFilesDir(), "backup.json");
+                        // Look for backup.json in Downloads folder (where JavaScript saves it)
+                        File backupFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "backup.json");
                         if (backupFile.exists()) {
+                            Log.d(TAG, "Found backup file at: " + backupFile.getAbsolutePath());
                             uploadBackupToDrive(token, backupFile);
                         } else {
-                            runOnUiThread(() -> Toast.makeText(MainActivity.this, "No backup file found.", Toast.LENGTH_SHORT).show());
+                            Log.d(TAG, "No backup.json found in Downloads folder");
+                            runOnUiThread(() -> Toast.makeText(MainActivity.this, "No backup file found in Downloads.", Toast.LENGTH_SHORT).show());
                         }
                     } else {
                         Toast.makeText(MainActivity.this, "Login failed: No access token", Toast.LENGTH_SHORT).show();
