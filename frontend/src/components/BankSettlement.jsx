@@ -249,6 +249,11 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
                   <tr className="font-bold">
                     <td colSpan="2" className="px-3 py-2">Total</td>
                     <td className={`px-3 py-2 text-right font-mono ${
+                      isDarkMode ? 'text-orange-400' : 'text-orange-600'
+                    }`}>
+                      {totals.cashAmount.toFixed(2)}
+                    </td>
+                    <td className={`px-3 py-2 text-right font-mono ${
                       isDarkMode ? 'text-blue-400' : 'text-blue-600'
                     }`}>
                       {totals.cardAmount.toFixed(2)}
@@ -267,11 +272,6 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
                       isDarkMode ? 'text-green-400' : 'text-green-600'
                     }`}>
                       {totals.dtpAmount.toFixed(2)}
-                    </td>
-                    <td className={`px-3 py-2 text-right font-mono ${
-                      isDarkMode ? 'text-green-400' : 'text-green-700'
-                    }`}>
-                      {totals.total.toFixed(2)}
                     </td>
                   </tr>
                 </tfoot>
