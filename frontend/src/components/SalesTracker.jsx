@@ -269,7 +269,8 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
         testing: parseFloat(formData.testing) || 0,
         rate: parseFloat(formData.rate),
         liters: parseFloat(saleRecord.liters),
-        amount: parseFloat(saleRecord.amount)
+        amount: parseFloat(saleRecord.amount),
+        mpp: formData.mpp || false
       });
       
       if (newSale) {
