@@ -46,6 +46,7 @@ class LocalStorageService {
     if (!this.getExpenseData()) this.setExpenseData([]);
     if (!this.getCustomers()) this.setCustomers([]);
     if (!this.getPayments()) this.setPayments([]);
+    if (!this.getSettlements()) this.setSettlements([]);
     
     // Initialize default income/expense categories
     if (!this.getIncomeCategories()) {
@@ -62,6 +63,15 @@ class LocalStorageService {
         { id: '3', name: 'Electricity' },
         { id: '4', name: 'Maintenance' },
         { id: '5', name: 'Other' }
+      ]);
+    }
+    
+    // Initialize default settlement types
+    if (!this.getSettlementTypes()) {
+      this.setSettlementTypes([
+        { id: '1', name: 'Bank Deposit' },
+        { id: '2', name: 'Cash to Bank' },
+        { id: '3', name: 'Online Transfer' }
       ]);
     }
   }
