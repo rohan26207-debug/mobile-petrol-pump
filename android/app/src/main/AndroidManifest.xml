@@ -2,13 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mobilepetrolpump.app">
 
-    <!-- Permissions -->
+    <!-- 🌐 Network + Wake permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-    <!-- Optional legacy storage support for Android 10 and below -->
+    <!-- 📂 Optional legacy storage for Android 10 and below -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="28" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -22,8 +22,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true"
         android:hardwareAccelerated="true"
+        android:usesCleartextTraffic="true"
         android:requestLegacyExternalStorage="true">
 
         <activity
@@ -34,37 +34,27 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
 
-            <!-- Main launcher -->
+            <!-- 🚀 Main launcher -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- ✅ Deep link for Google OAuth redirect -->
-            <!-- Must match exactly what's set in your Google Cloud Console -->
+            <!-- ✅ Handle Google OAuth redirect for localhost-based flow -->
+            <!-- Must match your Google Cloud Console web client redirect URI -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- This must match your registered redirect URI -->
-                <!-- e.g. com.mobilepetrolpump.app:/oauth2redirect -->
-                <data
-                    android:scheme="com.mobilepetrolpump.app"
-                    android:host="oauth2redirect" />
-            </intent-filter>
-
-            <!-- ✅ Also handle localhost redirects for WebView-based login -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Matches REDIRECT_URI = "http://localhost" used in MainActivity.java -->
                 <data android:scheme="http" android:host="localhost" />
                 <data android:scheme="http" android:host="127.0.0.1" />
             </intent-filter>
+
         </activity>
 
-        <!-- ✅ File Provider for PDF & JSON backups -->
+        <!-- ✅ File Provider for JSON / PDF backups -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
@@ -74,6 +64,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
+
     </application>
 
 </manifest>
