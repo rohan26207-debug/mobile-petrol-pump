@@ -76,7 +76,7 @@ const Settlement = ({
     setEditingId(null);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (shouldClose = false) => {
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
       toast({
         title: "Invalid Input",
@@ -111,7 +111,7 @@ const Settlement = ({
 
     resetForm();
     
-    if (onRecordSaved) {
+    if (shouldClose && onRecordSaved) {
       onRecordSaved();
     }
   };
