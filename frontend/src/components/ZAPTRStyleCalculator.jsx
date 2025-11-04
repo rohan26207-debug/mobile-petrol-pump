@@ -2128,6 +2128,8 @@ window.onload = function() {
                   hideRecordsList={true}
                 />
               </div>
+                </TabsContent>
+              </Tabs>
             </SheetContent>
           </Sheet>
         </div>
