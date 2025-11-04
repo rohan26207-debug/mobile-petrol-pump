@@ -63,6 +63,62 @@ const OutstandingPDFReport = ({ customers, creditData, payments, isDarkMode, sel
     outstanding: acc.outstanding + d.outstanding
   }), { totalCredit: 0, totalReceived: 0, outstanding: 0 });
 
+  // Excel Export functionality
+  const handleExcelExport = () => {
+    try {
+      // Prepare data for Excel
+      const excelData = [
+        // Title row
+        ['Outstanding Report'],
+        [],
+        [`As of: ${new Date(selectedDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`],
+        [],
+        // Table headers
+        ['Sr. No', 'Customer Name', 'Total Credit (₹)', 'Total Received (₹)', 'Outstanding (₹)'],
+        // Table data
+        ...sortedData.map((customer, index) => [
+          index + 1,
+          customer.name,
+          customer.totalCredit.toFixed(2),
+          customer.totalReceived.toFixed(2),
+          customer.outstanding.toFixed(2)
+        ]),
+        // Total row
+        ['Total', '', totals.totalCredit.toFixed(2), totals.totalReceived.toFixed(2), totals.outstanding.toFixed(2)],
+        [],
+        // Footer
+        [`Generated on: ${new Date().toLocaleString('en-IN')}`]
+      ];
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 10 },  // Sr. No
+        { wch: 25 },  // Customer Name
+        { wch: 18 },  // Total Credit
+        { wch: 18 },  // Total Received
+        { wch: 18 }   // Outstanding
+      ];
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Outstanding');
+
+      // Generate filename with date
+      const filename = `Outstanding_Report_${new Date(selectedDate).toISOString().split('T')[0]}.xlsx`;
+
+      // Export file
+      XLSX.writeFile(wb, filename);
+      
+      console.log('Excel file exported successfully');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      alert('Error exporting to Excel: ' + error.message);
+    }
+  };
+
   const handlePrint = () => {
     try {
       // Check if running in Android WebView
