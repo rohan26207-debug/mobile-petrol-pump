@@ -69,6 +69,8 @@ const ZAPTRStyleCalculator = () => {
   // Dialog states for edit functionality
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
   const [creditDialogOpen, setCreditDialogOpen] = useState(false);
+  const [settleIncExpDialogOpen, setSettleIncExpDialogOpen] = useState(false);
+  const [settleIncExpActiveTab, setSettleIncExpActiveTab] = useState('settlement');
   const [settlementDialogOpen, setSettlementDialogOpen] = useState(false);
   const [incomeExpenseDialogOpen, setIncomeExpenseDialogOpen] = useState(false);
   const [stockDialogOpen, setStockDialogOpen] = useState(false);
