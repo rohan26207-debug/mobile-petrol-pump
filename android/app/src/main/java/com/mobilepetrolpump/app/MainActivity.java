@@ -323,18 +323,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void handleOAuthDeepLink(Intent intent) {
-        if (intent != null && intent.getData() != null) {
-            Uri uri = intent.getData();
-            String url = uri.toString();
-            
-            // Check if this is an OAuth callback URL
-            if (url.startsWith("http://localhost") || url.startsWith("http://127.0.0.1")) {
-                if (url.contains("access_token=")) {
-                    // Extract token from URL fragment
-                    Uri parsedUri = Uri.parse(url.replace("#", "?"));
-                    String accessToken = parsedUri.getQueryParameter("access_token");
-                    handleAccessToken(accessToken);
-                }
+        if (intent == null || intent.getData() == null) return;
+
+        Uri uri = intent.getData();
+        String url = uri.toString();
+        android.util.Log.d("OAuthRedirect", "Deep link received: " + url);
+
+        // ✅ Handle both localhost and app-scheme redirects
+        if (url.startsWith("http://localhost") || url.startsWith("http://127.0.0.1")
+                || url.startsWith("com.mobilepetrolpump.app:/oauth2redirect")) {
+
+            // Convert fragment (#) into query (?) to extract parameters
+            String fixedUrl = url.replace("#", "?");
+            Uri parsedUri = Uri.parse(fixedUrl);
+
+            String accessToken = parsedUri.getQueryParameter("access_token");
+            String error = parsedUri.getQueryParameter("error");
+
+            if (error != null) {
+                Toast.makeText(this, "OAuth failed: " + error, Toast.LENGTH_LONG).show();
+                android.util.Log.e("OAuthRedirect", "OAuth error: " + error);
+                return;
+            }
+
+            if (accessToken != null && !accessToken.isEmpty()) {
+                android.util.Log.d("OAuthRedirect", "✅ Access token: " + accessToken.substring(0, Math.min(20, accessToken.length())) + "...");
+                handleAccessToken(accessToken);
+            } else {
+                android.util.Log.e("OAuthRedirect", "⚠️ No access_token found in redirect");
             }
         }
     }
