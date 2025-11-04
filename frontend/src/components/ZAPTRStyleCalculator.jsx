@@ -112,6 +112,7 @@ const ZAPTRStyleCalculator = () => {
       const creditData = localStorageService.getCreditData();
       const incomeData = localStorageService.getIncomeData();
       const expenseData = localStorageService.getExpenseData();
+      const settlementData = localStorageService.getSettlements();
       const fuelSettings = localStorageService.getFuelSettings();
       const customers = localStorageService.getCustomers();
       const payments = localStorageService.getPayments();
@@ -121,6 +122,7 @@ const ZAPTRStyleCalculator = () => {
       setCreditData(creditData);
       setIncomeData(incomeData);
       setExpenseData(expenseData);
+      setSettlementData(settlementData);
       setFuelSettings(fuelSettings);
       setCustomers(customers);
       setPayments(payments);
