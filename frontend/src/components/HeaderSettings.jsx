@@ -45,6 +45,49 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   // Auto-backup weekly hook
   const { toggleAutoBackup, getBackupStatus } = useAutoBackupWeekly(toast);
 
+  // Income/Expense Categories state
+  const [incomeCategories, setIncomeCategories] = useState([]);
+  const [expenseCategories, setExpenseCategories] = useState([]);
+
+  // Load categories on mount
+  React.useEffect(() => {
+    setIncomeCategories(localStorageService.getIncomeCategories());
+    setExpenseCategories(localStorageService.getExpenseCategories());
+  }, []);
+
+  // Category management functions
+  const handleAddIncomeCategory = (name) => {
+    const newCategory = localStorageService.addIncomeCategory(name);
+    setIncomeCategories(localStorageService.getIncomeCategories());
+    return newCategory;
+  };
+
+  const handleDeleteIncomeCategory = (id) => {
+    localStorageService.deleteIncomeCategory(id);
+    setIncomeCategories(localStorageService.getIncomeCategories());
+  };
+
+  const handleUpdateIncomeCategory = (id, name) => {
+    localStorageService.updateIncomeCategory(id, name);
+    setIncomeCategories(localStorageService.getIncomeCategories());
+  };
+
+  const handleAddExpenseCategory = (name) => {
+    const newCategory = localStorageService.addExpenseCategory(name);
+    setExpenseCategories(localStorageService.getExpenseCategories());
+    return newCategory;
+  };
+
+  const handleDeleteExpenseCategory = (id) => {
+    localStorageService.deleteExpenseCategory(id);
+    setExpenseCategories(localStorageService.getExpenseCategories());
+  };
+
+  const handleUpdateExpenseCategory = (id, name) => {
+    localStorageService.updateExpenseCategory(id, name);
+    setExpenseCategories(localStorageService.getExpenseCategories());
+  };
+
   // Employee management removed
 
   // Owner details state removed
