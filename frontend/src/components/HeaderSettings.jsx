@@ -1296,6 +1296,26 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                           }`}>
                             💡 Click on the URL above to copy it to clipboard
                           </p>
+                          
+                          <Button
+                            variant="outline"
+                            className="w-full mt-3 bg-red-600 hover:bg-red-700 text-white border-red-600"
+                            onClick={() => {
+                              if (window.confirm('Are you sure you want to delete the saved URL?')) {
+                                localStorage.removeItem('mpump_online_url');
+                                setSavedOnlineUrl('');
+                                setOnlineUrl('');
+                                
+                                toast({
+                                  title: "URL Deleted",
+                                  description: "Saved URL has been removed successfully"
+                                });
+                              }
+                            }}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Delete Saved URL
+                          </Button>
                         </div>
                       </div>
                     </>
