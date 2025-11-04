@@ -1306,7 +1306,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                           }
                           
                           // Confirm deletion
-                          if (window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`)) {
+                          if (window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis includes:\n- Stock Data\n- Reading Sales Data\n- Credit Sales Data\n- Income/Expense Data\n- Receipt Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`)) {
                             try {
                               // Get all data
                               const salesData = localStorageService.getSalesData();
@@ -1315,7 +1315,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                               const expenseData = localStorageService.getExpenseData();
                               const payments = localStorageService.getPayments();
                               
-                              // Filter out data within the date range
+                              // Filter out data within the date range (keep data outside range)
                               const filteredSales = salesData.filter(item => item.date < fromDate || item.date > toDate);
                               const filteredCredits = creditData.filter(item => item.date < fromDate || item.date > toDate);
                               const filteredIncome = incomeData.filter(item => item.date < fromDate || item.date > toDate);
@@ -1328,7 +1328,26 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                               const deletedIncome = incomeData.length - filteredIncome.length;
                               const deletedExpenses = expenseData.length - filteredExpenses.length;
                               const deletedPayments = payments.length - filteredPayments.length;
-                              const totalDeleted = deletedSales + deletedCredits + deletedIncome + deletedExpenses + deletedPayments;
+                              
+                              // Delete stock data for date range
+                              let deletedStockRecords = 0;
+                              const stockKeys = Object.keys(localStorage).filter(key => key.endsWith('StockData'));
+                              stockKeys.forEach(key => {
+                                const stockData = JSON.parse(localStorage.getItem(key) || '{}');
+                                
+                                // Filter stock data by date
+                                Object.keys(stockData).forEach(date => {
+                                  if (date >= fromDate && date <= toDate) {
+                                    deletedStockRecords++;
+                                    delete stockData[date];
+                                  }
+                                });
+                                
+                                // Update stock data in localStorage
+                                localStorage.setItem(key, JSON.stringify(stockData));
+                              });
+                              
+                              const totalDeleted = deletedSales + deletedCredits + deletedIncome + deletedExpenses + deletedPayments + deletedStockRecords;
                               
                               // Update localStorage
                               localStorageService.setSalesData(filteredSales);
@@ -1340,7 +1359,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                               // Show success message
                               toast({
                                 title: "Data Deleted Successfully",
-                                description: `Deleted ${totalDeleted} records (Sales: ${deletedSales}, Credits: ${deletedCredits}, Income: ${deletedIncome}, Expenses: ${deletedExpenses}, Payments: ${deletedPayments}). Refreshing...`,
+                                description: `Deleted ${totalDeleted} records (Stock: ${deletedStockRecords}, Sales: ${deletedSales}, Credits: ${deletedCredits}, Income: ${deletedIncome}, Expenses: ${deletedExpenses}, Receipts: ${deletedPayments}). Refreshing...`,
                               });
                               
                               // Clear date inputs
