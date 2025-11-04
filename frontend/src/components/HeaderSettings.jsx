@@ -524,11 +524,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <span className="hidden sm:inline">Fuel Types</span>
                     <span className="sm:hidden">Fuel</span>
                   </TabsTrigger>
-                  <TabsTrigger value="cloud" className="flex items-center gap-1 text-xs sm:text-sm px-2">
-                    <Cloud className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Cloud Sync</span>
-                    <span className="sm:hidden">Cloud</span>
-                  </TabsTrigger>
+                  {/* Cloud Sync tab removed */}
                   <TabsTrigger value="contact" className="flex items-center gap-1 text-xs sm:text-sm px-2">
                     <User className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Contact</span>
