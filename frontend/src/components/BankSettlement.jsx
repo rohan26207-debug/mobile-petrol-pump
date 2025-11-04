@@ -26,6 +26,20 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
       // Filter data for this date
       const daySettlements = settlementData.filter(s => s.date === date);
       const dayPayments = payments.filter(p => p.date === date);
+      const dayCreditSales = creditData.filter(c => c.date === date);
+
+      // Calculate Cash amount (cash from credit sales + customer cash receipts)
+      // Cash from credit sales (cash sales)
+      const creditCashSales = dayCreditSales
+        .filter(c => c.type === 'cash' || !c.type) // type not set means cash
+        .reduce((sum, c) => sum + (c.amount || 0), 0);
+      
+      // Customer cash receipts
+      const paymentCash = dayPayments
+        .filter(p => p.mode && p.mode.toLowerCase() === 'cash')
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+      const cashAmount = creditCashSales + paymentCash;
 
       // Calculate Card amount (Settlement + Customer receipts with mode='Card')
       const settlementCard = daySettlements
@@ -74,14 +88,14 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sele
       return {
         srNo: index + 1,
         date,
+        cashAmount,
         cardAmount,
         paytmAmount,
         phonepeAmount,
-        dtpAmount,
-        total: cardAmount + paytmAmount + phonepeAmount + dtpAmount
+        dtpAmount
       };
     });
-  }, [fromDate, toDate, settlementData, payments]);
+  }, [fromDate, toDate, settlementData, payments, creditData]);
 
   // Calculate totals
   const totals = useMemo(() => {
