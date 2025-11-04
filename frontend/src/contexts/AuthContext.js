@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://fueltrack-mobile.preview.emergentagent.com';
+  const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://petrol-pump-app.preview.emergentagent.com';
 
   // Check for existing session on app load
   useEffect(() => {
