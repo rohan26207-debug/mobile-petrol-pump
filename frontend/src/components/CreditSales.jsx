@@ -108,7 +108,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
           rate: editingRecord.rate?.toString() || '' 
         }],
         incomeEntries: editingRecord.incomeEntries || [],
-        expenseEntries: editingRecord.expenseEntries || []
+        expenseEntries: editingRecord.expenseEntries || [],
+        mpp: editingRecord.mpp || false
       });
       setCustomerSearch(editingRecord.customerName || ''); // Set customer search field
       setEditingId(editingRecord.id);
@@ -126,7 +127,8 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
         customerName: '',
         fuelEntries: [{ fuelType: '', liters: '', rate: '' }],
         incomeEntries: [],
-        expenseEntries: []
+        expenseEntries: [],
+        mpp: false
       });
     }
   }, [formResetKey, editingRecord, editingId]);
