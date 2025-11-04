@@ -894,16 +894,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                           variant="outline" 
                           className="w-full"
                           onClick={() => {
-                            // Check if running in Android WebView
-                            const isAndroid = typeof window.MPumpCalcAndroid !== 'undefined';
-                            
-                            if (isAndroid && window.MPumpCalcAndroid.selectJsonBackup) {
-                              // For Android app - use native file picker
-                              window.MPumpCalcAndroid.selectJsonBackup();
-                              return;
-                            }
-                            
-                            // For web browser - use file input
+                            // Use standard file input - works in both browser and Android WebView
                             const fileInput = document.createElement('input');
                             fileInput.type = 'file';
                             fileInput.accept = '.json,application/json';
@@ -946,7 +937,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                                     if (success) {
                                       toast({
                                         title: "Data Imported Successfully",
-                                        description: "Your backup has been restored. Please refresh the page to see changes.",
+                                        description: "Your backup has been restored. Refreshing...",
                                       });
                                       
                                       // Refresh page after 2 seconds
