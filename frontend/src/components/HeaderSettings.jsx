@@ -116,59 +116,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     }
   }, []);
 
-  // Handle Android import callback
-  useEffect(() => {
-    // Set up global function for Android to call
-    window.handleAndroidImport = (jsonData) => {
-      try {
-        const importedData = JSON.parse(jsonData);
-        
-        // Validate data structure
-        if (!importedData.salesData && !importedData.creditData && 
-            !importedData.incomeData && !importedData.expenseData) {
-          toast({
-            title: "Invalid Backup File",
-            description: "The file doesn't contain valid backup data",
-            variant: "destructive",
-          });
-          return;
-        }
-        
-        // Import data
-        const success = localStorageService.importAllData(importedData);
-        
-        if (success) {
-          toast({
-            title: "Data Imported Successfully",
-            description: "Your backup has been restored. Refreshing...",
-          });
-          
-          // Refresh page after 2 seconds
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        } else {
-          toast({
-            title: "Import Failed",
-            description: "Failed to import data. Please try again.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        toast({
-          title: "Import Error",
-          description: "Failed to read backup file. Please ensure it's a valid JSON file.",
-          variant: "destructive",
-        });
-        console.error('Import error:', error);
-      }
-    };
-    
-    // Cleanup
-    return () => {
-      delete window.handleAndroidImport;
-    };
-  }, [toast]);
+  // Android import callback removed - using standard file input for all platforms
 
   const updateNozzleCount = (fuelType, delta) => {
     const newSettings = {
