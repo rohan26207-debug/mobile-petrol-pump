@@ -355,7 +355,7 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
   // Render form content function (similar to CreditSales pattern)
   const renderFormContent = () => (
     <div className="p-0.5 gap-0.5 space-y-2">
-      <div className="grid grid-cols-[1fr,1fr,auto] gap-2">
+      <div className={`grid ${isMPPVisible ? 'grid-cols-[1fr,1fr,auto]' : 'grid-cols-2'} gap-2`}>
         <div className="space-y-1">
           <Label className="text-xs font-semibold">Fuel Type</Label>
           <Select key={`fuel-${editingId || 'new'}`} value={formData.fuelType} onValueChange={handleFuelChange}>
@@ -395,17 +395,19 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
           </Select>
         </div>
 
-        <div className="space-y-1">
-          <Label className="text-xs font-semibold whitespace-nowrap">MPP</Label>
-          <div className="flex items-center justify-center h-10 -mt-1">
-            <input
-              type="checkbox"
-              checked={formData.mpp}
-              onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
-              className="w-5 h-5 cursor-pointer accent-blue-500"
-            />
+        {isMPPVisible && (
+          <div className="space-y-1">
+            <Label className="text-xs font-semibold whitespace-nowrap">MPP</Label>
+            <div className="flex items-center justify-center h-10 -mt-1">
+              <input
+                type="checkbox"
+                checked={formData.mpp}
+                onChange={(e) => setFormData(prev => ({ ...prev, mpp: e.target.checked }))}
+                className="w-5 h-5 cursor-pointer accent-blue-500"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className="grid grid-cols-2 gap-2">
