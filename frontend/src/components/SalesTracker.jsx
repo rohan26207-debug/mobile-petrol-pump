@@ -42,7 +42,8 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
         endReading: editingRecord.endReading?.toString() || '',
         testing: editingRecord.testing?.toString() || '',
         rate: editingRecord.rate?.toString() || '',
-        type: editingRecord.type || 'cash'
+        type: editingRecord.type || 'cash',
+        mpp: editingRecord.mpp || false
       });
       setEditingId(editingRecord.id);
     } else {
