@@ -95,6 +95,7 @@ const PaymentReceived = ({
     setEditCustomerSearch(payment.customerName);
     setEditAmount(payment.amount.toString());
     setEditPaymentDate(payment.date);
+    setEditPaymentMode(payment.mode || 'cash'); // Set edit mode
     setEditDialogOpen(true);
   };
 
@@ -106,7 +107,8 @@ const PaymentReceived = ({
           customerId: editCustomerId,
           customerName: customer.name,
           amount: parseFloat(editAmount),
-          date: editPaymentDate
+          date: editPaymentDate,
+          mode: editPaymentMode // Include mode in update
         });
         setEditDialogOpen(false);
         setEditingPayment(null);
@@ -114,6 +116,7 @@ const PaymentReceived = ({
         setEditCustomerSearch('');
         setEditAmount('');
         setEditPaymentDate('');
+        setEditPaymentMode('cash');
       }
     }
   };
