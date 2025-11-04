@@ -190,16 +190,16 @@ const Settlement = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
-            <Button 
-              onClick={handleSubmit}
-              className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
-              disabled={!formData.amount || !formData.description}
-            >
-              <Plus className="w-4 h-4 mr-1" />
-              {editingId ? 'Update' : 'Add'} Settlement
-            </Button>
-            {editingId && (
+          {editingId ? (
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => handleSubmit(true)}
+                className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={!formData.amount || !formData.description}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Update Settlement
+              </Button>
               <Button 
                 onClick={resetForm}
                 variant="outline"
@@ -207,8 +207,27 @@ const Settlement = ({
               >
                 Cancel
               </Button>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Button 
+                onClick={() => handleSubmit(false)}
+                className="w-full bg-orange-600 hover:bg-orange-700 text-white"
+                disabled={!formData.amount || !formData.description}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Settlement & Add More
+              </Button>
+              <Button 
+                onClick={() => handleSubmit(true)}
+                className="w-full bg-orange-700 hover:bg-orange-800 text-white"
+                disabled={!formData.amount || !formData.description}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add Settlement & Close
+              </Button>
+            </div>
+          )}
         </div>
 
         {!hideRecordsList && (
