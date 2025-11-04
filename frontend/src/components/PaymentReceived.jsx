@@ -18,6 +18,7 @@ const PaymentReceived = ({
   const [customerId, setCustomerId] = useState('');
   const [amount, setAmount] = useState('');
   const [paymentDate, setPaymentDate] = useState(selectedDate);
+  const [paymentMode, setPaymentMode] = useState('cash'); // New: payment mode
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   
