@@ -58,6 +58,7 @@ const ZAPTRStyleCalculator = () => {
   const [creditData, setCreditData] = useState([]);
   const [expenseData, setExpenseData] = useState([]);
   const [incomeData, setIncomeData] = useState([]);
+  const [settlementData, setSettlementData] = useState([]);
   const [fuelSettings, setFuelSettings] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [customers, setCustomers] = useState([]);
