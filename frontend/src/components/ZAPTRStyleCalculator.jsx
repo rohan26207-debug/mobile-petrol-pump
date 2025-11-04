@@ -36,6 +36,7 @@ import 'jspdf-autotable';
 import SalesTracker from './SalesTracker';
 import CreditSales from './CreditSales';
 import IncomeExpense from './IncomeExpense';
+import Settlement from './Settlement';
 import PriceConfiguration from './PriceConfiguration';
 import HeaderSettings from './HeaderSettings';
 import UnifiedRecords from './UnifiedRecords';
