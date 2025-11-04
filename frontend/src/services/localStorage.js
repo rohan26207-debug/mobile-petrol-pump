@@ -475,6 +475,113 @@ class LocalStorageService {
     }
   }
 
+  // Merge data (keeps old data in case of conflicts)
+  mergeAllData(importedData) {
+    try {
+      // Helper function to merge arrays, keeping old data for duplicate IDs
+      const mergeArrays = (existingArray, newArray) => {
+        if (!Array.isArray(existingArray)) existingArray = [];
+        if (!Array.isArray(newArray)) newArray = [];
+        
+        // Create a map of existing IDs for quick lookup
+        const existingIds = new Set(existingArray.map(item => item.id));
+        
+        // Add only new items (items with IDs that don't exist in old data)
+        const itemsToAdd = newArray.filter(item => !existingIds.has(item.id));
+        
+        return [...existingArray, ...itemsToAdd];
+      };
+
+      // Merge main data arrays (old data takes priority)
+      if (importedData.salesData) {
+        const existingSales = this.getSalesData();
+        const mergedSales = mergeArrays(existingSales, importedData.salesData);
+        this.setSalesData(mergedSales);
+      }
+
+      if (importedData.creditData) {
+        const existingCredits = this.getCreditData();
+        const mergedCredits = mergeArrays(existingCredits, importedData.creditData);
+        this.setCreditData(mergedCredits);
+      }
+
+      if (importedData.incomeData) {
+        const existingIncome = this.getIncomeData();
+        const mergedIncome = mergeArrays(existingIncome, importedData.incomeData);
+        this.setIncomeData(mergedIncome);
+      }
+
+      if (importedData.expenseData) {
+        const existingExpenses = this.getExpenseData();
+        const mergedExpenses = mergeArrays(existingExpenses, importedData.expenseData);
+        this.setExpenseData(mergedExpenses);
+      }
+
+      if (importedData.customers) {
+        const existingCustomers = this.getCustomers();
+        const mergedCustomers = mergeArrays(existingCustomers, importedData.customers);
+        this.setCustomers(mergedCustomers);
+      }
+
+      if (importedData.payments) {
+        const existingPayments = this.getPayments();
+        const mergedPayments = mergeArrays(existingPayments, importedData.payments);
+        this.setPayments(mergedPayments);
+      }
+
+      // For settings, keep existing if they exist, otherwise use imported
+      if (importedData.fuelSettings && !this.getFuelSettings()) {
+        this.setFuelSettings(importedData.fuelSettings);
+      }
+
+      // Merge stock data
+      if (importedData.stockData) {
+        Object.keys(importedData.stockData).forEach(key => {
+          // Only import if key doesn't exist
+          if (!localStorage.getItem(key)) {
+            localStorage.setItem(key, JSON.stringify(importedData.stockData[key]));
+          }
+        });
+      }
+
+      // For single-value settings, keep existing if they exist
+      if (importedData.contactInfo && !localStorage.getItem('mpump_contact_info')) {
+        localStorage.setItem('mpump_contact_info', JSON.stringify(importedData.contactInfo));
+      }
+
+      if (importedData.notes !== undefined && !localStorage.getItem('mpp_notes')) {
+        localStorage.setItem('mpp_notes', importedData.notes);
+      }
+
+      if (importedData.onlineUrl !== undefined && !localStorage.getItem('mpump_online_url')) {
+        localStorage.setItem('mpump_online_url', importedData.onlineUrl);
+      }
+
+      if (importedData.autoBackupSettings && !localStorage.getItem('mpump_auto_backup_settings')) {
+        localStorage.setItem('mpump_auto_backup_settings', JSON.stringify(importedData.autoBackupSettings));
+      }
+
+      if (importedData.weeklyBackupSettings && !localStorage.getItem('mpump_auto_backup_weekly_settings')) {
+        localStorage.setItem('mpump_auto_backup_weekly_settings', JSON.stringify(importedData.weeklyBackupSettings));
+      }
+
+      // Merge app preferences (keep existing if present)
+      if (importedData.appPreferences) {
+        if (importedData.appPreferences.textSize && !localStorage.getItem('appTextSize')) {
+          localStorage.setItem('appTextSize', importedData.appPreferences.textSize);
+        }
+        if (importedData.appPreferences.theme && !localStorage.getItem('appTheme')) {
+          localStorage.setItem('appTheme', importedData.appPreferences.theme);
+        }
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to merge data:', error);
+      return false;
+    }
+  }
+
   // Clear all data
   clearAllData() {
     Object.values(this.keys).forEach(key => {
