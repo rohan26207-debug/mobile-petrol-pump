@@ -69,22 +69,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     localStorage.setItem('mpump_contact_info', JSON.stringify(contactInfo));
   }, [contactInfo]);
 
-  // Google Drive backup state
-  const [driveBackupLoading, setDriveBackupLoading] = useState(false);
-  const [driveRestoreLoading, setDriveRestoreLoading] = useState(false);
-  
-  // Auto Google Drive Backup state
-  const [autoGDriveBackup, setAutoGDriveBackup] = useState(() => {
-    const saved = localStorage.getItem('auto_gdrive_backup_enabled');
-    return saved === 'true';
-  });
-  
-  const [lastGDriveBackup, setLastGDriveBackup] = useState(() => {
-    return localStorage.getItem('last_gdrive_backup');
-  });
-
-  // Initialize auto backup hook
-  useAutoGoogleDriveBackup(autoGDriveBackup, toast);
+  // Cloud sync removed - local backup only
 
   const toggleAutoGDriveBackup = () => {
     const newValue = !autoGDriveBackup;
