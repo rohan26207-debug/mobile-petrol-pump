@@ -371,13 +371,20 @@ window.onload = function() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2 pt-2">
+            <div className="grid grid-cols-2 gap-2 pt-2">
               <Button
                 onClick={handlePrint}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                className="bg-green-600 hover:bg-green-700 text-white"
               >
                 <Printer className="w-4 h-4 mr-2" />
                 Print Outs
+              </Button>
+              <Button
+                onClick={handleExcelExport}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Excel
               </Button>
             </div>
           </div>
