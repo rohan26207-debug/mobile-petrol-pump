@@ -2292,34 +2292,17 @@ window.onload = function() {
               <TabsList className={`flex w-full mb-4 ${
                 isDarkMode ? 'bg-gray-800' : 'bg-slate-100'
               }`}>
-                <TabsTrigger value="received" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
-                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Receipt</span>
-                  <span className="sm:hidden">Rcpt</span>
-                </TabsTrigger>
-                <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[34%]">
+                <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[50%]">
                   <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Outstanding</span>
                   <span className="sm:hidden">Ot</span>
                 </TabsTrigger>
-                <TabsTrigger value="report" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
+                <TabsTrigger value="report" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[50%]">
                   <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                   <span className="hidden sm:inline">Customer Ledger</span>
                   <span className="sm:hidden">Cust</span>
                 </TabsTrigger>
               </TabsList>
-
-              <TabsContent value="received">
-                <PaymentReceived
-                  customers={customers}
-                  payments={payments}
-                  selectedDate={selectedDate}
-                  onAddPayment={handleAddPayment}
-                  onUpdatePayment={handleUpdatePayment}
-                  onDeletePayment={handleDeletePayment}
-                  isDarkMode={isDarkMode}
-                />
-              </TabsContent>
 
               <TabsContent value="outstanding-settings">
                 <OutstandingPDFReport
