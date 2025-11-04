@@ -114,6 +114,77 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
     );
   }, [bankSettlementData]);
 
+  // Excel Export functionality
+  const handleExcelExport = () => {
+    try {
+      // Prepare data for Excel
+      const excelData = [
+        // Title row
+        ['Bank Settlement Report'],
+        [],
+        // Date range
+        [`Date Range: ${new Date(fromDate).toLocaleDateString('en-IN')} to ${new Date(toDate).toLocaleDateString('en-IN')}`],
+        [],
+        // Summary totals
+        ['Summary'],
+        ['Payment Mode', 'Total Amount (₹)'],
+        ['Cash', totals.cashAmount.toFixed(2)],
+        ['Card', totals.cardAmount.toFixed(2)],
+        ['Paytm', totals.paytmAmount.toFixed(2)],
+        ['PhonePe', totals.phonepeAmount.toFixed(2)],
+        ['DTP', totals.dtpAmount.toFixed(2)],
+        [],
+        // Table headers
+        ['Sr. No', 'Date', 'Cash (₹)', 'Card (₹)', 'Paytm (₹)', 'PhonePe (₹)', 'DTP (₹)'],
+        // Table data
+        ...bankSettlementData.map(row => [
+          row.srNo,
+          new Date(row.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }),
+          row.cashAmount > 0 ? row.cashAmount.toFixed(2) : '-',
+          row.cardAmount > 0 ? row.cardAmount.toFixed(2) : '-',
+          row.paytmAmount > 0 ? row.paytmAmount.toFixed(2) : '-',
+          row.phonepeAmount > 0 ? row.phonepeAmount.toFixed(2) : '-',
+          row.dtpAmount > 0 ? row.dtpAmount.toFixed(2) : '-'
+        ]),
+        // Total row
+        ['Total', '', totals.cashAmount.toFixed(2), totals.cardAmount.toFixed(2), totals.paytmAmount.toFixed(2), totals.phonepeAmount.toFixed(2), totals.dtpAmount.toFixed(2)],
+        [],
+        // Footer
+        [`Generated on: ${new Date().toLocaleString('en-IN')}`],
+        ['Note: Amounts include settlements and customer receipts for each payment mode']
+      ];
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 10 },  // Sr. No
+        { wch: 15 },  // Date
+        { wch: 12 },  // Cash
+        { wch: 12 },  // Card
+        { wch: 12 },  // Paytm
+        { wch: 12 },  // PhonePe
+        { wch: 12 }   // DTP
+      ];
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Bank Settlement');
+
+      // Generate filename with date
+      const filename = `Bank_Settlement_${new Date(fromDate).toISOString().split('T')[0]}_to_${new Date(toDate).toISOString().split('T')[0]}.xlsx`;
+
+      // Export file
+      XLSX.writeFile(wb, filename);
+      
+      console.log('Excel file exported successfully');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      alert('Error exporting to Excel: ' + error.message);
+    }
+  };
+
   // Print functionality
   const handlePrint = () => {
     const htmlContent = `
