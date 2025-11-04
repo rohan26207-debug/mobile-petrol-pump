@@ -981,14 +981,16 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                         <Badge className="bg-blue-100 text-blue-800 border-0">
                           {fuelType}
                         </Badge>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeFuelType(fuelType)}
-                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
+                        {fuelType.toUpperCase() !== 'MPP' && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => removeFuelType(fuelType)}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
