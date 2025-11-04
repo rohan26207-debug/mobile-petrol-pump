@@ -260,6 +260,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         new Thread(() -> {
+            android.util.Log.d("DriveUpload", "🚀 Uploading " + backupFile.getAbsolutePath() + " to Drive");
             try {
                 String boundary = "----MPumpCalcBoundary" + System.currentTimeMillis();
                 String metadata = "{ \"name\": \"" + backupFile.getName() + "\", " +
