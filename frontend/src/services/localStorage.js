@@ -646,12 +646,13 @@ class LocalStorageService {
     return this.setItem(this.keys.customers, customers);
   }
 
-  addCustomer(name, startingBalance = 0) {
+  addCustomer(name, startingBalance = 0, isMPP = false) {
     const customers = this.getCustomers();
     const newCustomer = {
       id: Date.now().toString(),
       name: name,
       startingBalance: parseFloat(startingBalance) || 0,
+      isMPP: isMPP || false,
       created_at: new Date().toISOString()
     };
     
