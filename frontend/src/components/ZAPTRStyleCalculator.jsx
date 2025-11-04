@@ -457,6 +457,19 @@ const ZAPTRStyleCalculator = () => {
     return false;
   };
 
+  const deleteSettlementRecord = (id) => {
+    try {
+      const success = localStorageService.deleteSettlement(id);
+      if (success) {
+        setSettlementData(prev => prev.filter(settlement => settlement.id !== id));
+        return true;
+      }
+    } catch (error) {
+      console.error('Failed to delete settlement record:', error);
+    }
+    return false;
+  };
+
   // Edit dialog handlers
   const handleEditSale = (saleRecord) => {
     setEditingSaleData(saleRecord);
