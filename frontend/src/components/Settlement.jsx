@@ -56,7 +56,8 @@ const Settlement = ({
       setFormData({
         date: editingRecord.date,
         amount: editingRecord.amount.toString(),
-        description: editingRecord.description
+        description: editingRecord.description,
+        mpp: editingRecord.mpp || false
       });
       setEditingId(editingRecord.id);
     }
