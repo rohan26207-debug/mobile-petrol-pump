@@ -94,6 +94,23 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     setExpenseCategories(localStorageService.getExpenseCategories());
   };
 
+  // Settlement type management functions
+  const handleAddSettlementType = (name) => {
+    const newType = localStorageService.addSettlementType(name);
+    setSettlementTypes(localStorageService.getSettlementTypes());
+    return newType;
+  };
+
+  const handleDeleteSettlementType = (id) => {
+    localStorageService.deleteSettlementType(id);
+    setSettlementTypes(localStorageService.getSettlementTypes());
+  };
+
+  const handleUpdateSettlementType = (id, name) => {
+    localStorageService.updateSettlementType(id, name);
+    setSettlementTypes(localStorageService.getSettlementTypes());
+  };
+
   // Employee management removed
 
   // Owner details state removed
