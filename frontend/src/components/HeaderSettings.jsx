@@ -35,6 +35,7 @@ import { useToast } from '../hooks/use-toast';
 import { useAutoBackupWeekly } from '../hooks/use-auto-backup-weekly';
 import localStorageService, { exportAllData, importAllData, mergeAllData } from '../services/localStorage';
 import CustomerManagement from './CustomerManagement';
+import IncomeExpenseCategories from './IncomeExpenseCategories';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
