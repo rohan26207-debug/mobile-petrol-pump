@@ -1146,7 +1146,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     </>
                   )}
 
-                  {/* Merge Manual Data Back Button */}
+                  {/* Merge Manual Data Button */}
                   <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
                   
                   <div className={`border rounded-lg p-4 ${
@@ -1158,12 +1158,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                       }`}>
                         Merge Backup Data
                       </h4>
-                      
-                      <p className={`text-sm ${
-                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
-                      }`}>
-                        Import and merge data from backup file while keeping existing data
-                      </p>
                       
                       <Button 
                         variant="outline" 
