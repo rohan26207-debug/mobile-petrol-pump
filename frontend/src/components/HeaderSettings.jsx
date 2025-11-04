@@ -910,6 +910,97 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                       </div>
                     </div>
                   </div>
+
+                  {/* Auto Backup (7 Days) Section */}
+                  <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                  
+                  <div className={`border rounded-lg p-4 ${
+                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                  }`}>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className={`font-medium ${
+                          isDarkMode ? 'text-white' : 'text-slate-800'
+                        }`}>
+                          Auto Backup (Every 7 Days)
+                        </h4>
+                        <Badge variant={weeklyBackupEnabled ? "default" : "outline"}>
+                          {weeklyBackupEnabled ? 'Enabled' : 'Disabled'}
+                        </Badge>
+                      </div>
+                      
+                      <p className={`text-sm ${
+                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>
+                        Automatically download backup file every 7 days
+                      </p>
+                      
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="weekly-backup-toggle"
+                            checked={weeklyBackupEnabled}
+                            onChange={(e) => {
+                              const enabled = e.target.checked;
+                              setWeeklyBackupEnabled(enabled);
+                              toggleAutoBackup(enabled);
+                              
+                              // Refresh status
+                              const status = getBackupStatus();
+                              setWeeklyLastBackup(status.lastBackupTime);
+                              setWeeklyNextScheduled(status.nextScheduledTime);
+                              
+                              toast({
+                                title: enabled ? "Auto Backup Enabled" : "Auto Backup Disabled",
+                                description: enabled 
+                                  ? "Backup will be automatically downloaded every 7 days"
+                                  : "Auto backup has been turned off"
+                              });
+                            }}
+                            className="w-4 h-4"
+                          />
+                          <label 
+                            htmlFor="weekly-backup-toggle"
+                            className={`text-sm cursor-pointer ${
+                              isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}
+                          >
+                            Enable automatic backup every 7 days
+                          </label>
+                        </div>
+
+                        {weeklyBackupEnabled && (
+                          <div className={`space-y-2 p-3 rounded ${
+                            isDarkMode ? 'bg-gray-600' : 'bg-blue-50'
+                          }`}>
+                            <div className={`text-xs ${
+                              isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              <strong>Last Auto Backup:</strong>{' '}
+                              {weeklyLastBackup 
+                                ? new Date(weeklyLastBackup).toLocaleString()
+                                : 'Not yet performed'}
+                            </div>
+                            <div className={`text-xs ${
+                              isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                            }`}>
+                              <strong>Next Scheduled:</strong>{' '}
+                              {weeklyNextScheduled 
+                                ? new Date(weeklyNextScheduled).toLocaleString()
+                                : 'Not scheduled'}
+                            </div>
+                          </div>
+                        )}
+
+                        <p className={`text-xs ${
+                          isDarkMode ? 'text-gray-500' : 'text-slate-500'
+                        }`}>
+                          💡 Note: Backup file will download automatically when you open the app after 7 days
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
               
