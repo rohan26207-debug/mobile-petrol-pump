@@ -113,6 +113,195 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
     );
   }, [bankSettlementData]);
 
+  // Print functionality
+  const handlePrint = () => {
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bank Settlement Report</title>
+  <style>
+    @media print {
+      body { margin: 10mm; }
+      @page { size: A4 landscape; margin: 10mm; }
+    }
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      color: #333;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #333;
+      padding-bottom: 10px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #1a56db;
+    }
+    .date-range {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: #666;
+    }
+    .summary {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    .summary-card {
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+      flex: 1;
+    }
+    .summary-card .label {
+      font-size: 11px;
+      color: #666;
+      font-weight: bold;
+    }
+    .summary-card .value {
+      font-size: 16px;
+      font-weight: bold;
+      margin-top: 5px;
+    }
+    .cash { color: #ea580c; }
+    .card { color: #1d4ed8; }
+    .paytm { color: #7c3aed; }
+    .phonepe { color: #4338ca; }
+    .dtp { color: #16a34a; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f3f4f6;
+      font-weight: bold;
+      text-align: left;
+    }
+    td.number {
+      text-align: right;
+      font-family: 'Courier New', monospace;
+    }
+    tfoot td {
+      font-weight: bold;
+      background-color: #f9fafb;
+      border-top: 2px solid #333;
+    }
+    .footer {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 10px;
+      color: #666;
+      border-top: 1px solid #ccc;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🏦 Bank Settlement Report</h1>
+  </div>
+  
+  <div class="date-range">
+    <strong>Date Range:</strong> ${new Date(fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })} 
+    to ${new Date(toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+  </div>
+
+  <div class="summary">
+    <div class="summary-card">
+      <div class="label">Cash</div>
+      <div class="value cash">₹${totals.cashAmount.toFixed(2)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Card</div>
+      <div class="value card">₹${totals.cardAmount.toFixed(2)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">Paytm</div>
+      <div class="value paytm">₹${totals.paytmAmount.toFixed(2)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">PhonePe</div>
+      <div class="value phonepe">₹${totals.phonepeAmount.toFixed(2)}</div>
+    </div>
+    <div class="summary-card">
+      <div class="label">DTP</div>
+      <div class="value dtp">₹${totals.dtpAmount.toFixed(2)}</div>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Sr. No</th>
+        <th>Date</th>
+        <th style="text-align: right;">Cash (₹)</th>
+        <th style="text-align: right;">Card (₹)</th>
+        <th style="text-align: right;">Paytm (₹)</th>
+        <th style="text-align: right;">PhonePe (₹)</th>
+        <th style="text-align: right;">DTP (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${bankSettlementData.map(row => `
+        <tr>
+          <td>${row.srNo}</td>
+          <td>${new Date(row.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+          <td class="number">${row.cashAmount > 0 ? row.cashAmount.toFixed(2) : '-'}</td>
+          <td class="number">${row.cardAmount > 0 ? row.cardAmount.toFixed(2) : '-'}</td>
+          <td class="number">${row.paytmAmount > 0 ? row.paytmAmount.toFixed(2) : '-'}</td>
+          <td class="number">${row.phonepeAmount > 0 ? row.phonepeAmount.toFixed(2) : '-'}</td>
+          <td class="number">${row.dtpAmount > 0 ? row.dtpAmount.toFixed(2) : '-'}</td>
+        </tr>
+      `).join('')}
+    </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="2">Total</td>
+        <td class="number cash">${totals.cashAmount.toFixed(2)}</td>
+        <td class="number card">${totals.cardAmount.toFixed(2)}</td>
+        <td class="number paytm">${totals.paytmAmount.toFixed(2)}</td>
+        <td class="number phonepe">${totals.phonepeAmount.toFixed(2)}</td>
+        <td class="number dtp">${totals.dtpAmount.toFixed(2)}</td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="footer">
+    Generated on: ${new Date().toLocaleString('en-IN')}<br>
+    Note: Amounts include settlements and customer receipts for each payment mode.
+  </div>
+
+  <script>
+    window.onload = function() {
+      setTimeout(function() {
+        window.print();
+      }, 500);
+    };
+  </script>
+</body>
+</html>`;
+
+    const printWindow = window.open('', '_blank', 'width=1000,height=800');
+    if (printWindow) {
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+    }
+  };
+
   return (
     <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'}`}>
       <CardHeader className="pb-3">
