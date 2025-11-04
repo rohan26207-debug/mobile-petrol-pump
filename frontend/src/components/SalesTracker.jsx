@@ -63,7 +63,8 @@ const SalesTracker = ({ isDarkMode, salesData, addSaleRecord, updateSaleRecord, 
         endReading: '',
         testing: '',
         rate: '',
-        type: 'cash'
+        type: 'cash',
+        mpp: false
       });
     }
   }, [formResetKey, editingRecord, editingId]);
