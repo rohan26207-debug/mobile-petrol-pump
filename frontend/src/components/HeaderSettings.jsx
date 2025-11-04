@@ -29,7 +29,8 @@ import {
   Cloud,
   CloudOff,
   RefreshCw,
-  LogOut
+  LogOut,
+  Receipt
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import { useAutoBackupWeekly } from '../hooks/use-auto-backup-weekly';
