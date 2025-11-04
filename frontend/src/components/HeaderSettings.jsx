@@ -37,6 +37,7 @@ import { useAutoBackupWeekly } from '../hooks/use-auto-backup-weekly';
 import localStorageService, { exportAllData, importAllData, mergeAllData } from '../services/localStorage';
 import CustomerManagement from './CustomerManagement';
 import IncomeExpenseCategories from './IncomeExpenseCategories';
+import SettlementManagement from './SettlementManagement';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
