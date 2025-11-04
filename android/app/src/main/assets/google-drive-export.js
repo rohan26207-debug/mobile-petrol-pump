@@ -1,21 +1,20 @@
 /**
- * === Google Drive Export Integration (Final Unified Version) ===
+ * === Google Drive Export Integration ===
  * Works in both Web and Android WebView builds.
- * - Android uses redirect URI: com.mobilepetrolpump:/oauth2redirect
- * - Web uses redirect URI: http://localhost
+ * Uses http://localhost redirect URI (Web OAuth Client)
  */
 
 // Global token cache
 let googleAccessToken = null;
 
 /**
- * Get platform-specific OAuth configuration
+ * Google OAuth configuration
+ * NOTE: Uses Web OAuth Client with http://localhost redirect
  */
 function getGoogleOAuthConfig() {
-  const isAndroid = !!window.MPumpCalcAndroid;
   return {
     client_id: window.ANDROID_OAUTH_CLIENT_ID || '411840168577-hqpoggit0nncfetfgtu4g465udsbuhla.apps.googleusercontent.com',
-    redirect_uri: isAndroid ? 'com.mobilepetrolpump:/oauth2redirect' : 'http://localhost',
+    redirect_uri: 'http://localhost',
     scope: 'https://www.googleapis.com/auth/drive.file',
     response_type: 'token',
     include_granted_scopes: 'true',
