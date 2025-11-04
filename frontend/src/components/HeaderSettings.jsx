@@ -529,7 +529,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
             <div className="flex-1 overflow-hidden">
               <Tabs defaultValue="customer" className="w-full h-full flex flex-col">
                 <TabsList 
-                  className={`grid w-full grid-cols-7 ${
+                  className={`grid w-full grid-cols-6 ${
                     isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                   }`}
                   style={{ height: '48px', gap: '4px', padding: '4px' }}
