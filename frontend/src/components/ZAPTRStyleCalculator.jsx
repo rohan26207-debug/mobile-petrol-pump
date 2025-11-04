@@ -74,6 +74,7 @@ const ZAPTRStyleCalculator = () => {
   const [rateDialogOpen, setRateDialogOpen] = useState(false);
   const [editingSaleData, setEditingSaleData] = useState(null);
   const [editingCreditData, setEditingCreditData] = useState(null);
+  const [editingSettlementData, setEditingSettlementData] = useState(null);
   const [editingIncomeExpenseData, setEditingIncomeExpenseData] = useState(null);
   const [stockDataVersion, setStockDataVersion] = useState(0); // For triggering stock summary re-render
   
