@@ -186,17 +186,19 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
                         <span className={`font-medium block ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
                           {customer.name}
                         </span>
-                        <label className="flex items-center gap-1 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={customer.isMPP || false}
-                            onChange={(e) => onUpdateCustomer(customer.id, customer.startingBalance, e.target.checked)}
-                            className="w-4 h-4 cursor-pointer accent-blue-500"
-                          />
-                          <span className={`text-xs font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
-                            MPP
-                          </span>
-                        </label>
+                        {customer.name.toLowerCase().includes('mobile petrol pump') && (
+                          <label className="flex items-center gap-1 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={customer.isMPP || false}
+                              onChange={(e) => onUpdateCustomer(customer.id, customer.startingBalance, e.target.checked)}
+                              className="w-4 h-4 cursor-pointer accent-blue-500"
+                            />
+                            <span className={`text-xs font-semibold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                              MPP
+                            </span>
+                          </label>
+                        )}
                       </div>
                       <span className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
                         Balance: ₹{(customer.startingBalance || 0).toFixed(2)}
