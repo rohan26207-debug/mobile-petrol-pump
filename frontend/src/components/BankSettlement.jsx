@@ -96,7 +96,7 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
         dtpAmount
       };
     });
-  }, [fromDate, toDate, settlementData, payments, creditData]);
+  }, [fromDate, toDate, settlementData, payments, creditData, salesData]);
 
   // Calculate totals
   const totals = useMemo(() => {
