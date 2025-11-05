@@ -415,6 +415,14 @@ const UnifiedRecords = ({
               color="text-red-600"
               renderRecord={renderExpenseRecord}
             />
+            
+            <RecordGroup
+              title="Settlement"
+              icon={Wallet}
+              records={filteredSettlements}
+              color="text-yellow-600"
+              renderRecord={renderSettlementRecord}
+            />
           </>
         )}
       </CardContent>
