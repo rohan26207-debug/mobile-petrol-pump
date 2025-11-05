@@ -1015,6 +1015,53 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                       </Button>
                     </div>
                   </div>
+
+                  {/* Pro Mode Section */}
+                  <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                  
+                  <div className={`border rounded-lg p-4 ${
+                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                  }`}>
+                    <div className="space-y-3">
+                      <h4 className={`font-medium ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Pro Mode
+                      </h4>
+                      <p className={`text-xs ${
+                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`}>
+                        Enable Pro mode to skip "Are you sure?" confirmation dialogs
+                      </p>
+                      
+                      <div className="flex items-center space-x-3 pt-2">
+                        <Checkbox
+                          id="pro-mode"
+                          checked={proMode}
+                          onCheckedChange={handleProModeToggle}
+                          className={isDarkMode ? 'border-gray-500' : ''}
+                        />
+                        <Label
+                          htmlFor="pro-mode"
+                          className={`text-sm font-medium cursor-pointer ${
+                            isDarkMode ? 'text-white' : 'text-slate-700'
+                          }`}
+                        >
+                          {proMode ? '✅ Pro Mode Active' : 'Enable Pro Mode'}
+                        </Label>
+                      </div>
+                      
+                      {proMode && (
+                        <div className={`mt-3 p-3 rounded-lg border ${
+                          isDarkMode ? 'bg-green-900/20 border-green-800' : 'bg-green-50 border-green-200'
+                        }`}>
+                          <p className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-700'}`}>
+                            ⚡ Pro Mode is active. Delete confirmations are disabled.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </TabsContent>
               
