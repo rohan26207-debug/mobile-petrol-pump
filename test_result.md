@@ -193,10 +193,11 @@ The MPP Cash calculation had TWO major issues:
    - **IMPORTANT**: Credit sale payment = Only fuel amount (excludes income/expenses)
 
 2. **Synchronization**:
-   - Edit MPP-tagged credit/settlement → Update linked payment amount and date
+   - Edit MPP-tagged credit → Update linked payment with new fuel amount and date
+   - Edit MPP-tagged settlement → Update linked payment with new amount and date
    - Delete MPP-tagged credit/settlement → Delete linked payment
    - Untagging MPP flag → Payment remains (no deletion)
-   - Tagging existing transaction as MPP → Create new auto-payment
+   - Tagging existing transaction as MPP → Create new auto-payment with fuel amount only
 
 3. **Payment Tracking Fields**:
    - `linkedMPPCreditId`: Links payment to source credit
