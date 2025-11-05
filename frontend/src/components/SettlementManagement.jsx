@@ -84,7 +84,15 @@ const SettlementManagement = ({
 
   const handleDelete = (id, name) => {
     console.log('Delete clicked for:', id, name);
-    setDeleteConfirmation({ show: true, id, name });
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      console.log('Pro Mode enabled, deleting directly');
+      onDeleteSettlementType(id);
+    } else {
+      // Show confirmation dialog
+      setDeleteConfirmation({ show: true, id, name });
+    }
   };
 
   const confirmDelete = () => {
