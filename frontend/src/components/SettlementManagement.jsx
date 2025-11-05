@@ -128,9 +128,24 @@ const SettlementManagement = ({
 
       {/* Settlement Types List */}
       <div className="space-y-3">
-        <Label className="text-sm font-medium">
-          Manage Settlement Types
-        </Label>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm font-medium">
+            Manage Settlement Types
+          </Label>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleResetToDefault}
+            className={`flex items-center gap-2 ${
+              isDarkMode 
+                ? 'border-orange-600 text-orange-400 hover:bg-orange-900/20' 
+                : 'border-orange-600 text-orange-600 hover:bg-orange-50'
+            }`}
+          >
+            <RotateCcw className="w-4 h-4" />
+            Restore Default
+          </Button>
+        </div>
         
         {currentTypes.length === 0 ? (
           <div className={`text-center py-8 ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
