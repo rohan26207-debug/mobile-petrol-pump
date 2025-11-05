@@ -333,8 +333,20 @@ const ZAPTRStyleCalculator = () => {
     const todaySettlements = settlementData.filter(s => s.date === selectedDate);
     const settlementNoMPP = todaySettlements.filter(s => !s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
     
-    // MPP calculations
+    // MPP calculations with debugging
+    console.log('=== getTodayStats - MPP CALCULATIONS ===');
+    console.log('Total today sales:', todaySales.length);
+    console.log('All sales with MPP info:', todaySales.map(s => ({ 
+      id: s.id, 
+      mpp: s.mpp, 
+      type: typeof s.mpp,
+      amount: s.amount,
+      liters: s.liters
+    })));
+    
     const salesWithMPP = todaySales.filter(s => s.mpp === true || s.mpp === 'true');
+    console.log('Sales WITH MPP (filtered):', salesWithMPP.length, salesWithMPP.map(s => ({ id: s.id, amount: s.amount })));
+    
     const fuelSalesMPP = salesWithMPP.reduce((sum, sale) => sum + sale.amount, 0);
     const fuelLitersMPP = salesWithMPP.reduce((sum, sale) => sum + sale.liters, 0);
     
@@ -342,11 +354,27 @@ const ZAPTRStyleCalculator = () => {
     const mppCash = fuelSalesMPP - creditAmountMPP - settlementMPP;
     const hasMPPData = fuelSalesMPP > 0 || creditAmountMPP > 0 || settlementMPP > 0;
     
+    console.log('MPP Stats:', {
+      fuelSalesMPP,
+      fuelLitersMPP,
+      creditAmountMPP,
+      settlementMPP,
+      mppCash,
+      hasMPPData
+    });
+    
     // Fuel sales without MPP (for left column)
+    const salesNoMPP = todaySales.filter(sale => sale.type === 'cash' && !sale.mpp && sale.mpp !== true && sale.mpp !== 'true');
+    console.log('Sales NO MPP (filtered):', salesNoMPP.length, salesNoMPP.map(s => ({ id: s.id, amount: s.amount })));
+    
     const fuelSalesNoMPP = fuelCashSales;
-    const fuelLitersNoMPP = todaySales
-      .filter(sale => sale.type === 'cash' && !sale.mpp && sale.mpp !== true && sale.mpp !== 'true')
-      .reduce((sum, sale) => sum + sale.liters, 0);
+    const fuelLitersNoMPP = salesNoMPP.reduce((sum, sale) => sum + sale.liters, 0);
+    
+    console.log('Left Column Stats:', {
+      fuelSalesNoMPP,
+      fuelLitersNoMPP
+    });
+    console.log('========================================');
     
     // Cash in Hand = Fuel Sales - Credit Sales (no MPP) - Expenses + Income - Settlement (no MPP)
     const adjustedCashSales = fuelCashSales - creditTotalAmountNoMPP - totalExpenses + otherIncome - settlementNoMPP;
