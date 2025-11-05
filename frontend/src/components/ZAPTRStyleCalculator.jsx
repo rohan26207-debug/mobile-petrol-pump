@@ -1110,8 +1110,18 @@ const ZAPTRStyleCalculator = () => {
         transferDate: selectedDate,
         timestamp: new Date().getTime()
       };
+      
+      console.log('=== SAVING TRANSFER STATE ===');
+      console.log('Transfer state to save:', JSON.stringify(transferState, null, 2));
+      console.log('Storage key:', `mpump_transfer_state_${selectedDate}`);
+      
       setMppTransferState(transferState);
       localStorage.setItem(`mpump_transfer_state_${selectedDate}`, JSON.stringify(transferState));
+      
+      // Verify the state was saved
+      const savedState = localStorage.getItem(`mpump_transfer_state_${selectedDate}`);
+      console.log('Verified saved state:', savedState);
+      console.log('=== TRANSFER STATE SAVED ===');
 
       toast({
         title: "MPP Cash Transferred",
