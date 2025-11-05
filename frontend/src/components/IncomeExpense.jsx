@@ -190,6 +190,10 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       });
       
       if (newIncome) {
+        // Save description to history
+        localStorageService.addIncomeDescHistory(formData.description);
+        setIncomeDescHistory(localStorageService.getIncomeDescHistory());
+        
         setFormData({ description: '', amount: '', mpp: false });
         toast({
           title: "Success",
@@ -206,6 +210,10 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       });
       
       if (newExpense) {
+        // Save description to history
+        localStorageService.addExpenseDescHistory(formData.description);
+        setExpenseDescHistory(localStorageService.getExpenseDescHistory());
+        
         setFormData({ description: '', amount: '', mpp: false });
         toast({
           title: "Success",
