@@ -957,8 +957,11 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                             return;
                           }
                           
-                          // Confirm deletion
-                          if (window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis includes:\n- Stock Data\n- Reading Sales Data\n- Credit Sales Data\n- Income/Expense Data\n- Receipt Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`)) {
+                          // Confirm deletion - check Pro Mode
+                          const confirmDelete = localStorageService.isProModeEnabled() || 
+                            window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis includes:\n- Stock Data\n- Reading Sales Data\n- Credit Sales Data\n- Income/Expense Data\n- Receipt Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`);
+                          
+                          if (confirmDelete) {
                             try {
                               // Get all data
                               const salesData = localStorageService.getSalesData();
