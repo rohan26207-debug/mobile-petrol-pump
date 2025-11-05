@@ -371,10 +371,19 @@ const ZAPTRStyleCalculator = () => {
   // Data handling functions (offline localStorage)
   const addSaleRecord = (saleData) => {
     try {
+      console.log('Adding Sale Record:', {
+        ...saleData,
+        date: selectedDate,
+        mpp: saleData.mpp,
+        mppType: typeof saleData.mpp
+      });
+      
       const newSale = localStorageService.addSaleRecord({
         ...saleData,
         date: selectedDate
       });
+      
+      console.log('Sale Record Added:', newSale);
       
       // Update local state immediately
       setSalesData(prev => [...prev, newSale]);
