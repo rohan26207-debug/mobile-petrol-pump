@@ -51,7 +51,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       setFormData({
         amount: editingRecord.amount?.toString() || '',
         description: editingRecord.description || '',
-        type: recordType
+        type: recordType,
+        mpp: editingRecord.mpp || false
       });
       setEditingId(editingRecord.id);
     } else {
