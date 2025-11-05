@@ -270,17 +270,30 @@ const ZAPTRStyleCalculator = () => {
     const directIncomeMPP = todayIncome.filter(income => income.mpp === true || income.mpp === 'true').reduce((sum, income) => sum + income.amount, 0);
     const directIncome = directIncomeNoMPP + directIncomeMPP;
     
-    // Calculate income from credit sales
-    const creditIncome = todayCredits.reduce((sum, credit) => {
-      if (credit.incomeEntries && credit.incomeEntries.length > 0) {
-        return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + entry.amount, 0);
-      }
-      return sum;
-    }, 0);
+    // Calculate income from credit sales (separated by parent credit's MPP tag)
+    const creditIncomeNoMPP = todayCredits
+      .filter(credit => !credit.mpp)
+      .reduce((sum, credit) => {
+        if (credit.incomeEntries && credit.incomeEntries.length > 0) {
+          return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + entry.amount, 0);
+        }
+        return sum;
+      }, 0);
     
-    // Total income (no MPP) = direct income (no MPP) + credit income
-    const otherIncomeNoMPP = directIncomeNoMPP + creditIncome;
-    const otherIncomeMPP = directIncomeMPP;
+    const creditIncomeMPP = todayCredits
+      .filter(credit => credit.mpp === true || credit.mpp === 'true')
+      .reduce((sum, credit) => {
+        if (credit.incomeEntries && credit.incomeEntries.length > 0) {
+          return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + entry.amount, 0);
+        }
+        return sum;
+      }, 0);
+    
+    const creditIncome = creditIncomeNoMPP + creditIncomeMPP;
+    
+    // Total income separated by MPP
+    const otherIncomeNoMPP = directIncomeNoMPP + creditIncomeNoMPP;
+    const otherIncomeMPP = directIncomeMPP + creditIncomeMPP;
     const otherIncome = directIncome + creditIncome;
     
     // Calculate expenses from direct entries (separated by MPP tag)
@@ -288,17 +301,30 @@ const ZAPTRStyleCalculator = () => {
     const directExpensesMPP = todayExpenses.filter(expense => expense.mpp === true || expense.mpp === 'true').reduce((sum, expense) => sum + expense.amount, 0);
     const directExpenses = directExpensesNoMPP + directExpensesMPP;
     
-    // Calculate expenses from credit sales
-    const creditExpenses = todayCredits.reduce((sum, credit) => {
-      if (credit.expenseEntries && credit.expenseEntries.length > 0) {
-        return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + entry.amount, 0);
-      }
-      return sum;
-    }, 0);
+    // Calculate expenses from credit sales (separated by parent credit's MPP tag)
+    const creditExpensesNoMPP = todayCredits
+      .filter(credit => !credit.mpp)
+      .reduce((sum, credit) => {
+        if (credit.expenseEntries && credit.expenseEntries.length > 0) {
+          return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + entry.amount, 0);
+        }
+        return sum;
+      }, 0);
     
-    // Total expenses (no MPP) = direct expenses (no MPP) + credit expenses
-    const totalExpensesNoMPP = directExpensesNoMPP + creditExpenses;
-    const totalExpensesMPP = directExpensesMPP;
+    const creditExpensesMPP = todayCredits
+      .filter(credit => credit.mpp === true || credit.mpp === 'true')
+      .reduce((sum, credit) => {
+        if (credit.expenseEntries && credit.expenseEntries.length > 0) {
+          return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + entry.amount, 0);
+        }
+        return sum;
+      }, 0);
+    
+    const creditExpenses = creditExpensesNoMPP + creditExpensesMPP;
+    
+    // Total expenses separated by MPP
+    const totalExpensesNoMPP = directExpensesNoMPP + creditExpensesNoMPP;
+    const totalExpensesMPP = directExpensesMPP + creditExpensesMPP;
     const totalExpenses = directExpenses + creditExpenses;
     
     // Debug logging for income/expenses
