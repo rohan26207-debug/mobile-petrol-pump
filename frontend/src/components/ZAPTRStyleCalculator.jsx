@@ -367,8 +367,8 @@ const ZAPTRStyleCalculator = () => {
       adjustedCashSales,
       mppCash,
       totalCashInHand,
-      hasMPPSales,
-      creditAmount: creditTotalAmount, // Total customer owes (including income/expense)
+      hasMPPData,
+      creditAmount: creditTotalAmount,
       creditLiters,
       totalLiters, 
       totalSales: fuelCashSales + creditTotalAmount,
@@ -376,7 +376,18 @@ const ZAPTRStyleCalculator = () => {
       totalIncome,
       totalExpenses,
       netCash,
-      fuelSalesByType
+      fuelSalesByType,
+      // Separate MPP data
+      fuelSalesNoMPP,
+      fuelLitersNoMPP,
+      creditAmountNoMPP: creditTotalAmountNoMPP,
+      creditLitersNoMPP,
+      settlementNoMPP,
+      fuelSalesMPP,
+      fuelLitersMPP,
+      creditAmountMPP,
+      creditLitersMPP,
+      settlementMPP
     };
   };
 
