@@ -161,10 +161,24 @@ The MPP Cash calculation had TWO major issues:
 - Added incomeData and expenseData props to CustomerLedger component (lines 2733-2734)
 
 ### Expected Behavior
-- MPP Cash should appear in the "Received" column (not Credit column)
-- Amount should be calculated as: Fuel Sales - Credit - Expenses + Income - Settlements
-- This reduces the outstanding balance for Mobile Petrol Pump customer
-- The calculation should match the MPP Cash shown in Today Summary
+**Customer Ledger for "Mobile Petrol Pump" should show:**
+
+1. **Credit column:**
+   - Normal credit sales (without MPP tag)
+
+2. **Received column:**
+   - Normal payments
+   - ONE "MPP Cash" entry (consolidated from all MPP transactions)
+
+3. **MPP Cash calculation:**
+   - Formula: Fuel Sales (MPP) - Credit (MPP) - Expenses (MPP) + Income (MPP) - Settlements (MPP)
+   - This should match the "MPP Cash" shown in Today Summary (second column)
+   - Reduces the outstanding balance for Mobile Petrol Pump customer
+
+**What should NOT appear:**
+- Individual MPP-tagged credit sales as separate line items
+- Individual MPP-tagged settlements as separate line items
+- These are all consolidated into the single "MPP Cash" entry
 
 ### Testing Status
 ⏳ **PENDING VERIFICATION** - Awaiting user testing with actual data
