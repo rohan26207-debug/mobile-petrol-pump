@@ -1879,30 +1879,28 @@ window.onload = function() {
             <div className={`grid ${stats.hasMPPData ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
               {/* LEFT COLUMN - Regular Data (No MPP) */}
               <div className="space-y-1.5 sm:space-y-2">
-              {/* Reading Sales by Fuel Type */}
-              {Object.entries(stats.fuelSalesByType).map(([fuelType, data], index) => (
-                <div key={fuelType} className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                {/* Fuel Sales (No MPP) */}
+                <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-700' : 'bg-blue-50'
                 }`}>
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                      {index + 1}
+                      1
                     </div>
                     <span className={`font-medium text-xs sm:text-base truncate ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      {fuelType} Sales
+                      Fuel Sales
                     </span>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      {data.liters.toFixed(2)}L • ₹{data.amount.toFixed(2)}
+                      {stats.fuelLitersNoMPP.toFixed(2)}L • ₹{stats.fuelSalesNoMPP.toFixed(2)}
                     </div>
                   </div>
                 </div>
-              ))}
               
               {/* Show total if there are multiple fuel types */}
               {Object.keys(stats.fuelSalesByType).length > 1 && (
