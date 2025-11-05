@@ -707,9 +707,19 @@ const ZAPTRStyleCalculator = () => {
 
   const deleteSettlementRecord = (id) => {
     try {
+      // Find and delete linked MPP payment if exists
+      const linkedPayment = payments.find(p => p.linkedMPPSettlementId === id && p.isAutoMPPTracking === true);
+      if (linkedPayment) {
+        localStorageService.deletePayment(linkedPayment.id);
+        console.log('Deleted linked MPP payment for settlement:', linkedPayment.id);
+      }
+      
       const success = localStorageService.deleteSettlement(id);
       if (success) {
         setSettlementData(prev => prev.filter(settlement => settlement.id !== id));
+        if (linkedPayment) {
+          setPayments(localStorageService.getPayments());
+        }
         return true;
       }
     } catch (error) {
