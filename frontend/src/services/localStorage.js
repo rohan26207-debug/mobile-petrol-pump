@@ -933,13 +933,6 @@ class LocalStorageService {
 
   updateSettlementType(id, name) {
     const types = this.getSettlementTypes();
-    const typeToUpdate = types.find(t => t.id === id);
-    
-    // Prevent updating protected types
-    if (typeToUpdate && typeToUpdate.isProtected) {
-      throw new Error('Cannot edit protected settlement type.');
-    }
-    
     const updated = types.map(t => {
       if (t.id === id) {
         return { ...t, name: name };
@@ -949,17 +942,6 @@ class LocalStorageService {
     updated.sort((a, b) => a.name.localeCompare(b.name));
     this.setSettlementTypes(updated);
     return updated.find(t => t.id === id);
-  }
-
-  resetSettlementTypesToDefault() {
-    const defaultTypes = [
-      { id: '1', name: 'Card', isProtected: true },
-      { id: '2', name: 'DTP', isProtected: true },
-      { id: '3', name: 'Paytm', isProtected: true },
-      { id: '4', name: 'PhonePe', isProtected: true }
-    ];
-    this.setSettlementTypes(defaultTypes);
-    return defaultTypes;
   }
 }
 
