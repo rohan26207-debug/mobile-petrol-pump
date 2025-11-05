@@ -328,6 +328,44 @@ const UnifiedRecords = ({
     </div>
   );
 
+  const renderSettlementRecord = (settlement) => (
+    <div key={settlement.id} className={`border rounded-lg p-2 sm:p-3 ${
+      isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+    }`}>
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2 flex-1 min-w-0">
+          {settlement.description && (
+            <p className={`text-xs sm:text-sm break-words ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+              {settlement.description}
+            </p>
+          )}
+        </div>
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-1 text-yellow-600 font-bold">
+            <IndianRupee className="w-4 h-4" />
+            <span className="text-base sm:text-lg">{settlement.amount.toFixed(2)}</span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => onEditSettlement && onEditSettlement(settlement)}
+            className="h-7 w-7 p-0"
+          >
+            <Edit className="w-3.5 h-3.5" />
+          </Button>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => deleteSettlementRecord && deleteSettlementRecord(settlement.id)}
+            className="h-7 w-7 p-0"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <Card className={`${
       isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
