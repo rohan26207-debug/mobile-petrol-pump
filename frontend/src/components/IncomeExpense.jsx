@@ -234,6 +234,22 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     setEditingId(null);
   };
 
+  const handleDeleteDescriptionHistory = (description) => {
+    if (activeType === 'income') {
+      localStorageService.deleteIncomeDescHistory(description);
+      setIncomeDescHistory(localStorageService.getIncomeDescHistory());
+    } else {
+      localStorageService.deleteExpenseDescHistory(description);
+      setExpenseDescHistory(localStorageService.getExpenseDescHistory());
+    }
+    
+    toast({
+      title: "Removed",
+      description: `"${description}" removed from suggestions.`,
+      variant: "default"
+    });
+  };
+
   const editRecord = (record, type) => {
     if (editingId === record.id) {
       // Cancel editing
