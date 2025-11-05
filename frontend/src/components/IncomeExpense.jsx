@@ -317,6 +317,23 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
             </div>
           </div>
         </div>
+        
+        {/* MPP Checkbox */}
+        {isMPPVisible && (
+          <div className="flex items-center space-x-2 pt-2">
+            <Checkbox
+              id="mpp-incexp"
+              checked={formData.mpp}
+              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, mpp: checked }))}
+            />
+            <Label
+              htmlFor="mpp-incexp"
+              className={`text-sm font-medium cursor-pointer ${isDarkMode ? 'text-white' : 'text-slate-700'}`}
+            >
+              Mobile Petrol Pump (MPP)
+            </Label>
+          </div>
+        )}
       </div>
 
       <div className="flex flex-col gap-2 pt-4">
