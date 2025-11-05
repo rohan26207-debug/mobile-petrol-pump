@@ -212,9 +212,10 @@ The MPP Cash calculation had TWO major issues:
    - `isAutoMPPTracking`: Boolean flag for auto-generated payments
    - `description`: Descriptive text for the payment source
 
-4. **Customer Ledger Display**:
+5. **Customer Ledger Display**:
    - Auto-payments appear as separate "Received" line items
    - Shows descriptive text (e.g., "MPP Credit Sale to ABC")
+   - Amount shown = Fuel amount only (not total credit amount)
    - Reduces MPP's outstanding balance
    - MPP Cash now only includes: Cash Sales - Expenses + Income
    - Credits and settlements are shown separately via auto-payments
