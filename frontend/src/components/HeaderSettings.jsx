@@ -149,16 +149,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     }
   };
 
-  const handleResetSettlementTypes = () => {
-    const defaultTypes = localStorageService.resetSettlementTypesToDefault();
-    setSettlementTypes(defaultTypes);
-    toast({
-      title: "Settings Restored",
-      description: "Settlement types have been reset to default settings.",
-      variant: "default"
-    });
-  };
-
   // Employee management removed
 
   // Owner details state removed
