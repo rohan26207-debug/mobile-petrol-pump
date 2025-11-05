@@ -38,6 +38,11 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
   const [editingId, setEditingId] = useState(null);
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
+  const [mppTransferState, setMppTransferState] = useState(() => {
+    // Check if there's an active transfer for today
+    const saved = localStorage.getItem(`mpump_transfer_state_${new Date().toISOString().split('T')[0]}`);
+    return saved ? JSON.parse(saved) : null;
+  });
   const [incomeDescHistory, setIncomeDescHistory] = useState([]);
   const [expenseDescHistory, setExpenseDescHistory] = useState([]);
   const [descriptionOpen, setDescriptionOpen] = useState(false);
