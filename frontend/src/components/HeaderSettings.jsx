@@ -47,6 +47,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   const [settingsOpen, setSettingsOpen] = useState(false); // For Sheet open state
   const [showQRSender, setShowQRSender] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
+  const [backupDate, setBackupDate] = useState(new Date().toISOString().split('T')[0]);
   const { toast } = useToast();
   
   // Auto-backup weekly hook
