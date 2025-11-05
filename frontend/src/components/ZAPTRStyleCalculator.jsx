@@ -1865,7 +1865,7 @@ window.onload = function() {
         {/* Today Summary View */}
         {parentTab === 'today' && (
           <>
-            {/* Summary Section */}
+            {/* Summary Section - Two Column Layout */}
         <Card className={`${
           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
         } shadow-lg mb-2`}>
@@ -1876,7 +1876,9 @@ window.onload = function() {
               Summary
             </h2>
             
-            <div className="space-y-1.5 sm:space-y-2">
+            <div className={`grid ${stats.hasMPPData ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
+              {/* LEFT COLUMN - Regular Data (No MPP) */}
+              <div className="space-y-1.5 sm:space-y-2">
               {/* Reading Sales by Fuel Type */}
               {Object.entries(stats.fuelSalesByType).map(([fuelType, data], index) => (
                 <div key={fuelType} className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
