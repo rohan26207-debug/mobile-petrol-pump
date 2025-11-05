@@ -238,9 +238,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     // Combine all entries
     const allEntries = [
       ...mppNormalCredits,
-      ...mppTaggedCredits,
-      ...mppSettlements,
-      ...ledgerEntries,
+      ...ledgerEntries, // This includes the MPP Cash entry
       ...normalPayments
     ].sort((a, b) => a.date.localeCompare(b.date));
 
