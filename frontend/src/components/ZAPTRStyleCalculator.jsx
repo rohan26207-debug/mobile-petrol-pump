@@ -613,6 +613,29 @@ const ZAPTRStyleCalculator = () => {
       // Update local state immediately
       setSettlementData(prev => [...prev, newSettlement]);
       
+      // Auto-create payment for MPP if this is MPP-tagged settlement
+      if (newSettlement.mpp === true || newSettlement.mpp === 'true') {
+        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+        
+        if (mppCustomer) {
+          const autoPayment = {
+            customerId: mppCustomer.id,
+            customerName: mppCustomer.name,
+            amount: newSettlement.amount,
+            date: newSettlement.date,
+            mode: 'auto',
+            linkedMPPSettlementId: newSettlement.id,
+            isAutoMPPTracking: true,
+            description: `MPP Settlement - ${newSettlement.description || 'Settlement'}`
+          };
+          
+          const createdPayment = localStorageService.addPayment(autoPayment);
+          setPayments(localStorageService.getPayments());
+          
+          console.log('Auto-created MPP payment for settlement:', createdPayment);
+        }
+      }
+      
       return newSettlement;
     } catch (error) {
       console.error('Failed to add settlement record:', error);
