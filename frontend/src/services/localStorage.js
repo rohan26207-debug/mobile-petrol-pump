@@ -1092,6 +1092,11 @@ class LocalStorageService {
     const updated = history.filter(item => item !== description);
     localStorage.setItem(this.keys.expenseDescHistory, JSON.stringify(updated));
   }
+
+  // Pro Mode Management
+  isProModeEnabled() {
+    return localStorage.getItem('mpump_pro_mode') === 'true';
+  }
 }
 
 // Export singleton instance
