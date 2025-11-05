@@ -747,6 +747,41 @@ const ZAPTRStyleCalculator = () => {
       const updatedCredit = localStorageService.updateCreditRecord(id, updatedData);
       if (updatedCredit) {
         setCreditData(prev => prev.map(credit => credit.id === id ? updatedCredit : credit));
+        
+        // Update linked MPP payment if exists
+        const linkedPayment = payments.find(p => p.linkedMPPCreditId === id && p.isAutoMPPTracking === true);
+        if (linkedPayment) {
+          // Update the linked payment with new amount
+          localStorageService.updatePayment(linkedPayment.id, {
+            ...linkedPayment,
+            amount: updatedCredit.amount,
+            date: updatedCredit.date,
+            description: `MPP Credit Sale to ${updatedCredit.customerName}`
+          });
+          setPayments(localStorageService.getPayments());
+          console.log('Updated linked MPP payment:', linkedPayment.id);
+        } else if ((updatedCredit.mpp === true || updatedCredit.mpp === 'true') && !updatedCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
+          // If credit was just tagged as MPP, create new auto-payment
+          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+          
+          if (mppCustomer) {
+            const autoPayment = {
+              customerId: mppCustomer.id,
+              customerName: mppCustomer.name,
+              amount: updatedCredit.amount,
+              date: updatedCredit.date,
+              mode: 'auto',
+              linkedMPPCreditId: updatedCredit.id,
+              isAutoMPPTracking: true,
+              description: `MPP Credit Sale to ${updatedCredit.customerName}`
+            };
+            
+            localStorageService.addPayment(autoPayment);
+            setPayments(localStorageService.getPayments());
+            console.log('Created new MPP payment for updated credit:', autoPayment);
+          }
+        }
+        
         return updatedCredit;
       }
     } catch (error) {
