@@ -147,21 +147,74 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
         description: `MPP Settlement - ${s.description || 'Settlement'}`
       }));
 
-    // 4. MPP Cash (calculated from sales data)
-    const mppCashSales = salesData
-      .filter(s => s.mpp === true)
-      .filter(s => s.date >= fromDate && s.date <= toDate);
+    // 4. MPP Cash calculation (same formula as in Today Summary)
+    // Formula: MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income - MPP Settlements
     
-    const totalMPPCash = mppCashSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+    // Get MPP fuel sales in date range
+    const mppFuelSales = salesData
+      .filter(s => s.mpp === true)
+      .filter(s => s.date >= fromDate && s.date <= toDate)
+      .reduce((sum, sale) => sum + (sale.amount || 0), 0);
+    
+    // Get MPP credit amount in date range (already calculated above in mppTaggedCredits)
+    const mppCreditAmount = creditData
+      .filter(c => c.mpp === true)
+      .filter(c => c.date >= fromDate && c.date <= toDate)
+      .reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    
+    // Get MPP income in date range (direct + from credit sales)
+    const mppDirectIncome = incomeData
+      .filter(inc => inc.mpp === true)
+      .filter(inc => inc.date >= fromDate && inc.date <= toDate)
+      .reduce((sum, inc) => sum + (inc.amount || 0), 0);
+    
+    const mppCreditIncome = creditData
+      .filter(credit => credit.mpp === true)
+      .filter(credit => credit.date >= fromDate && credit.date <= toDate)
+      .reduce((sum, credit) => {
+        if (credit.incomeEntries && credit.incomeEntries.length > 0) {
+          return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + (entry.amount || 0), 0);
+        }
+        return sum;
+      }, 0);
+    
+    const mppTotalIncome = mppDirectIncome + mppCreditIncome;
+    
+    // Get MPP expenses in date range (direct + from credit sales)
+    const mppDirectExpenses = expenseData
+      .filter(exp => exp.mpp === true)
+      .filter(exp => exp.date >= fromDate && exp.date <= toDate)
+      .reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    
+    const mppCreditExpenses = creditData
+      .filter(credit => credit.mpp === true)
+      .filter(credit => credit.date >= fromDate && credit.date <= toDate)
+      .reduce((sum, credit) => {
+        if (credit.expenseEntries && credit.expenseEntries.length > 0) {
+          return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + (entry.amount || 0), 0);
+        }
+        return sum;
+      }, 0);
+    
+    const mppTotalExpenses = mppDirectExpenses + mppCreditExpenses;
+    
+    // Get MPP settlements in date range (already calculated above)
+    const mppSettlementAmount = settlementData
+      .filter(s => s.mpp === true)
+      .filter(s => s.date >= fromDate && s.date <= toDate)
+      .reduce((sum, s) => sum + (s.amount || 0), 0);
+    
+    // Calculate MPP Cash: Fuel Sales - Credit - Expenses + Income - Settlements
+    const totalMPPCash = mppFuelSales - mppCreditAmount - mppTotalExpenses + mppTotalIncome - mppSettlementAmount;
     
     if (totalMPPCash > 0) {
-      // Group MPP cash by date or show as single entry
+      // Show MPP cash as a single entry in "Received" column
       const mppCashEntry = {
         date: toDate, // Show on end date for summary
-        type: 'mpp_cash_received',
+        type: 'mpp_cash',
         credit: 0,
         received: totalMPPCash,
-        description: 'MPP Cash Amount'
+        description: 'MPP Cash'
       };
       ledgerEntries.push(mppCashEntry);
     }
