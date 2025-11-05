@@ -795,24 +795,44 @@ const ZAPTRStyleCalculator = () => {
         // Update linked MPP payment if exists
         const linkedPayment = payments.find(p => p.linkedMPPCreditId === id && p.isAutoMPPTracking === true);
         if (linkedPayment) {
-          // Update the linked payment with new amount
+          // Calculate ONLY fuel amount (excluding income and expenses)
+          let fuelAmount = 0;
+          if (updatedCredit.fuelEntries && updatedCredit.fuelEntries.length > 0) {
+            fuelAmount = updatedCredit.fuelEntries.reduce((sum, entry) => {
+              return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
+            }, 0);
+          } else {
+            fuelAmount = updatedCredit.amount;
+          }
+          
+          // Update the linked payment with new fuel amount
           localStorageService.updatePayment(linkedPayment.id, {
             ...linkedPayment,
-            amount: updatedCredit.amount,
+            amount: fuelAmount,
             date: updatedCredit.date,
             description: `MPP Credit Sale to ${updatedCredit.customerName}`
           });
           setPayments(localStorageService.getPayments());
-          console.log('Updated linked MPP payment:', linkedPayment.id);
+          console.log('Updated linked MPP payment (fuel only):', linkedPayment.id);
         } else if ((updatedCredit.mpp === true || updatedCredit.mpp === 'true') && !updatedCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
           // If credit was just tagged as MPP, create new auto-payment
           const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
           
           if (mppCustomer) {
+            // Calculate ONLY fuel amount (excluding income and expenses)
+            let fuelAmount = 0;
+            if (updatedCredit.fuelEntries && updatedCredit.fuelEntries.length > 0) {
+              fuelAmount = updatedCredit.fuelEntries.reduce((sum, entry) => {
+                return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
+              }, 0);
+            } else {
+              fuelAmount = updatedCredit.amount;
+            }
+            
             const autoPayment = {
               customerId: mppCustomer.id,
               customerName: mppCustomer.name,
-              amount: updatedCredit.amount,
+              amount: fuelAmount,
               date: updatedCredit.date,
               mode: 'auto',
               linkedMPPCreditId: updatedCredit.id,
@@ -822,7 +842,7 @@ const ZAPTRStyleCalculator = () => {
             
             localStorageService.addPayment(autoPayment);
             setPayments(localStorageService.getPayments());
-            console.log('Created new MPP payment for updated credit:', autoPayment);
+            console.log('Created new MPP payment for updated credit (fuel only):', autoPayment);
           }
         }
         
