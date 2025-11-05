@@ -1956,7 +1956,7 @@ window.onload = function() {
     text += `Credit Sales: ${stats.creditLiters.toFixed(2)}L - ${stats.creditAmount.toFixed(2)}\n`;
     text += `Income: ${stats.otherIncome.toFixed(2)}\n`;
     text += `Expenses: ${stats.totalExpenses.toFixed(2)}\n`;
-    text += `Cash in Hand: ${stats.adjustedCashSales.toFixed(2)}\n`;
+    text += `Cash in Hand: ${stats.cashInHand.toFixed(2)}\n`;
     text += `-------\n\n`;
     
     // *Readings* section
