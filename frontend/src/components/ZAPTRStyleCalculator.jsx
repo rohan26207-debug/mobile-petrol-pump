@@ -447,11 +447,12 @@ const ZAPTRStyleCalculator = () => {
     });
     console.log('========================================');
     
-    // Cash in Hand = Fuel Sales - Credit Sales (no MPP) - Expenses (no MPP) + Income (no MPP) - Settlement (no MPP)
-    const adjustedCashSales = fuelCashSales - creditTotalAmountNoMPP - totalExpensesNoMPP + otherIncomeNoMPP - settlementNoMPP;
+    // Cash in Hand = Fuel Sales (no MPP) - Credit Sales (no MPP) - Expenses (no MPP) + Income (no MPP) - Settlement (no MPP)
+    const cashInHand = fuelCashSales - creditTotalAmountNoMPP - totalExpensesNoMPP + otherIncomeNoMPP - settlementNoMPP;
     
-    // Total Cash in Hand = Cash in Hand + MPP Cash
-    const totalCashInHand = adjustedCashSales + mppCash;
+    // MPP Cash is separate and calculated independently
+    // Total available cash = Cash in Hand + MPP Cash (for display only)
+    const totalAvailableCash = cashInHand + mppCash;
     
     const totalLiters = todaySales.reduce((sum, sale) => sum + sale.liters, 0);
     
