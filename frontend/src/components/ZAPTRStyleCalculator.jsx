@@ -2730,6 +2730,8 @@ window.onload = function() {
                   payments={payments}
                   salesData={salesData}
                   settlementData={settlementData}
+                  incomeData={incomeData}
+                  expenseData={expenseData}
                   isDarkMode={isDarkMode}
                   selectedDate={selectedDate}
                 />
