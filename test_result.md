@@ -115,18 +115,22 @@ Verify that the MPP Cash in the Customer Ledger Report for "Mobile Petrol Pump" 
 User reported: "MPP cash is not minus but it is cash in hand. it should be mpp cash"
 
 ### Root Cause Analysis
-The MPP Cash calculation in CustomerLedger.jsx was incorrect. It was simply summing MPP sales amounts instead of using the proper formula:
+The MPP Cash calculation had TWO major issues:
 
-**Incorrect Code (Before Fix):**
-```javascript
-const mppCashSales = salesData.filter(s => s.mpp === true)
-const totalMPPCash = mppCashSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-```
+**Issue 1:** Simply summing MPP sales instead of using the complete formula
+**Issue 2 (CRITICAL):** Showing individual MPP-tagged credits and settlements as separate line items, while ALSO including them in MPP Cash calculation. This caused double-counting and made MPP Cash = just MPP Fuel Sales amount.
 
-**Correct Formula (After Fix):**
-```
-MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income - MPP Settlements
-```
+**Incorrect Approach (Before Fix):**
+- Show MPP-tagged credits as individual "Received" entries
+- Show MPP-tagged settlements as individual "Received" entries  
+- ALSO calculate MPP Cash including all MPP data
+- Result: MPP Cash showed only fuel sales because other components were already deducted
+
+**Correct Approach (After Fix):**
+- Show ONLY normal credit sales (without MPP tag) as line items
+- Show ONLY one "MPP Cash" entry that includes ALL MPP transactions
+- Formula: `MPP Cash = MPP Fuel Sales - MPP Credit - MPP Expenses + MPP Income - MPP Settlements`
+- All MPP-tagged data is consolidated into this single line item
 
 ### Changes Implemented
 1. **Updated CustomerLedger.jsx** to accept `incomeData` and `expenseData` props
