@@ -925,7 +925,26 @@ class LocalStorageService {
 
   // Settlement Type Methods
   getSettlementTypes() {
-    return this.getItem(this.keys.settlementTypes) || [];
+    const types = this.getItem(this.keys.settlementTypes) || [];
+    const protectedNames = ['Card', 'DTP', 'Paytm', 'PhonePe'];
+    
+    // Always ensure isProtected flag is set correctly
+    const typesWithProtection = types.map(type => {
+      if (type.isProtected === undefined) {
+        return {
+          ...type,
+          isProtected: protectedNames.includes(type.name)
+        };
+      }
+      return type;
+    });
+    
+    // If any types were updated, save back to localStorage
+    if (typesWithProtection.some((type, index) => type.isProtected !== types[index].isProtected)) {
+      this.setSettlementTypes(typesWithProtection);
+    }
+    
+    return typesWithProtection;
   }
 
   setSettlementTypes(types) {
