@@ -359,8 +359,8 @@ const ZAPTRStyleCalculator = () => {
     const fuelLitersMPP = salesWithMPP.reduce((sum, sale) => sum + sale.liters, 0);
     
     const settlementMPP = todaySettlements.filter(s => s.mpp === true || s.mpp === 'true').reduce((sum, s) => sum + (s.amount || 0), 0);
-    const mppCash = fuelSalesMPP - creditAmountMPP - settlementMPP;
-    const hasMPPData = fuelSalesMPP > 0 || creditAmountMPP > 0 || settlementMPP > 0;
+    const mppCash = fuelSalesMPP - creditAmountMPP - totalExpensesMPP + otherIncomeMPP - settlementMPP;
+    const hasMPPData = fuelSalesMPP > 0 || creditAmountMPP > 0 || settlementMPP > 0 || otherIncomeMPP > 0 || totalExpensesMPP > 0;
     
     console.log('MPP Stats:', {
       fuelSalesMPP,
