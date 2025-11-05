@@ -522,6 +522,16 @@ const ZAPTRStyleCalculator = () => {
         return updated;
       });
       
+      // If this sale has MPP tag, auto-generate receipt for MPP customer
+      if (newSale.mpp === true && newSale.amount > 0) {
+        createAutoReceiptForMPP(
+          newSale.amount,
+          `Auto-receipt: MPP Fuel Sale - ${newSale.fuelType || 'Fuel'}`,
+          newSale.id,
+          'sale'
+        );
+      }
+      
       return newSale;
     } catch (error) {
       console.error('Failed to add sale record:', error);
