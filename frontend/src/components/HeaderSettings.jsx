@@ -1538,7 +1538,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
       {showQRSender && (
         <QRCodeSender
           isDarkMode={isDarkMode}
-          data={localStorageService.exportAllData()}
+          data={localStorageService.exportDataByDate(backupDate)}
           onClose={() => setShowQRSender(false)}
         />
       )}
