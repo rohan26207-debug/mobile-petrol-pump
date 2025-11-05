@@ -29,7 +29,14 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
   };
 
   const handleDeleteClick = (customer) => {
-    setDeleteConfirm({ show: true, customer });
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      onDeleteCustomer(customer.id);
+    } else {
+      // Show confirmation dialog
+      setDeleteConfirm({ show: true, customer });
+    }
   };
 
   const confirmDelete = () => {
