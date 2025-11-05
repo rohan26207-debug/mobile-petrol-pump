@@ -133,6 +133,9 @@ MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income 
 2. **Implemented correct MPP Cash calculation** matching the formula used in ZAPTRStyleCalculator.jsx
 3. **Updated ZAPTRStyleCalculator.jsx** to pass incomeData and expenseData to CustomerLedger component
 4. **Changed description** from "MPP Cash Amount" to "MPP Cash" for consistency
+5. **Fixed filtering** to check both `mpp === true` and `mpp === 'true'` (boolean and string)
+6. **Added console logging** for debugging MPP Cash calculation
+7. **Handle negative MPP Cash** - shows in Credit column if negative, Received column if positive
 
 ### Implementation Details
 **File**: `/app/frontend/src/components/CustomerLedger.jsx`
