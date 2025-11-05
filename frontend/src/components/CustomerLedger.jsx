@@ -152,24 +152,24 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     // Get MPP fuel sales in date range
     const mppFuelSales = salesData
-      .filter(s => s.mpp === true)
+      .filter(s => s.mpp === true || s.mpp === 'true')
       .filter(s => s.date >= fromDate && s.date <= toDate)
       .reduce((sum, sale) => sum + (sale.amount || 0), 0);
     
     // Get MPP credit amount in date range (already calculated above in mppTaggedCredits)
     const mppCreditAmount = creditData
-      .filter(c => c.mpp === true)
+      .filter(c => c.mpp === true || c.mpp === 'true')
       .filter(c => c.date >= fromDate && c.date <= toDate)
       .reduce((sum, credit) => sum + (credit.amount || 0), 0);
     
     // Get MPP income in date range (direct + from credit sales)
     const mppDirectIncome = incomeData
-      .filter(inc => inc.mpp === true)
+      .filter(inc => inc.mpp === true || inc.mpp === 'true')
       .filter(inc => inc.date >= fromDate && inc.date <= toDate)
       .reduce((sum, inc) => sum + (inc.amount || 0), 0);
     
     const mppCreditIncome = creditData
-      .filter(credit => credit.mpp === true)
+      .filter(credit => credit.mpp === true || credit.mpp === 'true')
       .filter(credit => credit.date >= fromDate && credit.date <= toDate)
       .reduce((sum, credit) => {
         if (credit.incomeEntries && credit.incomeEntries.length > 0) {
@@ -182,12 +182,12 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     // Get MPP expenses in date range (direct + from credit sales)
     const mppDirectExpenses = expenseData
-      .filter(exp => exp.mpp === true)
+      .filter(exp => exp.mpp === true || exp.mpp === 'true')
       .filter(exp => exp.date >= fromDate && exp.date <= toDate)
       .reduce((sum, exp) => sum + (exp.amount || 0), 0);
     
     const mppCreditExpenses = creditData
-      .filter(credit => credit.mpp === true)
+      .filter(credit => credit.mpp === true || credit.mpp === 'true')
       .filter(credit => credit.date >= fromDate && credit.date <= toDate)
       .reduce((sum, credit) => {
         if (credit.expenseEntries && credit.expenseEntries.length > 0) {
@@ -200,7 +200,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     // Get MPP settlements in date range (already calculated above)
     const mppSettlementAmount = settlementData
-      .filter(s => s.mpp === true)
+      .filter(s => s.mpp === true || s.mpp === 'true')
       .filter(s => s.date >= fromDate && s.date <= toDate)
       .reduce((sum, s) => sum + (s.amount || 0), 0);
     
