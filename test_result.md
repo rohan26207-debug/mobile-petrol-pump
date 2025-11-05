@@ -187,9 +187,10 @@ The MPP Cash calculation had TWO major issues:
 
 **Changes:**
 1. **Auto-Payment Creation**:
-   - When MPP-tagged credit sale is created → Auto-create payment for MPP
+   - When MPP-tagged credit sale is created → Auto-create payment for MPP (FUEL AMOUNT ONLY)
    - When MPP-tagged settlement is created → Auto-create payment for MPP
    - Description shows source: "MPP Credit Sale to [Customer]" or "MPP Settlement - [Description]"
+   - **IMPORTANT**: Credit sale payment = Only fuel amount (excludes income/expenses)
 
 2. **Synchronization**:
    - Edit MPP-tagged credit/settlement → Update linked payment amount and date
