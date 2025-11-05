@@ -49,6 +49,9 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   const [showQRSender, setShowQRSender] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
   const [backupDate, setBackupDate] = useState(new Date().toISOString().split('T')[0]);
+  const [proMode, setProMode] = useState(() => {
+    return localStorage.getItem('mpump_pro_mode') === 'true';
+  });
   const { toast } = useToast();
   
   // Auto-backup weekly hook
