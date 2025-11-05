@@ -241,7 +241,8 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     ].sort((a, b) => a.date.localeCompare(b.date));
 
     // Calculate running balance for MPP customer
-    // Balance = Credit Sales (no MPP) - MPP Credit Sales (fuel) - MPP Settlements - MPP Cash
+    // Balance = Starting Balance + Credit Sales (no MPP) - all Received amounts
+    // Received amounts include: MPP Credit Sales (fuel), MPP Settlements, Normal Payments, and MPP Cash
     let runningBalance = customer.startingBalance || 0;
     const ledgerWithBalance = allEntries.map(item => {
       runningBalance += (item.credit - item.received);
