@@ -1235,7 +1235,7 @@ const ZAPTRStyleCalculator = () => {
     // Total expenses includes both direct and credit expenses
     const totalExpenses = directExpenses + creditExpenses;
     
-    const adjustedCashSales = fuelCashSales - creditAmount + otherIncome - totalExpenses;
+    const cashInHand = fuelCashSales - creditAmount + otherIncome - totalExpenses;
 
     return {
       fuelSalesByType,
@@ -1245,7 +1245,7 @@ const ZAPTRStyleCalculator = () => {
       creditAmount,
       otherIncome,
       totalExpenses,
-      adjustedCashSales
+      cashInHand
     };
   };
   
