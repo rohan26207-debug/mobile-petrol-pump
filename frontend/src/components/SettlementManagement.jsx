@@ -12,6 +12,7 @@ const SettlementManagement = ({
   onAddSettlementType, 
   onDeleteSettlementType, 
   onUpdateSettlementType,
+  onResetToDefault,
   isDarkMode 
 }) => {
   const [newTypeName, setNewTypeName] = useState('');
