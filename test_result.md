@@ -103,4 +103,67 @@ When invoking testing sub-agents (`deep_testing_backend_v2` or `auto_frontend_te
 
 ---
 
+## Test Session: MPP Cash Calculation in Customer Ledger Report
+**Date**: November 5, 2025  
+**Tester**: AI Development Agent  
+**Feature**: Customer Ledger Report - MPP Cash Calculation
+
+### Test Objective
+Verify that the MPP Cash in the Customer Ledger Report for "Mobile Petrol Pump" customer is calculated correctly using the same formula as in the Today Summary section.
+
+### Issue Reported
+User reported: "MPP cash is not minus but it is cash in hand. it should be mpp cash"
+
+### Root Cause Analysis
+The MPP Cash calculation in CustomerLedger.jsx was incorrect. It was simply summing MPP sales amounts instead of using the proper formula:
+
+**Incorrect Code (Before Fix):**
+```javascript
+const mppCashSales = salesData.filter(s => s.mpp === true)
+const totalMPPCash = mppCashSales.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+```
+
+**Correct Formula (After Fix):**
+```
+MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income - MPP Settlements
+```
+
+### Changes Implemented
+1. **Updated CustomerLedger.jsx** to accept `incomeData` and `expenseData` props
+2. **Implemented correct MPP Cash calculation** matching the formula used in ZAPTRStyleCalculator.jsx
+3. **Updated ZAPTRStyleCalculator.jsx** to pass incomeData and expenseData to CustomerLedger component
+4. **Changed description** from "MPP Cash Amount" to "MPP Cash" for consistency
+
+### Implementation Details
+**File**: `/app/frontend/src/components/CustomerLedger.jsx`
+- Added `incomeData` and `expenseData` to component props (line 11)
+- Completely rewrote MPP Cash calculation (lines 150-227) to include:
+  - MPP Fuel Sales from salesData
+  - MPP Credit Amount from creditData
+  - MPP Direct Income + MPP Credit Income from incomeData and creditData
+  - MPP Direct Expenses + MPP Credit Expenses from expenseData and creditData
+  - MPP Settlements from settlementData
+- MPP Cash is shown as a positive amount in the "Received" column
+- Updated balance calculation comment for clarity
+
+**File**: `/app/frontend/src/components/ZAPTRStyleCalculator.jsx`
+- Added incomeData and expenseData props to CustomerLedger component (lines 2733-2734)
+
+### Expected Behavior
+- MPP Cash should appear in the "Received" column (not Credit column)
+- Amount should be calculated as: Fuel Sales - Credit - Expenses + Income - Settlements
+- This reduces the outstanding balance for Mobile Petrol Pump customer
+- The calculation should match the MPP Cash shown in Today Summary
+
+### Testing Status
+⏳ **PENDING VERIFICATION** - Awaiting user testing with actual data
+
+### Next Steps
+1. User should add MPP-tagged transactions (sales, credits, income, expenses, settlements)
+2. Generate Customer Ledger Report for "Mobile Petrol Pump" customer
+3. Verify MPP Cash amount matches the formula
+4. Confirm MPP Cash appears in "Received" column
+
+---
+
 *Last Updated: November 5, 2025*
