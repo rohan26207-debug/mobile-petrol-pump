@@ -229,10 +229,11 @@ The MPP Cash calculation had TWO major issues:
 - MPP Outstanding: ₹300,000
 
 **Day 2: MPP sells 2000L credit to ABC**
-- Create MPP-tagged credit sale to "ABC" (2000L)
-- Auto-payment created for MPP: ₹200,000
-- ABC Outstanding: ₹200,000
-- MPP Outstanding: ₹100,000 (reduced by auto-payment)
+- Create MPP-tagged credit sale to "ABC" (2000L @ ₹100/L = ₹200,000 fuel)
+- If credit also includes income/expenses, they are NOT counted in auto-payment
+- Auto-payment created for MPP: ₹200,000 (fuel amount only)
+- ABC Outstanding: ₹200,000 (or more if income/expenses included)
+- MPP Outstanding: ₹100,000 (300k - 200k fuel payment)
 
 **Day 2: MPP cash sale 1000L**
 - Create MPP-tagged cash sale (1000L)
