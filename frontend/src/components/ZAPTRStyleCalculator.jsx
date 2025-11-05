@@ -308,11 +308,22 @@ const ZAPTRStyleCalculator = () => {
     const settlementNoMPP = todaySettlements.filter(s => !s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
     
     // MPP calculations
-    const fuelSalesMPP = todaySales.filter(s => s.mpp).reduce((sum, sale) => sum + sale.amount, 0);
-    const creditMPP = todayCredits.filter(c => c.mpp).reduce((sum, credit) => sum + credit.amount, 0);
-    const settlementMPP = todaySettlements.filter(s => s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
+    const fuelSalesMPP = todaySales.filter(s => s.mpp === true || s.mpp === 'true').reduce((sum, sale) => sum + sale.amount, 0);
+    const creditMPP = todayCredits.filter(c => c.mpp === true || c.mpp === 'true').reduce((sum, credit) => sum + credit.amount, 0);
+    const settlementMPP = todaySettlements.filter(s => s.mpp === true || s.mpp === 'true').reduce((sum, s) => sum + (s.amount || 0), 0);
     const mppCash = fuelSalesMPP - creditMPP - settlementMPP;
     const hasMPPSales = fuelSalesMPP > 0;
+    
+    // Debug logging
+    console.log('MPP Debug:', {
+      totalSales: todaySales.length,
+      salesWithMPP: todaySales.filter(s => s.mpp === true || s.mpp === 'true').length,
+      fuelSalesMPP,
+      creditMPP,
+      settlementMPP,
+      mppCash,
+      hasMPPSales
+    });
     
     // Cash in Hand = Fuel Sales - Credit Sales (no MPP) - Expenses + Income - Settlement (no MPP)
     const adjustedCashSales = fuelCashSales - creditTotalAmountNoMPP - totalExpenses + otherIncome - settlementNoMPP;
