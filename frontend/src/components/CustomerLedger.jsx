@@ -207,6 +207,19 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     // Calculate MPP Cash: Fuel Sales - Credit - Expenses + Income - Settlements
     const totalMPPCash = mppFuelSales - mppCreditAmount - mppTotalExpenses + mppTotalIncome - mppSettlementAmount;
     
+    // Debug logging
+    console.log('=== Customer Ledger MPP Cash Calculation ===');
+    console.log('Customer:', customer.name);
+    console.log('Date Range:', fromDate, 'to', toDate);
+    console.log('MPP Fuel Sales:', mppFuelSales);
+    console.log('MPP Credit Amount:', mppCreditAmount);
+    console.log('MPP Total Expenses:', mppTotalExpenses);
+    console.log('MPP Total Income:', mppTotalIncome);
+    console.log('MPP Settlement Amount:', mppSettlementAmount);
+    console.log('Final MPP Cash:', totalMPPCash);
+    console.log('Formula: ', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount, '=', totalMPPCash);
+    console.log('==========================================');
+    
     if (totalMPPCash > 0) {
       // Show MPP cash as a single entry in "Received" column
       const mppCashEntry = {
