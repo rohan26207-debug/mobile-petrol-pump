@@ -157,6 +157,7 @@ class LocalStorageService {
       rate: creditData.rate || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].rate : 0),
       dueDate: creditData.dueDate || creditData.date,
       status: creditData.status || 'pending',
+      mpp: creditData.mpp || false,
       timestamp: new Date().toISOString()
     };
     
