@@ -118,34 +118,27 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     // Note: We do NOT show individual MPP-tagged credits and settlements as line items
     // They are all included in the single "MPP Cash" calculation below
 
-    // 4. MPP Cash calculation (same formula as in Today Summary)
-    // Formula: MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income - MPP Settlements
+    // 4. MPP Cash calculation (REVISED)
+    // Since MPP-tagged credits and settlements now appear as separate auto-payment line items,
+    // MPP Cash should ONLY include: MPP Cash Sales - MPP Expenses + MPP Income
+    // (NOT including credits and settlements which are shown separately)
     
     // Debug: Log all sales data to see mpp flags
     console.log('=== DEBUGGING MPP FILTERS ===');
-    console.log('All Sales Data:', salesData.map(s => ({ date: s.date, mpp: s.mpp, type: typeof s.mpp, amount: s.amount })));
+    console.log('All Sales Data:', salesData.map(s => ({ date: s.date, mpp: s.mpp, type: s.type, amount: s.amount })));
     console.log('Date Range:', fromDate, 'to', toDate);
     
-    // Get MPP fuel sales in date range
+    // Get MPP CASH sales in date range (excluding credits)
     const mppSalesFiltered = salesData
       .filter(s => s.date >= fromDate && s.date <= toDate);
-    console.log('Sales in date range:', mppSalesFiltered.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
+    console.log('Sales in date range:', mppSalesFiltered.map(s => ({ date: s.date, mpp: s.mpp, type: s.type, amount: s.amount })));
     
-    const mppSalesWithTag = mppSalesFiltered.filter(s => s.mpp === true || s.mpp === 'true');
-    console.log('MPP Tagged Sales:', mppSalesWithTag.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
+    // Only cash sales with MPP tag
+    const mppCashSalesWithTag = mppSalesFiltered.filter(s => (s.mpp === true || s.mpp === 'true') && s.type === 'cash');
+    console.log('MPP Tagged CASH Sales:', mppCashSalesWithTag.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
     
-    const mppFuelSales = mppSalesWithTag.reduce((sum, sale) => sum + (sale.amount || 0), 0);
-    console.log('Total MPP Fuel Sales:', mppFuelSales);
-    
-    // Get MPP credit amount in date range
-    const mppCreditsInRange = creditData.filter(c => c.date >= fromDate && c.date <= toDate);
-    console.log('Credits in date range:', mppCreditsInRange.map(c => ({ date: c.date, mpp: c.mpp, amount: c.amount })));
-    
-    const mppCreditsWithTag = mppCreditsInRange.filter(c => c.mpp === true || c.mpp === 'true');
-    console.log('MPP Tagged Credits:', mppCreditsWithTag.map(c => ({ date: c.date, mpp: c.mpp, amount: c.amount })));
-    
-    const mppCreditAmount = mppCreditsWithTag.reduce((sum, credit) => sum + (credit.amount || 0), 0);
-    console.log('Total MPP Credit Amount:', mppCreditAmount);
+    const mppCashSales = mppCashSalesWithTag.reduce((sum, sale) => sum + (sale.amount || 0), 0);
+    console.log('Total MPP CASH Sales:', mppCashSales);
     
     // Get MPP income in date range (direct + from credit sales)
     const mppDirectIncome = incomeData
