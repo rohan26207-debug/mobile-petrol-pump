@@ -177,21 +177,34 @@ const Settlement = ({
             <div className={`grid ${isMPPVisible ? 'grid-cols-[1fr,1fr,auto]' : 'grid-cols-2'} gap-2 items-end p-2`}>
               {/* Description */}
               <div className="space-y-1">
-                <Label className="text-sm font-medium">Description</Label>
-                <Input
-                  type="text"
+                <Label className="text-sm font-medium">Settlement Type</Label>
+                <Select
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Select or enter settlement type..."
-                  className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
-                  list="settlement-types"
-                  autoComplete="off"
-                />
-                <datalist id="settlement-types">
-                  {settlementTypes.map((type) => (
-                    <option key={type.id} value={type.name} />
-                  ))}
-                </datalist>
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, description: value }))}
+                >
+                  <SelectTrigger className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}>
+                    <SelectValue placeholder="Select settlement type..." />
+                  </SelectTrigger>
+                  <SelectContent className={isDarkMode ? 'bg-gray-700 border-gray-600' : ''}>
+                    <SelectGroup>
+                      {settlementTypes.length > 0 ? (
+                        settlementTypes.map((type) => (
+                          <SelectItem 
+                            key={type.id} 
+                            value={type.name}
+                            className={isDarkMode ? 'text-white hover:bg-gray-600' : ''}
+                          >
+                            {type.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="no-types" disabled className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                          No settlement types available. Add from Settings.
+                        </SelectItem>
+                      )}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Amount */}
