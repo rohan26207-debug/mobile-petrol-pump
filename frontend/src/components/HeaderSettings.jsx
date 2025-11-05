@@ -107,13 +107,41 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   };
 
   const handleDeleteSettlementType = (id) => {
-    localStorageService.deleteSettlementType(id);
-    setSettlementTypes(localStorageService.getSettlementTypes());
+    try {
+      localStorageService.deleteSettlementType(id);
+      setSettlementTypes(localStorageService.getSettlementTypes());
+      toast({
+        title: "Success",
+        description: "Settlement type deleted successfully.",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error deleting settlement type:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to delete settlement type.',
+        variant: "destructive"
+      });
+    }
   };
 
   const handleUpdateSettlementType = (id, name) => {
-    localStorageService.updateSettlementType(id, name);
-    setSettlementTypes(localStorageService.getSettlementTypes());
+    try {
+      localStorageService.updateSettlementType(id, name);
+      setSettlementTypes(localStorageService.getSettlementTypes());
+      toast({
+        title: "Success",
+        description: "Settlement type updated successfully.",
+        variant: "default"
+      });
+    } catch (error) {
+      console.error('Error updating settlement type:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to update settlement type.',
+        variant: "destructive"
+      });
+    }
   };
 
   // Employee management removed
