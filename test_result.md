@@ -180,14 +180,62 @@ The MPP Cash calculation had TWO major issues:
 - Individual MPP-tagged settlements as separate line items
 - These are all consolidated into the single "MPP Cash" entry
 
-### Testing Status
-⏳ **PENDING VERIFICATION** - Awaiting user testing with actual data
+### Latest Implementation (Auto-Payment Tracking)
+**Date**: November 5, 2025
 
-### Next Steps
-1. User should add MPP-tagged transactions (sales, credits, income, expenses, settlements)
-2. Generate Customer Ledger Report for "Mobile Petrol Pump" customer
-3. Verify MPP Cash amount matches the formula
-4. Confirm MPP Cash appears in "Received" column
+**New Feature**: Auto-create "Received" entries in MPP's account for MPP-tagged transactions
+
+**Changes:**
+1. **Auto-Payment Creation**:
+   - When MPP-tagged credit sale is created → Auto-create payment for MPP
+   - When MPP-tagged settlement is created → Auto-create payment for MPP
+   - Description shows source: "MPP Credit Sale to [Customer]" or "MPP Settlement - [Description]"
+
+2. **Synchronization**:
+   - Edit MPP-tagged credit/settlement → Update linked payment amount and date
+   - Delete MPP-tagged credit/settlement → Delete linked payment
+   - Untagging MPP flag → Payment remains (no deletion)
+   - Tagging existing transaction as MPP → Create new auto-payment
+
+3. **Payment Tracking Fields**:
+   - `linkedMPPCreditId`: Links payment to source credit
+   - `linkedMPPSettlementId`: Links payment to source settlement  
+   - `isAutoMPPTracking`: Boolean flag for auto-generated payments
+   - `description`: Descriptive text for the payment source
+
+4. **Customer Ledger Display**:
+   - Auto-payments appear as separate "Received" line items
+   - Shows descriptive text (e.g., "MPP Credit Sale to ABC")
+   - Reduces MPP's outstanding balance
+   - MPP Cash now only includes: Cash Sales - Expenses + Income
+   - Credits and settlements are shown separately via auto-payments
+
+### Testing Status
+⏳ **PENDING VERIFICATION** - Awaiting user testing with actual workflow
+
+### Test Workflow
+**Day 1: MPP takes 3000L credit**
+- Create credit sale to "Mobile Petrol Pump" (3000L)
+- MPP Outstanding: ₹300,000
+
+**Day 2: MPP sells 2000L credit to ABC**
+- Create MPP-tagged credit sale to "ABC" (2000L)
+- Auto-payment created for MPP: ₹200,000
+- ABC Outstanding: ₹200,000
+- MPP Outstanding: ₹100,000 (reduced by auto-payment)
+
+**Day 2: MPP cash sale 1000L**
+- Create MPP-tagged cash sale (1000L)
+- Shows in "MPP Cash" calculation
+- MPP Outstanding: Further reduced
+
+**Expected Customer Ledger for Mobile Petrol Pump:**
+```
+Date       Description                        Credit      Received    Outstanding
+01-Nov     Credit Sale - Diesel 3000L        ₹300,000    -           ₹300,000
+02-Nov     MPP Credit Sale to ABC            -           ₹200,000    ₹100,000
+02-Nov     MPP Cash                          -           ₹100,000    ₹0
+```
 
 ---
 
