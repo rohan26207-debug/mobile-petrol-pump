@@ -331,15 +331,25 @@ const ZAPTRStyleCalculator = () => {
     console.log('=== INCOME/EXPENSE DEBUG ===');
     console.log('Today Income:', todayIncome.length, todayIncome.map(i => ({ id: i.id, mpp: i.mpp, type: typeof i.mpp, amount: i.amount })));
     console.log('Today Expenses:', todayExpenses.length, todayExpenses.map(e => ({ id: e.id, mpp: e.mpp, type: typeof e.mpp, amount: e.amount })));
+    console.log('Today Credits:', todayCredits.length, todayCredits.map(c => ({ 
+      id: c.id, 
+      mpp: c.mpp, 
+      incomeEntries: c.incomeEntries?.length || 0,
+      expenseEntries: c.expenseEntries?.length || 0
+    })));
     console.log('Income Stats:', {
       directIncomeNoMPP,
       directIncomeMPP,
+      creditIncomeNoMPP,
+      creditIncomeMPP,
       otherIncomeNoMPP,
       otherIncomeMPP
     });
     console.log('Expense Stats:', {
       directExpensesNoMPP,
       directExpensesMPP,
+      creditExpensesNoMPP,
+      creditExpensesMPP,
       totalExpensesNoMPP,
       totalExpensesMPP
     });
