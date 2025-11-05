@@ -407,26 +407,86 @@ class LocalStorageService {
 
   // Export all data (for backup)
   exportDataByDate(selectedDate) {
-    // Filter data by selected date
-    const salesData = this.getSalesData().filter(s => s.date === selectedDate);
-    const creditData = this.getCreditData().filter(c => c.date === selectedDate);
-    const incomeData = this.getIncomeData().filter(i => i.date === selectedDate);
-    const expenseData = this.getExpenseData().filter(e => e.date === selectedDate);
-    const payments = this.getPayments().filter(p => p.date === selectedDate);
-    const settlements = this.getSettlements().filter(s => s.date === selectedDate);
+    // Filter data by selected date and minimize field names for compression
+    const sales = this.getSalesData().filter(s => s.date === selectedDate).map(s => ({
+      i: s.id,
+      d: s.date,
+      n: s.nozzle,
+      f: s.fuelType,
+      sr: s.startReading,
+      er: s.endReading,
+      l: s.liters,
+      r: s.rate,
+      a: s.amount,
+      m: s.mpp
+    }));
+    
+    const credits = this.getCreditData().filter(c => c.date === selectedDate).map(c => ({
+      i: c.id,
+      d: c.date,
+      ci: c.customerId,
+      cn: c.customerName,
+      a: c.amount,
+      m: c.mpp
+    }));
+    
+    const income = this.getIncomeData().filter(i => i.date === selectedDate).map(i => ({
+      i: i.id,
+      d: i.date,
+      ds: i.description,
+      a: i.amount,
+      m: i.mpp
+    }));
+    
+    const expense = this.getExpenseData().filter(e => e.date === selectedDate).map(e => ({
+      i: e.id,
+      d: e.date,
+      ds: e.description,
+      a: e.amount,
+      m: e.mpp
+    }));
+    
+    const pay = this.getPayments().filter(p => p.date === selectedDate).map(p => ({
+      i: p.id,
+      d: p.date,
+      ci: p.customerId,
+      a: p.amount,
+      m: p.mode
+    }));
+    
+    const settle = this.getSettlements().filter(s => s.date === selectedDate).map(s => ({
+      i: s.id,
+      d: s.date,
+      a: s.amount,
+      ds: s.description,
+      m: s.mpp
+    }));
+
+    // Minimize customer and fuel data
+    const cust = this.getCustomers().map(c => ({
+      i: c.id,
+      n: c.name,
+      sb: c.startingBalance,
+      mpp: c.isMPP
+    }));
+    
+    const fuel = {};
+    const fullFuel = this.getFuelSettings();
+    Object.keys(fullFuel).forEach(key => {
+      fuel[key] = { p: fullFuel[key].price, n: fullFuel[key].nozzleCount };
+    });
 
     return {
-      salesData,
-      creditData,
-      incomeData,
-      expenseData,
-      payments,
-      settlements,
-      fuelSettings: this.getFuelSettings(),
-      customers: this.getCustomers(),
-      exportDate: new Date().toISOString(),
-      selectedDate: selectedDate,
-      version: '2.0-date-filtered'
+      s: sales,
+      c: credits,
+      i: income,
+      e: expense,
+      p: pay,
+      st: settle,
+      f: fuel,
+      cu: cust,
+      dt: selectedDate,
+      v: '2.1'
     };
   }
 
