@@ -1950,120 +1950,207 @@ window.onload = function() {
                   </div>
                 </div>
 
-              {/* Income */}
-              <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-green-50'
-              }`}>
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                    {Object.keys(stats.fuelSalesByType).length + (Object.keys(stats.fuelSalesByType).length > 1 ? 3 : 2)}
-                  </div>
-                  <span className={`font-medium text-xs sm:text-base truncate ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    Income
-                  </span>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    {stats.otherIncome.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Expenses */}
-              <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-red-50'
-              }`}>
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                    {Object.keys(stats.fuelSalesByType).length + (Object.keys(stats.fuelSalesByType).length > 1 ? 4 : 3)}
-                  </div>
-                  <span className={`font-medium text-xs sm:text-base truncate ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    Expenses
-                  </span>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    {stats.totalExpenses.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-
-              {/* Cash in Hand */}
-              <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-purple-50'
-              }`}>
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                    {Object.keys(stats.fuelSalesByType).length + (Object.keys(stats.fuelSalesByType).length > 1 ? 5 : 4)}
-                  </div>
-                  <span className={`font-medium text-xs sm:text-base truncate ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    Cash in Hand
-                  </span>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    {stats.adjustedCashSales.toFixed(2)}
-                  </div>
-                </div>
-              </div>
-
-              {/* MPP Cash - shown only when there are MPP fuel sales */}
-              {stats.hasMPPSales && (
-                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-orange-500 ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-orange-50'
-                }`}>
-                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                      MPP
-                    </div>
-                    <span className={`font-medium text-xs sm:text-base truncate ${
-                      isDarkMode ? 'text-white' : 'text-slate-800'
-                    }`}>
-                      MPP Cash
-                    </span>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                      isDarkMode ? 'text-white' : 'text-slate-800'
-                    }`}>
-                      {stats.mppCash.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Total Cash in Hand - shown only when MPP Cash is visible */}
-              {stats.hasMPPSales && (
-                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-green-500 ${
+                {/* Income */}
+                <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-700' : 'bg-green-50'
                 }`}>
                   <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                      Σ
+                      3
                     </div>
                     <span className={`font-medium text-xs sm:text-base truncate ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      Total Cash in Hand
+                      Income
                     </span>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      {stats.totalCashInHand.toFixed(2)}
+                      ₹{stats.otherIncome.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Expenses */}
+                <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-red-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      4
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Expenses
+                    </span>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      ₹{stats.totalExpenses.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Settlement (No MPP) */}
+                <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-yellow-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      5
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Settlement
+                    </span>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      ₹{stats.settlementNoMPP.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cash in Hand */}
+                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-purple-500 ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-purple-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      6
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Cash in Hand
+                    </span>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      ₹{stats.adjustedCashSales.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT COLUMN - MPP Data */}
+              {stats.hasMPPData && (
+                <div className="space-y-1.5 sm:space-y-2">
+                  {/* MPP Header */}
+                  <div className={`p-2 sm:p-3 rounded-lg border-2 ${
+                    isDarkMode ? 'bg-gray-700 border-orange-500' : 'bg-orange-50 border-orange-300'
+                  }`}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm">
+                        🏷️
+                      </div>
+                      <h3 className={`font-bold text-sm sm:text-lg ${
+                        isDarkMode ? 'text-orange-400' : 'text-orange-700'
+                      }`}>
+                        MPP
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Fuel Sales (MPP) */}
+                  <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-blue-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        1
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Fuel Sales
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        {stats.fuelLitersMPP.toFixed(2)}L • ₹{stats.fuelSalesMPP.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Credit Sales (MPP) */}
+                  <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-orange-500 ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-orange-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        2
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Credit Sales
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        {stats.creditLitersMPP.toFixed(2)}L • ₹{stats.creditAmountMPP.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Settlement (MPP) */}
+                  <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-yellow-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        3
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Settlement
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        ₹{stats.settlementMPP.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* MPP Cash */}
+                  <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-green-500 ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-green-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        4
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        MPP Cash
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        ₹{stats.mppCash.toFixed(2)}
+                      </div>
                     </div>
                   </div>
                 </div>
