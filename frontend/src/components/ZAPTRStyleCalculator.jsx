@@ -542,6 +542,29 @@ const ZAPTRStyleCalculator = () => {
       // Update local state immediately
       setCreditData(prev => [...prev, newCredit]);
       
+      // Auto-create payment for MPP if this is MPP-tagged credit to another customer
+      if ((newCredit.mpp === true || newCredit.mpp === 'true') && !newCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
+        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+        
+        if (mppCustomer) {
+          const autoPayment = {
+            customerId: mppCustomer.id,
+            customerName: mppCustomer.name,
+            amount: newCredit.amount,
+            date: newCredit.date,
+            mode: 'auto',
+            linkedMPPCreditId: newCredit.id,
+            isAutoMPPTracking: true,
+            description: `MPP Credit Sale to ${newCredit.customerName}`
+          };
+          
+          const createdPayment = localStorageService.addPayment(autoPayment);
+          setPayments(localStorageService.getPayments());
+          
+          console.log('Auto-created MPP payment for credit sale:', createdPayment);
+        }
+      }
+      
       return newCredit;
     } catch (error) {
       console.error('Failed to add credit record:', error);
