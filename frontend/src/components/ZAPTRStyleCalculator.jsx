@@ -1767,7 +1767,7 @@ window.onload = function() {
       summaryData.push(['Credit Sales', `${stats.creditLiters.toFixed(2)}L`, `${stats.creditAmount.toFixed(2)}`]);
       summaryData.push(['Income', '-', `${stats.otherIncome.toFixed(2)}`]);
       summaryData.push(['Expenses', '-', `${stats.totalExpenses.toFixed(2)}`]);
-      summaryData.push(['Cash in Hand', `${stats.totalLiters.toFixed(2)}L`, `${stats.adjustedCashSales.toFixed(2)}`]);
+      summaryData.push(['Cash in Hand', `${stats.totalLiters.toFixed(2)}L`, `${stats.cashInHand.toFixed(2)}`]);
 
       doc.autoTable({
         startY: yPos,
