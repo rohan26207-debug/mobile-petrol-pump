@@ -2224,12 +2224,12 @@ window.onload = function() {
                   </div>
 
                   {/* MPP Cash */}
-                  <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-green-500 ${
-                    isDarkMode ? 'bg-gray-700' : 'bg-green-50'
+                  <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-purple-500 ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-purple-50'
                   }`}>
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                        4
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        6
                       </div>
                       <span className={`font-medium text-xs sm:text-base truncate ${
                         isDarkMode ? 'text-white' : 'text-slate-800'
