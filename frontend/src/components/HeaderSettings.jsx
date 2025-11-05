@@ -107,9 +107,14 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   };
 
   const handleDeleteSettlementType = (id) => {
+    console.log('handleDeleteSettlementType called with id:', id);
     try {
+      console.log('Calling localStorageService.deleteSettlementType');
       localStorageService.deleteSettlementType(id);
-      setSettlementTypes(localStorageService.getSettlementTypes());
+      console.log('Delete successful, updating state');
+      const updatedTypes = localStorageService.getSettlementTypes();
+      console.log('Updated settlement types:', updatedTypes);
+      setSettlementTypes(updatedTypes);
       toast({
         title: "Success",
         description: "Settlement type deleted successfully.",
