@@ -1970,21 +1970,15 @@ window.onload = function() {
           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
         } shadow-lg mb-2`}>
           <CardContent className="p-2 sm:p-3">
-            <h2 className={`text-lg sm:text-2xl font-bold mb-2 ${
-              isDarkMode ? 'text-white' : 'text-slate-800'
-            }`}>
-              Summary
-            </h2>
-            
             <div className={`grid ${stats.hasMPPData ? 'grid-cols-2' : 'grid-cols-1'} gap-3`}>
               {/* LEFT COLUMN - Regular Data (No MPP) */}
               <div className="space-y-1.5 sm:space-y-2">
                 {/* Summary Header for Left Column */}
-                <h3 className={`text-lg sm:text-2xl font-bold mb-2 ${
+                <h2 className={`text-lg sm:text-2xl font-bold mb-2 ${
                   isDarkMode ? 'text-white' : 'text-slate-800'
                 }`}>
                   Summary
-                </h3>
+                </h2>
                 {/* Fuel Sales (No MPP) */}
                 <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-700' : 'bg-blue-50'
