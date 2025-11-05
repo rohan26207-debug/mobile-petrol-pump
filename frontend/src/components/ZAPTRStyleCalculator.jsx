@@ -599,18 +599,9 @@ const ZAPTRStyleCalculator = () => {
   // Delete functions
   const deleteSaleRecord = (id) => {
     try {
-      // Get the sale record before deletion to check if it's MPP
-      const saleToDelete = salesData.find(sale => sale.id === id);
-      
       const success = localStorageService.deleteSaleRecord(id);
       if (success) {
         setSalesData(prev => prev.filter(sale => sale.id !== id));
-        
-        // Delete corresponding auto-generated receipt if it was MPP
-        if (saleToDelete && saleToDelete.mpp === true) {
-          deleteAutoReceiptForMPP(id, 'sale');
-        }
-        
         return true;
       }
     } catch (error) {
