@@ -1927,28 +1927,28 @@ window.onload = function() {
                 </div>
               )}
 
-              {/* Credit Sales */}
-              <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
-                isDarkMode ? 'bg-gray-700' : 'bg-orange-50'
-              }`}>
-                <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                    {Object.keys(stats.fuelSalesByType).length + (Object.keys(stats.fuelSalesByType).length > 1 ? 2 : 1)}
+                {/* Credit Sales (No MPP) */}
+                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-orange-500 ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-orange-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      2
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Credit Sales
+                    </span>
                   </div>
-                  <span className={`font-medium text-xs sm:text-base truncate ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    Credit Sales
-                  </span>
-                </div>
-                <div className="text-right flex-shrink-0">
-                  <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                    isDarkMode ? 'text-white' : 'text-slate-800'
-                  }`}>
-                    {stats.creditLiters.toFixed(2)}L • {stats.creditAmount.toFixed(2)}
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      {stats.creditLitersNoMPP.toFixed(2)}L • ₹{stats.creditAmountNoMPP.toFixed(2)}
+                    </div>
                   </div>
                 </div>
-              </div>
 
               {/* Income */}
               <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
