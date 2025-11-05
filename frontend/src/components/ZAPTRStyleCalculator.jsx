@@ -291,7 +291,8 @@ const ZAPTRStyleCalculator = () => {
     // Total expenses includes both direct and credit expenses
     const totalExpenses = directExpenses + creditExpenses;
     
-    // Calculate credit amount and liters
+    // Calculate credit amount and liters (without MPP tag)
+    const creditTotalAmountNoMPP = todayCredits.filter(c => !c.mpp).reduce((sum, credit) => sum + credit.amount, 0);
     const creditTotalAmount = todayCredits.reduce((sum, credit) => sum + credit.amount, 0);
     const creditLiters = todayCredits.reduce((sum, credit) => {
       if (credit.fuelEntries && credit.fuelEntries.length > 0) {
@@ -302,8 +303,23 @@ const ZAPTRStyleCalculator = () => {
       return sum;
     }, 0);
     
-    // Cash in Hand = Fuel Sales - Total Credit Amount + Total Income - Total Expenses
-    const adjustedCashSales = fuelCashSales - creditTotalAmount + otherIncome - totalExpenses;
+    // Calculate settlements without MPP tag
+    const todaySettlements = settlementData.filter(s => s.date === selectedDate);
+    const settlementNoMPP = todaySettlements.filter(s => !s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
+    
+    // MPP calculations
+    const fuelSalesMPP = todaySales.filter(s => s.mpp).reduce((sum, sale) => sum + sale.amount, 0);
+    const creditMPP = todayCredits.filter(c => c.mpp).reduce((sum, credit) => sum + credit.amount, 0);
+    const settlementMPP = todaySettlements.filter(s => s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
+    const mppCash = fuelSalesMPP - creditMPP - settlementMPP;
+    const hasMPPSales = fuelSalesMPP > 0;
+    
+    // Cash in Hand = Fuel Sales - Credit Sales (no MPP) - Expenses + Income - Settlement (no MPP)
+    const adjustedCashSales = fuelCashSales - creditTotalAmountNoMPP - totalExpenses + otherIncome - settlementNoMPP;
+    
+    // Total Cash in Hand = Cash in Hand + MPP Cash
+    const totalCashInHand = adjustedCashSales + mppCash;
+    
     const totalLiters = todaySales.reduce((sum, sale) => sum + sale.liters, 0);
     
     // Total income is fuel sales + other income
@@ -315,6 +331,9 @@ const ZAPTRStyleCalculator = () => {
     return { 
       fuelCashSales,
       adjustedCashSales,
+      mppCash,
+      totalCashInHand,
+      hasMPPSales,
       creditAmount: creditTotalAmount, // Total customer owes (including income/expense)
       creditLiters,
       totalLiters, 
