@@ -8,6 +8,11 @@ import { Separator } from './ui/separator';
 import { ScrollArea } from './ui/scroll-area';
 import { Badge } from './ui/badge';
 import { Checkbox } from './ui/checkbox';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -15,7 +20,9 @@ import {
   Edit,
   Trash2,
   IndianRupee,
-  Receipt
+  Receipt,
+  ChevronDown,
+  X
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
 import localStorageService from '../services/localStorage';
