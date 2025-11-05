@@ -19,17 +19,23 @@ import {
 import { useToast } from '../hooks/use-toast';
 import localStorageService from '../services/localStorage';
 
-const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRecord, deleteIncomeRecord, expenseData, addExpenseRecord, updateExpenseRecord, deleteExpenseRecord, selectedDate, salesData, creditData, formResetKey, editingRecord, onRecordSaved, hideRecordsList }) => {
+const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRecord, deleteIncomeRecord, expenseData, addExpenseRecord, updateExpenseRecord, deleteExpenseRecord, selectedDate, salesData, creditData, formResetKey, editingRecord, onRecordSaved, hideRecordsList, customers }) => {
   const [activeType, setActiveType] = useState('income');
   const [formData, setFormData] = useState({
     amount: '',
     description: '',
-    type: 'income'
+    type: 'income',
+    mpp: false
   });
   const [editingId, setEditingId] = useState(null);
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
   const { toast } = useToast();
+  
+  // Check if MPP checkbox should be visible based on customers
+  const isMPPVisible = React.useMemo(() => {
+    return customers && customers.some(c => c.isMPP === true);
+  }, [customers]);
 
   // Load categories on mount
   useEffect(() => {
