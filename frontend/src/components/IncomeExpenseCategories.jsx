@@ -6,6 +6,7 @@ import { Badge } from './ui/badge';
 import { Separator } from './ui/separator';
 import { Plus, Trash2, Edit, X, Check } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import localStorageService from '../services/localStorage';
 
 const IncomeExpenseCategories = ({ 
   incomeCategories, 
