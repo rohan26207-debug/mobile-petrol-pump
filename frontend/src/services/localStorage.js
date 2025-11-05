@@ -119,6 +119,7 @@ class LocalStorageService {
       rate: parseFloat(saleData.rate),
       amount: parseFloat(saleData.amount),
       type: 'cash',
+      mpp: saleData.mpp || false,
       timestamp: new Date().toISOString()
     };
     
