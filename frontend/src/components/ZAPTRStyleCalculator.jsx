@@ -725,27 +725,9 @@ const ZAPTRStyleCalculator = () => {
   // Update functions
   const updateSaleRecord = (id, updatedData) => {
     try {
-      // Get the original sale record to compare
-      const originalSale = salesData.find(sale => sale.id === id);
-      
       const updatedSale = localStorageService.updateSaleRecord(id, updatedData);
       if (updatedSale) {
         setSalesData(prev => prev.map(sale => sale.id === id ? updatedSale : sale));
-        
-        // Handle MPP receipt updates
-        if (updatedSale.mpp === true && updatedSale.amount > 0) {
-          // Update auto-generated receipt for MPP customer
-          updateAutoReceiptForMPP(
-            id,
-            'sale',
-            updatedSale.amount,
-            `Auto-receipt: MPP Fuel Sale - ${updatedSale.fuelType || 'Fuel'}`
-          );
-        } else if (originalSale && originalSale.mpp === true) {
-          // If MPP tag was removed or amount is 0, delete the receipt
-          deleteAutoReceiptForMPP(id, 'sale');
-        }
-        
         return updatedSale;
       }
     } catch (error) {
