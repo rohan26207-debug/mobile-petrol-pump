@@ -66,14 +66,14 @@ class LocalStorageService {
       ]);
     }
     
-    // Initialize default settlement types (protected types cannot be edited/deleted)
+    // Initialize default settlement types
     const existingTypes = this.getItem(this.keys.settlementTypes);
     if (!existingTypes || existingTypes.length === 0) {
       this.setSettlementTypes([
-        { id: '1', name: 'Card', isProtected: true },
-        { id: '2', name: 'DTP', isProtected: true },
-        { id: '3', name: 'Paytm', isProtected: true },
-        { id: '4', name: 'PhonePe', isProtected: true }
+        { id: '1', name: 'Card' },
+        { id: '2', name: 'DTP' },
+        { id: '3', name: 'Paytm' },
+        { id: '4', name: 'PhonePe' }
       ]);
     }
   }
