@@ -829,6 +829,28 @@ const ZAPTRStyleCalculator = () => {
     }
   };
 
+  // Helper function to automatically create receipt for Mobile Petrol Pump customer
+  const createAutoReceiptForMPP = (amount, description) => {
+    try {
+      const mppCustomer = customers.find(c => c.isMPP === true);
+      if (mppCustomer && amount > 0) {
+        const receiptData = {
+          customerId: mppCustomer.id,
+          customerName: mppCustomer.name,
+          amount: amount,
+          date: selectedDate,
+          paymentDate: selectedDate,
+          description: description || 'Auto-generated receipt'
+        };
+        localStorageService.addPayment(receiptData);
+        setPayments(localStorageService.getPayments());
+        console.log(`Auto-generated receipt for ${mppCustomer.name}: ₹${amount}`);
+      }
+    } catch (error) {
+      console.error('Error creating auto receipt for MPP:', error);
+    }
+  };
+
   const handleUpdatePayment = (id, paymentData) => {
     try {
       localStorageService.updatePayment(id, paymentData);
