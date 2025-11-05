@@ -926,13 +926,6 @@ class LocalStorageService {
 
   deleteSettlementType(id) {
     const types = this.getSettlementTypes();
-    const typeToDelete = types.find(t => t.id === id);
-    
-    // Prevent deletion of protected types
-    if (typeToDelete && typeToDelete.isProtected) {
-      throw new Error('Cannot delete protected settlement type.');
-    }
-    
     const updated = types.filter(t => t.id !== id);
     this.setSettlementTypes(updated);
     return true;
