@@ -777,31 +777,13 @@ const ZAPTRStyleCalculator = () => {
 
   const updateSettlementRecord = (id, updatedData) => {
     try {
-      // Get the original settlement record to compare
-      const originalSettlement = settlementData.find(settlement => settlement.id === id);
-      
       const updatedSettlement = localStorageService.updateSettlement(id, updatedData);
       if (updatedSettlement) {
         setSettlementData(prev => prev.map(settlement => settlement.id === id ? updatedSettlement : settlement));
-        
-        // Handle MPP receipt updates for settlements
-        if (updatedSettlement.mpp === true && updatedSettlement.amount > 0) {
-          // Update auto-generated receipt for MPP customer
-          updateAutoReceiptForMPP(
-            id,
-            'settlement',
-            updatedSettlement.amount,
-            `Auto-receipt: MPP Settlement - ${updatedSettlement.description || 'Settlement'}`
-          );
-        } else if (originalSettlement && originalSettlement.mpp === true) {
-          // If MPP tag was removed or amount is 0, delete the receipt
-          deleteAutoReceiptForMPP(id, 'settlement');
-        }
-        
         return updatedSettlement;
       }
     } catch (error) {
-      console.error('Failed to update settlement record:', error);
+      console.error('Error updating settlement record:', error);
     }
     return null;
   };
