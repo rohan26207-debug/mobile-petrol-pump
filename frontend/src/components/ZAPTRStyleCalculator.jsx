@@ -612,22 +612,13 @@ const ZAPTRStyleCalculator = () => {
 
   const deleteCreditRecord = (id) => {
     try {
-      // Get the credit record before deletion to check if it's MPP
-      const creditToDelete = creditData.find(credit => credit.id === id);
-      
       const success = localStorageService.deleteCreditRecord(id);
       if (success) {
         setCreditData(prev => prev.filter(credit => credit.id !== id));
-        
-        // Delete corresponding auto-generated receipt if it was MPP
-        if (creditToDelete && creditToDelete.mpp === true) {
-          deleteAutoReceiptForMPP(id, 'credit');
-        }
-        
         return true;
       }
     } catch (error) {
-      console.error('Failed to delete credit record:', error);
+      console.error('Error deleting credit record:', error);
     }
     return false;
   };
