@@ -1030,6 +1030,68 @@ class LocalStorageService {
     this.setSettlementTypes(updated);
     return updated.find(t => t.id === id);
   }
+
+  // Income Description History Management
+  getIncomeDescHistory() {
+    return JSON.parse(localStorage.getItem(this.keys.incomeDescHistory) || '[]');
+  }
+
+  addIncomeDescHistory(description) {
+    if (!description || !description.trim()) return;
+    
+    const history = this.getIncomeDescHistory();
+    const trimmedDesc = description.trim();
+    
+    // Check if already exists
+    if (history.includes(trimmedDesc)) return;
+    
+    // Add to beginning of array
+    history.unshift(trimmedDesc);
+    
+    // Keep only last 20 entries
+    if (history.length > 20) {
+      history.splice(20);
+    }
+    
+    localStorage.setItem(this.keys.incomeDescHistory, JSON.stringify(history));
+  }
+
+  deleteIncomeDescHistory(description) {
+    const history = this.getIncomeDescHistory();
+    const updated = history.filter(item => item !== description);
+    localStorage.setItem(this.keys.incomeDescHistory, JSON.stringify(updated));
+  }
+
+  // Expense Description History Management
+  getExpenseDescHistory() {
+    return JSON.parse(localStorage.getItem(this.keys.expenseDescHistory) || '[]');
+  }
+
+  addExpenseDescHistory(description) {
+    if (!description || !description.trim()) return;
+    
+    const history = this.getExpenseDescHistory();
+    const trimmedDesc = description.trim();
+    
+    // Check if already exists
+    if (history.includes(trimmedDesc)) return;
+    
+    // Add to beginning of array
+    history.unshift(trimmedDesc);
+    
+    // Keep only last 20 entries
+    if (history.length > 20) {
+      history.splice(20);
+    }
+    
+    localStorage.setItem(this.keys.expenseDescHistory, JSON.stringify(history));
+  }
+
+  deleteExpenseDescHistory(description) {
+    const history = this.getExpenseDescHistory();
+    const updated = history.filter(item => item !== description);
+    localStorage.setItem(this.keys.expenseDescHistory, JSON.stringify(updated));
+  }
 }
 
 // Export singleton instance
