@@ -1131,8 +1131,13 @@ const ZAPTRStyleCalculator = () => {
 
   // Function to undo MPP Cash transfer
   const handleUndoMPPTransfer = () => {
+    console.log('=== STARTING UNDO TRANSFER ===');
+    console.log('Current mppTransferState:', mppTransferState);
+    console.log('Selected date:', selectedDate);
+    
     try {
       if (!mppTransferState) {
+        console.log('No transfer state found');
         toast({
           title: "No Transfer to Undo",
           description: "There is no recent transfer to undo.",
@@ -1141,73 +1146,132 @@ const ZAPTRStyleCalculator = () => {
         return;
       }
 
-      console.log('Undoing transfer with state:', mppTransferState);
+      console.log('Transfer state details:', JSON.stringify(mppTransferState, null, 2));
+      
+      let undoSuccessful = true;
+      const errors = [];
 
       // Delete the expense that was created for the transfer (new logic)
       if (mppTransferState.expenseId) {
-        console.log('Deleting expense with ID:', mppTransferState.expenseId);
-        const success = localStorageService.deleteExpenseRecord(mppTransferState.expenseId);
-        if (success) {
-          setExpenseData(localStorageService.getExpenseRecords());
-          console.log('Expense deleted successfully');
-        } else {
-          console.error('Failed to delete expense');
+        console.log('Attempting to delete expense with ID:', mppTransferState.expenseId);
+        try {
+          const success = localStorageService.deleteExpenseRecord(mppTransferState.expenseId);
+          console.log('Delete expense result:', success);
+          if (success) {
+            setExpenseData(localStorageService.getExpenseRecords());
+            console.log('✅ Expense deleted and state updated');
+          } else {
+            console.log('❌ Failed to delete expense');
+            errors.push('Failed to delete expense record');
+            undoSuccessful = false;
+          }
+        } catch (expenseError) {
+          console.error('Exception deleting expense:', expenseError);
+          errors.push(`Expense deletion error: ${expenseError.message}`);
+          undoSuccessful = false;
         }
+      } else {
+        console.log('No expenseId in transfer state');
       }
 
       // Delete the settlement if it exists (for backward compatibility)
       if (mppTransferState.settlementId) {
-        console.log('Deleting settlement with ID:', mppTransferState.settlementId);
-        const success = localStorageService.deleteSettlement(mppTransferState.settlementId);
-        if (success) {
-          setSettlementData(localStorageService.getSettlements());
-          console.log('Settlement deleted successfully');
-        } else {
-          console.error('Failed to delete settlement');
+        console.log('Attempting to delete settlement with ID:', mppTransferState.settlementId);
+        try {
+          const success = localStorageService.deleteSettlement(mppTransferState.settlementId);
+          console.log('Delete settlement result:', success);
+          if (success) {
+            setSettlementData(localStorageService.getSettlements());
+            console.log('✅ Settlement deleted and state updated');
+          } else {
+            console.log('❌ Failed to delete settlement');
+            errors.push('Failed to delete settlement record');
+            undoSuccessful = false;
+          }
+        } catch (settlementError) {
+          console.error('Exception deleting settlement:', settlementError);
+          errors.push(`Settlement deletion error: ${settlementError.message}`);
+          undoSuccessful = false;
         }
+      } else {
+        console.log('No settlementId in transfer state');
       }
 
       // Delete the income record that was created for Cash in Hand
       if (mppTransferState.incomeId) {
-        console.log('Deleting income with ID:', mppTransferState.incomeId);
-        const success = localStorageService.deleteIncomeRecord(mppTransferState.incomeId);
-        if (success) {
-          setIncomeData(localStorageService.getIncomeRecords());
-          console.log('Income deleted successfully');
-        } else {
-          console.error('Failed to delete income');
+        console.log('Attempting to delete income with ID:', mppTransferState.incomeId);
+        try {
+          const success = localStorageService.deleteIncomeRecord(mppTransferState.incomeId);
+          console.log('Delete income result:', success);
+          if (success) {
+            setIncomeData(localStorageService.getIncomeRecords());
+            console.log('✅ Income deleted and state updated');
+          } else {
+            console.log('❌ Failed to delete income');
+            errors.push('Failed to delete income record');
+            undoSuccessful = false;
+          }
+        } catch (incomeError) {
+          console.error('Exception deleting income:', incomeError);
+          errors.push(`Income deletion error: ${incomeError.message}`);
+          undoSuccessful = false;
         }
+      } else {
+        console.log('No incomeId in transfer state');
       }
 
       // Delete the receipt that was created for the transfer
       if (mppTransferState.receiptId) {
-        console.log('Deleting payment with ID:', mppTransferState.receiptId);
-        const success = localStorageService.deletePayment(mppTransferState.receiptId);
-        if (success) {
-          setPayments(localStorageService.getPayments());
-          console.log('Payment deleted successfully');
-        } else {
-          console.error('Failed to delete payment');
+        console.log('Attempting to delete payment with ID:', mppTransferState.receiptId);
+        try {
+          const success = localStorageService.deletePayment(mppTransferState.receiptId);
+          console.log('Delete payment result:', success);
+          if (success) {
+            setPayments(localStorageService.getPayments());
+            console.log('✅ Payment deleted and state updated');
+          } else {
+            console.log('❌ Failed to delete payment');
+            errors.push('Failed to delete payment record');
+            undoSuccessful = false;
+          }
+        } catch (paymentError) {
+          console.error('Exception deleting payment:', paymentError);
+          errors.push(`Payment deletion error: ${paymentError.message}`);
+          undoSuccessful = false;
         }
+      } else {
+        console.log('No receiptId in transfer state');
       }
 
-      // Clear transfer state
-      setMppTransferState(null);
-      localStorage.removeItem(`mpump_transfer_state_${selectedDate}`);
-      console.log('Transfer state cleared');
+      // Clear transfer state only if all deletions were successful
+      if (undoSuccessful) {
+        console.log('All deletions successful, clearing transfer state');
+        setMppTransferState(null);
+        localStorage.removeItem(`mpump_transfer_state_${selectedDate}`);
+        console.log('✅ Transfer state cleared');
 
-      toast({
-        title: "Transfer Undone",
-        description: `₹${mppTransferState.amount.toFixed(2)} transferred back to MPP Cash`,
-        variant: "default"
-      });
+        toast({
+          title: "Transfer Undone",
+          description: `₹${mppTransferState.amount.toFixed(2)} transferred back to MPP Cash`,
+          variant: "default"
+        });
+      } else {
+        console.log('Some deletions failed, not clearing transfer state');
+        console.log('Errors:', errors);
+        throw new Error(`Undo partially failed: ${errors.join(', ')}`);
+      }
+
+      console.log('=== UNDO TRANSFER COMPLETED SUCCESSFULLY ===');
 
     } catch (error) {
-      console.error('Error undoing MPP transfer:', error);
-      console.error('Error details:', error.message, error.stack);
+      console.error('=== UNDO TRANSFER FAILED ===');
+      console.error('Error details:', error);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      
       toast({
         title: "Undo Failed",
-        description: `Failed to undo the transfer: ${error.message}`,
+        description: `Failed to undo transfer: ${error.message}`,
         variant: "destructive"
       });
     }
