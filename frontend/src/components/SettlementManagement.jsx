@@ -216,6 +216,39 @@ const SettlementManagement = ({
           Settlements are amounts transferred from cash sales to bank. This reduces your cash in hand but doesn't affect total sales.
         </p>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmation.show} onOpenChange={(open) => !open && cancelDelete()}>
+        <DialogContent className={isDarkMode ? 'bg-gray-800 text-white' : ''}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              Confirm Deletion
+            </DialogTitle>
+            <DialogDescription className={isDarkMode ? 'text-gray-300' : ''}>
+              Are you sure you want to delete "{deleteConfirmation.name}"?
+              <br />
+              <span className="text-red-600 font-semibold">This action cannot be undone.</span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={cancelDelete}
+              className={isDarkMode ? 'border-gray-600' : ''}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmDelete}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
