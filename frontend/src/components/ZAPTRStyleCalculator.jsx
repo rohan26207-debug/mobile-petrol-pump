@@ -178,6 +178,10 @@ const ZAPTRStyleCalculator = () => {
     
     // Reset all forms when date changes to prevent adding old data to new date
     resetAllForms();
+
+    // Load transfer state for the selected date
+    const saved = localStorage.getItem(`mpump_transfer_state_${selectedDate}`);
+    setMppTransferState(saved ? JSON.parse(saved) : null);
   }, [selectedDate]);
 
   // Function to reset all child component forms
