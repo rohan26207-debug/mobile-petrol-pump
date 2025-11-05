@@ -6,6 +6,7 @@ import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { CreditCard, Edit, Trash2, ChevronDown, AlertTriangle, IndianRupee } from 'lucide-react';
 import { Badge } from './ui/badge';
+import localStorageService from '../services/localStorage';
 
 const CreditSalesManagement = ({ 
   customers, 
