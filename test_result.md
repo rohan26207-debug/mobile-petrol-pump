@@ -199,7 +199,14 @@ The MPP Cash calculation had TWO major issues:
    - Untagging MPP flag → Payment remains (no deletion)
    - Tagging existing transaction as MPP → Create new auto-payment with fuel amount only
 
-3. **Payment Tracking Fields**:
+3. **Fuel Amount Calculation**:
+   - For MPP-tagged credit sales, auto-payment uses ONLY fuel amount
+   - Calculated from `fuelEntries`: Sum of (liters × rate) for each fuel entry
+   - Income and expense entries are NOT included in the auto-payment
+   - Example: Credit sale total = ₹250,000 (Fuel: ₹200,000 + Income: ₹30,000 + Expense: ₹20,000)
+     → Auto-payment to MPP = ₹200,000 (fuel only)
+
+4. **Payment Tracking Fields**:
    - `linkedMPPCreditId`: Links payment to source credit
    - `linkedMPPSettlementId`: Links payment to source settlement  
    - `isAutoMPPTracking`: Boolean flag for auto-generated payments
