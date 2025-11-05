@@ -854,6 +854,41 @@ const ZAPTRStyleCalculator = () => {
       const updatedSettlement = localStorageService.updateSettlement(id, updatedData);
       if (updatedSettlement) {
         setSettlementData(prev => prev.map(settlement => settlement.id === id ? updatedSettlement : settlement));
+        
+        // Update linked MPP payment if exists
+        const linkedPayment = payments.find(p => p.linkedMPPSettlementId === id && p.isAutoMPPTracking === true);
+        if (linkedPayment) {
+          // Update the linked payment with new amount
+          localStorageService.updatePayment(linkedPayment.id, {
+            ...linkedPayment,
+            amount: updatedSettlement.amount,
+            date: updatedSettlement.date,
+            description: `MPP Settlement - ${updatedSettlement.description || 'Settlement'}`
+          });
+          setPayments(localStorageService.getPayments());
+          console.log('Updated linked MPP payment for settlement:', linkedPayment.id);
+        } else if (updatedSettlement.mpp === true || updatedSettlement.mpp === 'true') {
+          // If settlement was just tagged as MPP, create new auto-payment
+          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+          
+          if (mppCustomer) {
+            const autoPayment = {
+              customerId: mppCustomer.id,
+              customerName: mppCustomer.name,
+              amount: updatedSettlement.amount,
+              date: updatedSettlement.date,
+              mode: 'auto',
+              linkedMPPSettlementId: updatedSettlement.id,
+              isAutoMPPTracking: true,
+              description: `MPP Settlement - ${updatedSettlement.description || 'Settlement'}`
+            };
+            
+            localStorageService.addPayment(autoPayment);
+            setPayments(localStorageService.getPayments());
+            console.log('Created new MPP payment for updated settlement:', autoPayment);
+          }
+        }
+        
         return updatedSettlement;
       }
     } catch (error) {
