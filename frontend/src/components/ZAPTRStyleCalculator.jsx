@@ -301,6 +301,24 @@ const ZAPTRStyleCalculator = () => {
     const totalExpensesMPP = directExpensesMPP;
     const totalExpenses = directExpenses + creditExpenses;
     
+    // Debug logging for income/expenses
+    console.log('=== INCOME/EXPENSE DEBUG ===');
+    console.log('Today Income:', todayIncome.length, todayIncome.map(i => ({ id: i.id, mpp: i.mpp, type: typeof i.mpp, amount: i.amount })));
+    console.log('Today Expenses:', todayExpenses.length, todayExpenses.map(e => ({ id: e.id, mpp: e.mpp, type: typeof e.mpp, amount: e.amount })));
+    console.log('Income Stats:', {
+      directIncomeNoMPP,
+      directIncomeMPP,
+      otherIncomeNoMPP,
+      otherIncomeMPP
+    });
+    console.log('Expense Stats:', {
+      directExpensesNoMPP,
+      directExpensesMPP,
+      totalExpensesNoMPP,
+      totalExpensesMPP
+    });
+    console.log('===========================');
+    
     // Calculate credit amount and liters (separated by MPP tag)
     const creditNoMPP = todayCredits.filter(c => !c.mpp && c.mpp !== true && c.mpp !== 'true');
     const creditWithMPP = todayCredits.filter(c => c.mpp === true || c.mpp === 'true');
