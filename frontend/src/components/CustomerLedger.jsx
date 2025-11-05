@@ -105,7 +105,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
 
     // 1. Normal credit sales for Mobile Petrol Pump customer (without MPP tag)
     const mppNormalCredits = creditData
-      .filter(c => c.customerName === customer.name && c.mpp !== true)
+      .filter(c => c.customerName === customer.name && c.mpp !== true && c.mpp !== 'true')
       .filter(c => c.date >= fromDate && c.date <= toDate)
       .map(c => ({
         date: c.date,
@@ -115,37 +115,8 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
         description: `Credit Sale - ${c.fuelType || 'N/A'} ${c.liters || 0}L`
       }));
 
-    // 2. MPP-tagged credit sales (fuel amount only) - shown as "received"
-    const mppTaggedCredits = creditData
-      .filter(c => c.mpp === true)
-      .filter(c => c.date >= fromDate && c.date <= toDate)
-      .map(c => {
-        // Calculate fuel amount only (excluding income/expense)
-        const fuelAmount = c.fuelEntries ? 
-          c.fuelEntries.reduce((sum, entry) => {
-            return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
-          }, 0) : c.amount;
-        
-        return {
-          date: c.date,
-          type: 'mpp_credit_received',
-          credit: 0,
-          received: fuelAmount,
-          description: `MPP Credit Sale (${c.customerName || 'Customer'})`
-        };
-      });
-
-    // 3. MPP-tagged settlements - shown as "received"
-    const mppSettlements = settlementData
-      .filter(s => s.mpp === true)
-      .filter(s => s.date >= fromDate && s.date <= toDate)
-      .map(s => ({
-        date: s.date,
-        type: 'mpp_settlement_received',
-        credit: 0,
-        received: s.amount,
-        description: `MPP Settlement - ${s.description || 'Settlement'}`
-      }));
+    // Note: We do NOT show individual MPP-tagged credits and settlements as line items
+    // They are all included in the single "MPP Cash" calculation below
 
     // 4. MPP Cash calculation (same formula as in Today Summary)
     // Formula: MPP Cash = MPP Fuel Sales - MPP Credit Amount - MPP Expenses + MPP Other Income - MPP Settlements
