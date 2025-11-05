@@ -1147,6 +1147,12 @@ const ZAPTRStyleCalculator = () => {
         setSettlementData(localStorageService.getSettlements());
       }
 
+      // Delete the income record that was created for Cash in Hand
+      if (mppTransferState.incomeId) {
+        localStorageService.deleteIncomeRecord(mppTransferState.incomeId);
+        setIncomeData(localStorageService.getIncomeRecords());
+      }
+
       // Delete the receipt that was created for the transfer
       if (mppTransferState.receiptId) {
         localStorageService.deletePayment(mppTransferState.receiptId);
