@@ -685,6 +685,15 @@ class LocalStorageService {
 
   updateCustomer(id, startingBalance, isMPP) {
     const customers = this.getCustomers();
+    
+    // Check if trying to set MPP flag to true when another MPP customer already exists
+    if (isMPP === true) {
+      const existingMPP = customers.find(c => c.isMPP === true && c.id !== id);
+      if (existingMPP) {
+        throw new Error('A Mobile Petrol Pump customer already exists. Only one MPP customer is allowed.');
+      }
+    }
+    
     const updated = customers.map(c => {
       if (c.id === id) {
         const updatedCustomer = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
