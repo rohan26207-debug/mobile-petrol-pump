@@ -396,7 +396,8 @@ const ZAPTRStyleCalculator = () => {
   // Data handling functions (offline localStorage)
   const addSaleRecord = (saleData) => {
     try {
-      console.log('Adding Sale Record:', {
+      console.log('=== ADDING SALE RECORD ===');
+      console.log('Sale Data:', {
         ...saleData,
         date: selectedDate,
         mpp: saleData.mpp,
@@ -408,10 +409,15 @@ const ZAPTRStyleCalculator = () => {
         date: selectedDate
       });
       
-      console.log('Sale Record Added:', newSale);
+      console.log('Sale Added to Storage:', newSale);
+      console.log('MPP field saved:', newSale.mpp, 'Type:', typeof newSale.mpp);
       
       // Update local state immediately
-      setSalesData(prev => [...prev, newSale]);
+      setSalesData(prev => {
+        const updated = [...prev, newSale];
+        console.log('Updated salesData state:', updated.map(s => ({ id: s.id, mpp: s.mpp, amount: s.amount })));
+        return updated;
+      });
       
       return newSale;
     } catch (error) {
