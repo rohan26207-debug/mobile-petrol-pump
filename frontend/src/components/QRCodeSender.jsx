@@ -28,12 +28,16 @@ const QRCodeSender = ({ isDarkMode, data, onClose }) => {
       
       console.log(`Data size: ${dataSizeKB} KB`);
       
-      if (dataSize > 2953) { // QR code limit is around 2953 bytes for alphanumeric
+      if (dataSize > 2900) { // QR code limit is around 2900 bytes with low error correction
         toast({
-          title: "Data Too Large",
-          description: `Data size is ${dataSizeKB} KB. QR code may be difficult to scan. Consider using fewer records.`,
+          title: "Warning: Large Data",
+          description: `Data size is ${dataSizeKB} KB. For best results, keep data under 2.8 KB. QR code may take longer to scan.`,
           variant: "destructive",
         });
+      }
+      
+      if (dataSize > 7000) { // Hard limit
+        throw new Error(`Data too large (${dataSizeKB} KB). Maximum is 7 KB. Please select a date with fewer transactions.`);
       }
 
       // Generate QR code with low error correction for maximum data capacity
