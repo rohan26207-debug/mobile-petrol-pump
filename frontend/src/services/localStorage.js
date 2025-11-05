@@ -939,6 +939,13 @@ class LocalStorageService {
 
   updateSettlementType(id, name) {
     const types = this.getSettlementTypes();
+    const typeToUpdate = types.find(t => t.id === id);
+    
+    // Prevent updating protected types
+    if (typeToUpdate && typeToUpdate.isProtected) {
+      throw new Error('Cannot edit protected settlement type.');
+    }
+    
     const updated = types.map(t => {
       if (t.id === id) {
         return { ...t, name: name };
