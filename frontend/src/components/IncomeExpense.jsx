@@ -62,6 +62,20 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     setExpenseDescHistory(localStorageService.getExpenseDescHistory());
   }, [activeType]);
 
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (descriptionOpen && !event.target.closest('.relative')) {
+        setDescriptionOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [descriptionOpen]);
+
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
     if (editingRecord) {
