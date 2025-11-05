@@ -635,9 +635,19 @@ const ZAPTRStyleCalculator = () => {
 
   const deleteCreditRecord = (id) => {
     try {
+      // Find and delete linked MPP payment if exists
+      const linkedPayment = payments.find(p => p.linkedMPPCreditId === id && p.isAutoMPPTracking === true);
+      if (linkedPayment) {
+        localStorageService.deletePayment(linkedPayment.id);
+        console.log('Deleted linked MPP payment:', linkedPayment.id);
+      }
+      
       const success = localStorageService.deleteCreditRecord(id);
       if (success) {
         setCreditData(prev => prev.filter(credit => credit.id !== id));
+        if (linkedPayment) {
+          setPayments(localStorageService.getPayments());
+        }
         return true;
       }
     } catch (error) {
