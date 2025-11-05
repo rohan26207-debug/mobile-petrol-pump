@@ -1350,7 +1350,7 @@ const ZAPTRStyleCalculator = () => {
         summaryData.push([
           'Cash in Hand',
           '-',
-          `₹${filteredStats.adjustedCashSales.toFixed(2)}`
+          `₹${filteredStats.cashInHand.toFixed(2)}`
         ]);
 
       doc.autoTable({
