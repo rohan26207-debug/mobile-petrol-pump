@@ -36,15 +36,15 @@ const QRCodeSender = ({ isDarkMode, data, onClose }) => {
         });
       }
 
-      // Generate QR code
+      // Generate QR code with low error correction for maximum data capacity
       const url = await QRCode.toDataURL(jsonString, {
-        width: 512,
-        margin: 2,
+        width: 800,
+        margin: 1,
         color: {
           dark: isDarkMode ? '#FFFFFF' : '#000000',
           light: isDarkMode ? '#1F2937' : '#FFFFFF'
         },
-        errorCorrectionLevel: 'M'
+        errorCorrectionLevel: 'L' // Low error correction = more data capacity
       });
 
       setQrCodeUrl(url);
