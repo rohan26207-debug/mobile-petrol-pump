@@ -1141,27 +1141,60 @@ const ZAPTRStyleCalculator = () => {
         return;
       }
 
-      // Delete the settlement that was created for the transfer
+      console.log('Undoing transfer with state:', mppTransferState);
+
+      // Delete the expense that was created for the transfer (new logic)
+      if (mppTransferState.expenseId) {
+        console.log('Deleting expense with ID:', mppTransferState.expenseId);
+        const success = localStorageService.deleteExpenseRecord(mppTransferState.expenseId);
+        if (success) {
+          setExpenseData(localStorageService.getExpenseRecords());
+          console.log('Expense deleted successfully');
+        } else {
+          console.error('Failed to delete expense');
+        }
+      }
+
+      // Delete the settlement if it exists (for backward compatibility)
       if (mppTransferState.settlementId) {
-        localStorageService.deleteSettlement(mppTransferState.settlementId);
-        setSettlementData(localStorageService.getSettlements());
+        console.log('Deleting settlement with ID:', mppTransferState.settlementId);
+        const success = localStorageService.deleteSettlement(mppTransferState.settlementId);
+        if (success) {
+          setSettlementData(localStorageService.getSettlements());
+          console.log('Settlement deleted successfully');
+        } else {
+          console.error('Failed to delete settlement');
+        }
       }
 
       // Delete the income record that was created for Cash in Hand
       if (mppTransferState.incomeId) {
-        localStorageService.deleteIncomeRecord(mppTransferState.incomeId);
-        setIncomeData(localStorageService.getIncomeRecords());
+        console.log('Deleting income with ID:', mppTransferState.incomeId);
+        const success = localStorageService.deleteIncomeRecord(mppTransferState.incomeId);
+        if (success) {
+          setIncomeData(localStorageService.getIncomeRecords());
+          console.log('Income deleted successfully');
+        } else {
+          console.error('Failed to delete income');
+        }
       }
 
       // Delete the receipt that was created for the transfer
       if (mppTransferState.receiptId) {
-        localStorageService.deletePayment(mppTransferState.receiptId);
-        setPayments(localStorageService.getPayments());
+        console.log('Deleting payment with ID:', mppTransferState.receiptId);
+        const success = localStorageService.deletePayment(mppTransferState.receiptId);
+        if (success) {
+          setPayments(localStorageService.getPayments());
+          console.log('Payment deleted successfully');
+        } else {
+          console.error('Failed to delete payment');
+        }
       }
 
       // Clear transfer state
       setMppTransferState(null);
       localStorage.removeItem(`mpump_transfer_state_${selectedDate}`);
+      console.log('Transfer state cleared');
 
       toast({
         title: "Transfer Undone",
@@ -1171,9 +1204,10 @@ const ZAPTRStyleCalculator = () => {
 
     } catch (error) {
       console.error('Error undoing MPP transfer:', error);
+      console.error('Error details:', error.message, error.stack);
       toast({
         title: "Undo Failed",
-        description: "Failed to undo the transfer",
+        description: `Failed to undo the transfer: ${error.message}`,
         variant: "destructive"
       });
     }
