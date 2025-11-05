@@ -865,6 +865,7 @@ class LocalStorageService {
         date: settlementData.date,
         amount: parseFloat(settlementData.amount),
         description: settlementData.description || '',
+        mpp: settlementData.mpp !== undefined ? settlementData.mpp : settlements[index].mpp,
         timestamp: new Date().toISOString()
       };
       this.setSettlements(settlements);
