@@ -399,7 +399,16 @@ const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditReco
   };
 
   const deleteCredit = (credit) => {
-    setDeleteConfirm({ show: true, credit });
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      if (deleteCreditRecord) {
+        deleteCreditRecord(credit.id);
+      }
+    } else {
+      // Show confirmation dialog
+      setDeleteConfirm({ show: true, credit });
+    }
   };
 
   const confirmDelete = () => {
