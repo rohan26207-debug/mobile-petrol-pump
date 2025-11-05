@@ -8,7 +8,7 @@ import { FileText, Search, Printer, ChevronDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
-const CustomerLedger = ({ customers, creditData, payments, isDarkMode, selectedDate }) => {
+const CustomerLedger = ({ customers, creditData, payments, salesData, settlementData, isDarkMode, selectedDate }) => {
   const [customerId, setCustomerId] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState(selectedDate);
