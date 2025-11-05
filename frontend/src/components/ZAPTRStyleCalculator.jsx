@@ -1061,16 +1061,27 @@ const ZAPTRStyleCalculator = () => {
         return;
       }
 
-      // Create a settlement to zero out the MPP cash
+      // Create a settlement WITH MPP tag to zero out the MPP cash
       const settlementData = {
         description: 'Transfer MPP Cash to In Hand',
         amount: mppCashAmount,
         date: selectedDate,
-        mpp: true
+        mpp: true  // This removes from MPP cash
       };
       
       const newSettlement = localStorageService.addSettlement(settlementData);
       setSettlementData(prev => [...prev, newSettlement]);
+
+      // Create an income record WITHOUT MPP tag to add to Cash in Hand
+      const incomeData = {
+        description: 'MPP Cash Transfer to In Hand',
+        amount: mppCashAmount,
+        date: selectedDate,
+        mpp: false  // This adds to Cash in Hand
+      };
+      
+      const newIncome = localStorageService.addIncomeRecord(incomeData);
+      setIncomeData(prev => [...prev, newIncome]);
 
       // Create receipt for Mobile Petrol Pump customer and get receipt ID
       const mppCustomer = customers.find(c => c.isMPP === true);
@@ -1094,6 +1105,7 @@ const ZAPTRStyleCalculator = () => {
       const transferState = {
         amount: mppCashAmount,
         settlementId: newSettlement.id,
+        incomeId: newIncome.id,
         receiptId: receiptId,
         transferDate: selectedDate,
         timestamp: new Date().getTime()
