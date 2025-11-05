@@ -1643,6 +1643,61 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
           }}
         />
       )}
+
+      {/* Pro Mode Password Dialog */}
+      <Dialog open={showProPasswordDialog} onOpenChange={setShowProPasswordDialog}>
+        <DialogContent className={`sm:max-w-md ${isDarkMode ? 'bg-gray-800 text-white' : ''}`}>
+          <div className="space-y-4">
+            <div className="text-center">
+              <h3 className={`text-lg font-semibold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                Enable Pro Mode
+              </h3>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+                Enter password to enable Pro mode
+              </p>
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="pro-password" className="text-sm font-medium">
+                Password
+              </Label>
+              <Input
+                id="pro-password"
+                type="password"
+                value={proPassword}
+                onChange={(e) => setProPassword(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleProPasswordSubmit();
+                  }
+                }}
+                placeholder="Enter password"
+                className={isDarkMode ? 'bg-gray-700 border-gray-600' : ''}
+                autoFocus
+              />
+            </div>
+
+            <div className="flex gap-2 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowProPasswordDialog(false);
+                  setProPassword('');
+                }}
+                className={isDarkMode ? 'border-gray-600' : ''}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleProPasswordSubmit}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                Enable Pro Mode
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
