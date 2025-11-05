@@ -3193,6 +3193,8 @@ window.onload = function() {
                   customers={customers}
                   creditData={creditData}
                   payments={payments}
+                  salesData={salesData}
+                  settlementData={settlementData}
                   isDarkMode={isDarkMode}
                   selectedDate={selectedDate}
                 />
