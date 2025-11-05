@@ -104,7 +104,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const recordData = {
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate
+        date: selectedDate,
+        mpp: formData.mpp || false
       };
       
       if (activeType === 'income' && updateIncomeRecord) {
@@ -113,7 +114,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         updateExpenseRecord(editingId, recordData);
       }
       setEditingId(null);
-      setFormData({ description: '', amount: '' });
+      setFormData({ description: '', amount: '', mpp: false });
       // Close dialog after updating
       if (onRecordSaved) onRecordSaved();
     } else {
@@ -121,11 +122,12 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         const newIncome = addIncomeRecord({
           description: formData.description,
           amount: parseFloat(formData.amount),
-          date: selectedDate
+          date: selectedDate,
+          mpp: formData.mpp || false
         });
         
         if (newIncome) {
-          setFormData({ description: '', amount: '' });
+          setFormData({ description: '', amount: '', mpp: false });
           // Close dialog after adding
           if (onRecordSaved) onRecordSaved();
         }
@@ -133,11 +135,12 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         const newExpense = addExpenseRecord({
           description: formData.description,
           amount: parseFloat(formData.amount),
-          date: selectedDate
+          date: selectedDate,
+          mpp: formData.mpp || false
         });
         
         if (newExpense) {
-          setFormData({ description: '', amount: '' });
+          setFormData({ description: '', amount: '', mpp: false });
           // Close dialog after adding
           if (onRecordSaved) onRecordSaved();
         }
