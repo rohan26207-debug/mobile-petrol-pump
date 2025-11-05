@@ -212,11 +212,15 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     const mppTotalExpenses = mppDirectExpenses + mppCreditExpenses;
     
-    // Get MPP settlements in date range (already calculated above)
-    const mppSettlementAmount = settlementData
-      .filter(s => s.mpp === true || s.mpp === 'true')
-      .filter(s => s.date >= fromDate && s.date <= toDate)
-      .reduce((sum, s) => sum + (s.amount || 0), 0);
+    // Get MPP settlements in date range
+    const mppSettlementsInRange = settlementData.filter(s => s.date >= fromDate && s.date <= toDate);
+    console.log('Settlements in date range:', mppSettlementsInRange.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
+    
+    const mppSettlementsWithTag = mppSettlementsInRange.filter(s => s.mpp === true || s.mpp === 'true');
+    console.log('MPP Tagged Settlements:', mppSettlementsWithTag.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
+    
+    const mppSettlementAmount = mppSettlementsWithTag.reduce((sum, s) => sum + (s.amount || 0), 0);
+    console.log('Total MPP Settlement Amount:', mppSettlementAmount);
     
     // Calculate MPP Cash: Fuel Sales - Credit - Expenses + Income - Settlements
     const totalMPPCash = mppFuelSales - mppCreditAmount - mppTotalExpenses + mppTotalIncome - mppSettlementAmount;
