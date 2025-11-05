@@ -2483,14 +2483,24 @@ window.onload = function() {
                       }`}>
                         ₹{stats.mppCash.toFixed(2)}
                       </div>
-                      {stats.mppCash > 0 && (
+                      {mppTransferState ? (
                         <Button
-                          onClick={handleTransferMPPCash}
+                          onClick={handleUndoMPPTransfer}
                           size="sm"
-                          className="mt-1 bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 h-6"
+                          className="mt-1 bg-red-600 hover:bg-red-700 text-white text-xs px-2 py-1 h-6"
                         >
-                          Transfer to In Hand
+                          Undo Transfer
                         </Button>
+                      ) : (
+                        stats.mppCash > 0 && (
+                          <Button
+                            onClick={handleTransferMPPCash}
+                            size="sm"
+                            className="mt-1 bg-green-600 hover:bg-green-700 text-white text-xs px-2 py-1 h-6"
+                          >
+                            Transfer to In Hand
+                          </Button>
+                        )
                       )}
                     </div>
                   </div>
