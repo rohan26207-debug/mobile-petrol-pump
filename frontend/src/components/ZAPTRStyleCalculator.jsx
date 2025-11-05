@@ -2153,20 +2153,11 @@ window.onload = function() {
               {stats.hasMPPData && (
                 <div className="space-y-1.5 sm:space-y-2">
                   {/* MPP Header */}
-                  <div className={`p-2 sm:p-3 rounded-lg border-2 ${
-                    isDarkMode ? 'bg-gray-700 border-orange-500' : 'bg-orange-50 border-orange-300'
+                  <h3 className={`text-lg sm:text-2xl font-bold mb-2 ${
+                    isDarkMode ? 'text-white' : 'text-slate-800'
                   }`}>
-                    <div className="flex items-center gap-2">
-                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm">
-                        🏷️
-                      </div>
-                      <h3 className={`font-bold text-sm sm:text-lg ${
-                        isDarkMode ? 'text-orange-400' : 'text-orange-700'
-                      }`}>
-                        MPP
-                      </h3>
-                    </div>
-                  </div>
+                    MPP
+                  </h3>
 
                   {/* Fuel Sales (MPP) */}
                   <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
