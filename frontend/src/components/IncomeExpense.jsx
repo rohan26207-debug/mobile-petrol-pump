@@ -38,6 +38,9 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
   const [editingId, setEditingId] = useState(null);
   const [incomeCategories, setIncomeCategories] = useState([]);
   const [expenseCategories, setExpenseCategories] = useState([]);
+  const [incomeDescHistory, setIncomeDescHistory] = useState([]);
+  const [expenseDescHistory, setExpenseDescHistory] = useState([]);
+  const [descriptionOpen, setDescriptionOpen] = useState(false);
   const { toast } = useToast();
   
   // Check if MPP checkbox should be visible based on customers
