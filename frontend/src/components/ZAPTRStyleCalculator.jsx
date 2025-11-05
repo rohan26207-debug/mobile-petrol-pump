@@ -802,8 +802,18 @@ const ZAPTRStyleCalculator = () => {
     try {
       localStorageService.updateCustomer(id, startingBalance, isMPP);
       setCustomers(localStorageService.getCustomers());
+      toast({
+        title: "Success",
+        description: "Customer updated successfully.",
+        variant: "default"
+      });
     } catch (error) {
       console.error('Error updating customer:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to update customer.',
+        variant: "destructive"
+      });
     }
   };
 
