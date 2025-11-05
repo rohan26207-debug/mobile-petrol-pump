@@ -2154,13 +2154,59 @@ window.onload = function() {
                     </div>
                   </div>
 
+                  {/* Income (MPP) */}
+                  <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-green-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        3
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Income
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        ₹{stats.otherIncomeMPP.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Expenses (MPP) */}
+                  <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
+                    isDarkMode ? 'bg-gray-700' : 'bg-red-50'
+                  }`}>
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                        4
+                      </div>
+                      <span className={`font-medium text-xs sm:text-base truncate ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        Expenses
+                      </span>
+                    </div>
+                    <div className="text-right flex-shrink-0">
+                      <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                        isDarkMode ? 'text-white' : 'text-slate-800'
+                      }`}>
+                        ₹{stats.totalExpensesMPP.toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Settlement (MPP) */}
                   <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                     isDarkMode ? 'bg-gray-700' : 'bg-yellow-50'
                   }`}>
                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                       <div className="w-6 h-6 sm:w-8 sm:h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                        3
+                        5
                       </div>
                       <span className={`font-medium text-xs sm:text-base truncate ${
                         isDarkMode ? 'text-white' : 'text-slate-800'
