@@ -34,7 +34,7 @@
 ## Step 4: Update Web URL
 1. Open: **`app/java/com/mpumpcalc/MainActivity.java`**
 2. Find line: `private static final String APP_URL = ...`
-3. Change to: `"https://petrol-pump-app.preview.emergentagent.com"`
+3. Change to: `"https://petrolpump-app.preview.emergentagent.com"`
 4. Save (`Ctrl+S` or `Cmd+S`)
 
 ---
