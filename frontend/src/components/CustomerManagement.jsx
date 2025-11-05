@@ -205,30 +205,28 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
                       </span>
                     </div>
                   </div>
-                  {!customer.name.toLowerCase().includes('mobile petrol pump') && (
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEditClick(customer)}
-                        className={`hover:bg-blue-100 hover:text-blue-600 ${
-                          isDarkMode ? 'text-gray-400 hover:bg-blue-900 hover:text-blue-400' : ''
-                        }`}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteClick(customer)}
-                        className={`hover:bg-red-100 hover:text-red-600 ${
-                          isDarkMode ? 'text-gray-400 hover:bg-red-900 hover:text-red-400' : ''
-                        }`}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  )}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEditClick(customer)}
+                      className={`hover:bg-blue-100 hover:text-blue-600 ${
+                        isDarkMode ? 'text-gray-400 hover:bg-blue-900 hover:text-blue-400' : ''
+                      }`}
+                    >
+                      <Pencil className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDeleteClick(customer)}
+                      className={`hover:bg-red-100 hover:text-red-600 ${
+                        isDarkMode ? 'text-gray-400 hover:bg-red-900 hover:text-red-400' : ''
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
