@@ -2373,6 +2373,7 @@ window.onload = function() {
                   editingRecord={editingIncomeExpenseData}
                   onRecordSaved={handleCloseDialogs}
                   hideRecordsList={true}
+                  customers={customers}
                 />
               </div>
                 </TabsContent>
