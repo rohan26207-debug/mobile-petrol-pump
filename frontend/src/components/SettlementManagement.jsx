@@ -70,10 +70,6 @@ const SettlementManagement = ({
     onUpdateSettlementType(id, editingName);
     setEditingId(null);
     setEditingName('');
-    toast({
-      title: "Settlement Type Updated",
-      description: "Settlement type has been updated successfully",
-    });
   };
 
   const handleDelete = (id, name) => {
