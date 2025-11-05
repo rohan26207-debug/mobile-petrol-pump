@@ -2519,6 +2519,7 @@ window.onload = function() {
               creditData={creditData}
               incomeData={incomeData}
               expenseData={expenseData}
+              settlementData={settlementData}
               selectedDate={selectedDate}
               onEditSale={handleEditSale}
               deleteSaleRecord={deleteSaleRecord}
@@ -2528,6 +2529,8 @@ window.onload = function() {
               deleteIncomeRecord={deleteIncomeRecord}
               onEditExpense={(record) => handleEditIncomeExpense(record, 'expense')}
               deleteExpenseRecord={deleteExpenseRecord}
+              onEditSettlement={handleEditSettlement}
+              deleteSettlementRecord={deleteSettlementRecord}
             />
           </TabsContent>
 
