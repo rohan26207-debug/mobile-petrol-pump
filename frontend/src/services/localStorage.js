@@ -980,6 +980,17 @@ class LocalStorageService {
     this.setSettlementTypes(updated);
     return updated.find(t => t.id === id);
   }
+
+  resetSettlementTypesToDefault() {
+    const defaultTypes = [
+      { id: '1', name: 'Card', isProtected: true },
+      { id: '2', name: 'DTP', isProtected: true },
+      { id: '3', name: 'Paytm', isProtected: true },
+      { id: '4', name: 'PhonePe', isProtected: true }
+    ];
+    this.setSettlementTypes(defaultTypes);
+    return defaultTypes;
+  }
 }
 
 // Export singleton instance
