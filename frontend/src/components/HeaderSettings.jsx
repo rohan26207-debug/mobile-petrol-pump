@@ -7,6 +7,7 @@ import { Separator } from './ui/separator';
 import { Badge } from './ui/badge';
 import { ScrollArea } from './ui/scroll-area';
 import { Dialog, DialogContent } from './ui/dialog';
+import { Checkbox } from './ui/checkbox';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { 
   Settings as SettingsIcon,
