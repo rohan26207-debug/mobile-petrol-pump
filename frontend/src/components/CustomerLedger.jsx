@@ -187,13 +187,12 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     console.log('Customer:', customer.name);
     console.log('Date Range:', fromDate, 'to', toDate);
     console.log('');
-    console.log('MPP Fuel Sales (Tagged Sales):', mppFuelSales);
-    console.log('MPP Credit Amount (Tagged Credits):', mppCreditAmount);
+    console.log('MPP CASH Sales (Tagged CASH Sales only):', mppCashSales);
     console.log('MPP Total Expenses (Tagged Expenses):', mppTotalExpenses);
     console.log('MPP Total Income (Tagged Income):', mppTotalIncome);
-    console.log('MPP Settlement Amount (Tagged Settlements):', mppSettlementAmount);
     console.log('');
-    console.log('Calculation:', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount);
+    console.log('NOTE: MPP Credits and Settlements are shown as separate auto-payment line items');
+    console.log('Calculation:', mppCashSales, '-', mppTotalExpenses, '+', mppTotalIncome);
     console.log('Final MPP Cash:', totalMPPCash);
     console.log('==========================================');
     
