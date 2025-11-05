@@ -23,7 +23,8 @@ const UnifiedRecords = ({
   salesData, 
   creditData, 
   incomeData, 
-  expenseData, 
+  expenseData,
+  settlementData,
   selectedDate,
   // Edit and delete functions
   onEditSale,
@@ -33,15 +34,18 @@ const UnifiedRecords = ({
   onEditIncome,
   deleteIncomeRecord,
   onEditExpense,
-  deleteExpenseRecord
+  deleteExpenseRecord,
+  onEditSettlement,
+  deleteSettlementRecord
 }) => {
   // Filter all data for selected date
   const filteredSales = salesData.filter(item => item.date === selectedDate);
   const filteredCredits = creditData.filter(item => item.date === selectedDate);
   const filteredIncome = incomeData.filter(item => item.date === selectedDate);
   const filteredExpenses = expenseData.filter(item => item.date === selectedDate);
+  const filteredSettlements = settlementData.filter(item => item.date === selectedDate);
 
-  const totalRecords = filteredSales.length + filteredCredits.length + filteredIncome.length + filteredExpenses.length;
+  const totalRecords = filteredSales.length + filteredCredits.length + filteredIncome.length + filteredExpenses.length + filteredSettlements.length;
 
   const RecordGroup = ({ title, icon: Icon, records, color, renderRecord }) => {
     if (records.length === 0) return null;
