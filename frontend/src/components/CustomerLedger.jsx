@@ -200,13 +200,15 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     console.log('=== Customer Ledger MPP Cash Calculation ===');
     console.log('Customer:', customer.name);
     console.log('Date Range:', fromDate, 'to', toDate);
-    console.log('MPP Fuel Sales:', mppFuelSales);
-    console.log('MPP Credit Amount:', mppCreditAmount);
-    console.log('MPP Total Expenses:', mppTotalExpenses);
-    console.log('MPP Total Income:', mppTotalIncome);
-    console.log('MPP Settlement Amount:', mppSettlementAmount);
+    console.log('');
+    console.log('MPP Fuel Sales (Tagged Sales):', mppFuelSales);
+    console.log('MPP Credit Amount (Tagged Credits):', mppCreditAmount);
+    console.log('MPP Total Expenses (Tagged Expenses):', mppTotalExpenses);
+    console.log('MPP Total Income (Tagged Income):', mppTotalIncome);
+    console.log('MPP Settlement Amount (Tagged Settlements):', mppSettlementAmount);
+    console.log('');
+    console.log('Calculation:', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount);
     console.log('Final MPP Cash:', totalMPPCash);
-    console.log('Formula: ', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount, '=', totalMPPCash);
     console.log('==========================================');
     
     if (totalMPPCash !== 0) {
