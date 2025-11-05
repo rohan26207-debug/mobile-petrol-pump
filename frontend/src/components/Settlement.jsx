@@ -144,12 +144,25 @@ const Settlement = ({
   };
 
   const handleDelete = (id) => {
-    if (window.confirm('Are you sure you want to delete this settlement record?')) {
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
       deleteSettlementRecord(id);
       toast({
         title: "Settlement Deleted",
-        description: "Settlement record has been removed",
+        description: "Settlement record has been deleted.",
+        variant: "default"
       });
+    } else {
+      // Show confirmation dialog
+      if (window.confirm('Are you sure you want to delete this settlement record?')) {
+        deleteSettlementRecord(id);
+        toast({
+          title: "Settlement Deleted",
+          description: "Settlement record has been deleted.",
+          variant: "default"
+        });
+      }
     }
   };
 
