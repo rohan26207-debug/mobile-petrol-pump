@@ -203,14 +203,15 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     if (editingId === record.id) {
       // Cancel editing
       setEditingId(null);
-      setFormData({ description: '', amount: '' });
+      setFormData({ description: '', amount: '', mpp: false });
     } else {
       // Start editing
       setActiveType(type);
       setEditingId(record.id);
       setFormData({
         description: record.description,
-        amount: record.amount.toString()
+        amount: record.amount.toString(),
+        mpp: record.mpp || false
       });
     }
   };
