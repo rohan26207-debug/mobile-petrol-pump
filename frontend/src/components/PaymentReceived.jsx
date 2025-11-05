@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
 import { IndianRupee, Wallet, Trash2, Search, ChevronDown, Edit, X, AlertTriangle } from 'lucide-react';
+import localStorageService from '../services/localStorage';
 
 const PaymentReceived = ({ 
   customers, 
