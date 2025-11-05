@@ -165,13 +165,8 @@ const SettlementManagement = ({
                   </div>
                 ) : (
                   <div className="flex items-center justify-between">
-                    <Badge className={`border-0 ${
-                      type.isProtected 
-                        ? 'bg-blue-100 text-blue-800' 
-                        : 'bg-orange-100 text-orange-800'
-                    }`}>
+                    <Badge className="bg-orange-100 text-orange-800 border-0">
                       {type.name}
-                      {type.isProtected && ' 🔒'}
                     </Badge>
                     {!type.isProtected && (
                       <div className="flex gap-1">
