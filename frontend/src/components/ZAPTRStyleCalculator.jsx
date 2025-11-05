@@ -704,9 +704,18 @@ const ZAPTRStyleCalculator = () => {
 
   const deleteSettlementRecord = (id) => {
     try {
+      // Get the settlement record before deletion to check if it's MPP
+      const settlementToDelete = settlementData.find(settlement => settlement.id === id);
+      
       const success = localStorageService.deleteSettlement(id);
       if (success) {
         setSettlementData(prev => prev.filter(settlement => settlement.id !== id));
+        
+        // Delete corresponding auto-generated receipt if it was MPP
+        if (settlementToDelete && settlementToDelete.mpp === true) {
+          deleteAutoReceiptForMPP(id, 'settlement');
+        }
+        
         return true;
       }
     } catch (error) {
