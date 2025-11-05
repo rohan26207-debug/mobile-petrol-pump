@@ -22,6 +22,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import localStorageService from '../services/localStorage';
 
 const CreditSales = ({ isDarkMode, creditData, addCreditRecord, updateCreditRecord, deleteCreditRecord, fuelSettings, selectedDate, salesData, incomeData, expenseData, formResetKey, editingRecord, onRecordSaved, hideRecordsList, customers = [] }) => {
   const [formData, setFormData] = useState({
