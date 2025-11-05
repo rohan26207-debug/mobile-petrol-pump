@@ -314,17 +314,6 @@ const ZAPTRStyleCalculator = () => {
     const mppCash = fuelSalesMPP - creditMPP - settlementMPP;
     const hasMPPSales = fuelSalesMPP > 0;
     
-    // Debug logging
-    console.log('MPP Debug:', {
-      totalSales: todaySales.length,
-      salesWithMPP: todaySales.filter(s => s.mpp === true || s.mpp === 'true').length,
-      fuelSalesMPP,
-      creditMPP,
-      settlementMPP,
-      mppCash,
-      hasMPPSales
-    });
-    
     // Cash in Hand = Fuel Sales - Credit Sales (no MPP) - Expenses + Income - Settlement (no MPP)
     const adjustedCashSales = fuelCashSales - creditTotalAmountNoMPP - totalExpenses + otherIncome - settlementNoMPP;
     
