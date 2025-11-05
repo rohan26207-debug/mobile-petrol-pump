@@ -738,38 +738,9 @@ const ZAPTRStyleCalculator = () => {
 
   const updateCreditRecord = (id, updatedData) => {
     try {
-      // Get the original credit record to compare
-      const originalCredit = creditData.find(credit => credit.id === id);
-      
       const updatedCredit = localStorageService.updateCreditRecord(id, updatedData);
       if (updatedCredit) {
         setCreditData(prev => prev.map(credit => credit.id === id ? updatedCredit : credit));
-        
-        // Handle MPP receipt updates for credit sales
-        if (updatedCredit.mpp === true) {
-          // Calculate fuel sales amount (excluding income/expense)
-          const fuelAmount = updatedCredit.fuelEntries ? 
-            updatedCredit.fuelEntries.reduce((sum, entry) => {
-              return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
-            }, 0) : 0;
-          
-          if (fuelAmount > 0) {
-            // Update auto-generated receipt for MPP customer
-            updateAutoReceiptForMPP(
-              id,
-              'credit',
-              fuelAmount,
-              `Auto-receipt: MPP Credit Sale (Fuel) - ${updatedCredit.customerName || 'Credit Sale'}`
-            );
-          } else {
-            // If fuel amount is 0, delete the receipt
-            deleteAutoReceiptForMPP(id, 'credit');
-          }
-        } else if (originalCredit && originalCredit.mpp === true) {
-          // If MPP tag was removed, delete the receipt
-          deleteAutoReceiptForMPP(id, 'credit');
-        }
-        
         return updatedCredit;
       }
     } catch (error) {
