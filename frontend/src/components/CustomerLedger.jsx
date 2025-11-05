@@ -166,11 +166,15 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const mppFuelSales = mppSalesWithTag.reduce((sum, sale) => sum + (sale.amount || 0), 0);
     console.log('Total MPP Fuel Sales:', mppFuelSales);
     
-    // Get MPP credit amount in date range (already calculated above in mppTaggedCredits)
-    const mppCreditAmount = creditData
-      .filter(c => c.mpp === true || c.mpp === 'true')
-      .filter(c => c.date >= fromDate && c.date <= toDate)
-      .reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    // Get MPP credit amount in date range
+    const mppCreditsInRange = creditData.filter(c => c.date >= fromDate && c.date <= toDate);
+    console.log('Credits in date range:', mppCreditsInRange.map(c => ({ date: c.date, mpp: c.mpp, amount: c.amount })));
+    
+    const mppCreditsWithTag = mppCreditsInRange.filter(c => c.mpp === true || c.mpp === 'true');
+    console.log('MPP Tagged Credits:', mppCreditsWithTag.map(c => ({ date: c.date, mpp: c.mpp, amount: c.amount })));
+    
+    const mppCreditAmount = mppCreditsWithTag.reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    console.log('Total MPP Credit Amount:', mppCreditAmount);
     
     // Get MPP income in date range (direct + from credit sales)
     const mppDirectIncome = incomeData
