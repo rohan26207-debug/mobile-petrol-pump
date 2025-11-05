@@ -772,9 +772,20 @@ const ZAPTRStyleCalculator = () => {
     try {
       const newCustomer = localStorageService.addCustomer(name, startingBalance, isMPP);
       setCustomers(localStorageService.getCustomers()); // Reload sorted list
+      toast({
+        title: "Success",
+        description: `Customer "${name}" added successfully.`,
+        variant: "default"
+      });
       return newCustomer;
     } catch (error) {
       console.error('Error adding customer:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to add customer.',
+        variant: "destructive"
+      });
+      return null;
     }
   };
 
