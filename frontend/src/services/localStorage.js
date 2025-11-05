@@ -66,12 +66,13 @@ class LocalStorageService {
       ]);
     }
     
-    // Initialize default settlement types
+    // Initialize default settlement types (protected types cannot be edited/deleted)
     if (!this.getSettlementTypes()) {
       this.setSettlementTypes([
-        { id: '1', name: 'Bank Deposit' },
-        { id: '2', name: 'Cash to Bank' },
-        { id: '3', name: 'Online Transfer' }
+        { id: '1', name: 'Card', isProtected: true },
+        { id: '2', name: 'DTP', isProtected: true },
+        { id: '3', name: 'Paytm', isProtected: true },
+        { id: '4', name: 'PhonePe', isProtected: true }
       ]);
     }
   }
