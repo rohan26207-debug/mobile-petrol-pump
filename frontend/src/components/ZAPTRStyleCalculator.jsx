@@ -547,10 +547,21 @@ const ZAPTRStyleCalculator = () => {
         const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
         
         if (mppCustomer) {
+          // Calculate ONLY fuel amount (excluding income and expenses)
+          let fuelAmount = 0;
+          if (newCredit.fuelEntries && newCredit.fuelEntries.length > 0) {
+            fuelAmount = newCredit.fuelEntries.reduce((sum, entry) => {
+              return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
+            }, 0);
+          } else {
+            // Fallback to total amount if no fuelEntries (shouldn't happen, but safe)
+            fuelAmount = newCredit.amount;
+          }
+          
           const autoPayment = {
             customerId: mppCustomer.id,
             customerName: mppCustomer.name,
-            amount: newCredit.amount,
+            amount: fuelAmount,
             date: newCredit.date,
             mode: 'auto',
             linkedMPPCreditId: newCredit.id,
@@ -561,7 +572,7 @@ const ZAPTRStyleCalculator = () => {
           const createdPayment = localStorageService.addPayment(autoPayment);
           setPayments(localStorageService.getPayments());
           
-          console.log('Auto-created MPP payment for credit sale:', createdPayment);
+          console.log('Auto-created MPP payment for credit sale (fuel only):', createdPayment);
         }
       }
       
