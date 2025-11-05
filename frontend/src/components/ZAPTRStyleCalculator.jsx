@@ -1964,6 +1964,56 @@ window.onload = function() {
                   </div>
                 </div>
               </div>
+
+              {/* MPP Cash - shown only when there are MPP fuel sales */}
+              {stats.hasMPPSales && (
+                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-orange-500 ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-orange-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-orange-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      MPP
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      MPP Cash
+                    </span>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      {stats.mppCash.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Total Cash in Hand - shown only when MPP Cash is visible */}
+              {stats.hasMPPSales && (
+                <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-green-500 ${
+                  isDarkMode ? 'bg-gray-700' : 'bg-green-50'
+                }`}>
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-green-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
+                      Σ
+                    </div>
+                    <span className={`font-medium text-xs sm:text-base truncate ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      Total Cash in Hand
+                    </span>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
+                      isDarkMode ? 'text-white' : 'text-slate-800'
+                    }`}>
+                      {stats.totalCashInHand.toFixed(2)}
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
