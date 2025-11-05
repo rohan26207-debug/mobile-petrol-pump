@@ -611,7 +611,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                   onAddSettlementType={handleAddSettlementType}
                   onDeleteSettlementType={handleDeleteSettlementType}
                   onUpdateSettlementType={handleUpdateSettlementType}
-                  onResetToDefault={handleResetSettlementTypes}
                   isDarkMode={isDarkMode}
                 />
               </TabsContent>
