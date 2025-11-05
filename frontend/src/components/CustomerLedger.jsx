@@ -241,7 +241,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const allEntries = [
       ...mppNormalCredits,
       ...ledgerEntries, // This includes the MPP Cash entry
-      ...normalPayments
+      ...allMPPPayments // This includes both normal and auto-generated payments
     ].sort((a, b) => a.date.localeCompare(b.date));
 
     // Calculate running balance for MPP customer
