@@ -101,7 +101,9 @@ const IncomeExpenseCategories = ({
   };
 
   const handleDelete = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
       if (activeType === 'income') {
         onDeleteIncomeCategory(id);
       } else {
@@ -111,6 +113,19 @@ const IncomeExpenseCategories = ({
         title: "Category Deleted",
         description: `${name} has been removed`,
       });
+    } else {
+      // Show confirmation dialog
+      if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+        if (activeType === 'income') {
+          onDeleteIncomeCategory(id);
+        } else {
+          onDeleteExpenseCategory(id);
+        }
+        toast({
+          title: "Category Deleted",
+          description: `${name} has been removed`,
+        });
+      }
     }
   };
 
