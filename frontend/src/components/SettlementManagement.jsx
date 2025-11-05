@@ -84,6 +84,20 @@ const SettlementManagement = ({
     }
   };
 
+  const handleResetToDefault = () => {
+    const confirmed = window.confirm(
+      'Are you sure you want to restore settlement types to default settings?\n\n' +
+      'This will:\n' +
+      '• Remove all custom settlement types\n' +
+      '• Restore only: Card, DTP, Paytm, PhonePe\n\n' +
+      'This action cannot be undone.'
+    );
+    
+    if (confirmed) {
+      onResetToDefault();
+    }
+  };
+
   const currentTypes = settlementTypes || [];
 
   return (
