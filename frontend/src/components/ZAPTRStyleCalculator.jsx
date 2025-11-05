@@ -666,6 +666,12 @@ const ZAPTRStyleCalculator = () => {
     setIncomeExpenseDialogOpen(true);
   };
 
+  const handleEditSettlement = (settlementRecord) => {
+    setEditingSettlementData(settlementRecord);
+    setSettleIncExpActiveTab('settlement');
+    setSettleIncExpDialogOpen(true);
+  };
+
   const handleCloseDialogs = () => {
     setSalesDialogOpen(false);
     setCreditDialogOpen(false);
