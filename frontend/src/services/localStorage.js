@@ -17,7 +17,9 @@ class LocalStorageService {
       incomeCategories: 'mpump_income_categories', // Income categories
       expenseCategories: 'mpump_expense_categories', // Expense categories
       settlements: 'mpump_settlements', // Settlements (bank transfers)
-      settlementTypes: 'mpump_settlement_types' // Settlement types/categories
+      settlementTypes: 'mpump_settlement_types', // Settlement types/categories
+      incomeDescHistory: 'mpump_income_desc_history', // Income description history
+      expenseDescHistory: 'mpump_expense_desc_history' // Expense description history
     };
     
     this.initializeDefaultData();
