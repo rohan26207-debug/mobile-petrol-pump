@@ -17,6 +17,7 @@ const SettlementManagement = ({
   const [newTypeName, setNewTypeName] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState('');
+  const [deleteConfirmation, setDeleteConfirmation] = useState({ show: false, id: null, name: '' });
   const { toast } = useToast();
 
   const handleAddType = () => {
