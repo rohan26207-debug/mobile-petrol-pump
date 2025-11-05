@@ -459,14 +459,14 @@ const ZAPTRStyleCalculator = () => {
     // Total income is fuel sales + other income
     const totalIncome = fuelCashSales + otherIncome;
     
-    // Net cash position (what's actually in hand)
-    const netCash = adjustedCashSales;
+    // Net cash position (what's actually in hand - no MPP)
+    const netCash = cashInHand;
     
     return { 
       fuelCashSales,
-      adjustedCashSales,
+      cashInHand,
       mppCash,
-      totalCashInHand,
+      totalAvailableCash,
       hasMPPData,
       creditAmount: creditTotalAmount,
       creditLiters,
