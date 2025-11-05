@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Users, Plus, Trash2, AlertTriangle, Pencil, Search } from 'lucide-react';
+import localStorageService from '../services/localStorage';
 
 const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer, isDarkMode }) => {
   const [newCustomerName, setNewCustomerName] = useState('');
