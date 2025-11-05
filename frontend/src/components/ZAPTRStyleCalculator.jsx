@@ -1632,7 +1632,7 @@ ${Object.entries(stats.fuelSalesByType).map(([fuelType, data]) =>
 <tr><td>Credit Sales<td class="r">${stats.creditLiters.toFixed(2)}L<td class="r">${stats.creditAmount.toFixed(2)}</tr>
 <tr><td>Income<td class="r">-<td class="r">${stats.otherIncome.toFixed(2)}</tr>
 <tr><td>Expenses<td class="r">-<td class="r">${stats.totalExpenses.toFixed(2)}</tr>
-<tr class="t"><td><b>Cash in Hand</b><td class="r"><b>${stats.totalLiters.toFixed(2)}L</b><td class="r"><b>${stats.adjustedCashSales.toFixed(2)}</b></tr>
+<tr class="t"><td><b>Cash in Hand</b><td class="r"><b>${stats.totalLiters.toFixed(2)}L</b><td class="r"><b>${stats.cashInHand.toFixed(2)}</b></tr>
 </table>
 
 ${todaySales.length > 0 ? `
