@@ -73,7 +73,12 @@ const SettlementManagement = ({
   };
 
   const handleDelete = (id, name) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+    console.log('Delete clicked for:', id, name);
+    const confirmed = window.confirm(`Are you sure you want to delete "${name}"?`);
+    console.log('User confirmed:', confirmed);
+    
+    if (confirmed) {
+      console.log('Calling onDeleteSettlementType with id:', id);
       onDeleteSettlementType(id);
     }
   };
