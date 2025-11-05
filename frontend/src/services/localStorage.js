@@ -915,7 +915,8 @@ class LocalStorageService {
     const types = this.getSettlementTypes();
     const newType = {
       id: Date.now().toString(),
-      name: name
+      name: name,
+      isProtected: false
     };
     types.push(newType);
     types.sort((a, b) => a.name.localeCompare(b.name));
