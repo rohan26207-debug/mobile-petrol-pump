@@ -542,24 +542,6 @@ const ZAPTRStyleCalculator = () => {
       // Update local state immediately
       setCreditData(prev => [...prev, newCredit]);
       
-      // If this credit sale has MPP tag, auto-generate receipt for MPP customer
-      if (newCredit.mpp === true) {
-        // Calculate fuel sales amount (excluding income/expense)
-        const fuelAmount = newCredit.fuelEntries ? 
-          newCredit.fuelEntries.reduce((sum, entry) => {
-            return sum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
-          }, 0) : 0;
-        
-        if (fuelAmount > 0) {
-          createAutoReceiptForMPP(
-            fuelAmount, 
-            `Auto-receipt: MPP Credit Sale (Fuel) - ${newCredit.customerName || 'Credit Sale'}`,
-            newCredit.id,
-            'credit'
-          );
-        }
-      }
-      
       return newCredit;
     } catch (error) {
       console.error('Failed to add credit record:', error);
