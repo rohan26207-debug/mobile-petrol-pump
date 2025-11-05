@@ -183,6 +183,7 @@ class LocalStorageService {
       amount: parseFloat(incomeData.amount),
       description: incomeData.description || incomeData.category || 'Income',
       type: 'income',
+      mpp: incomeData.mpp || false,
       timestamp: new Date().toISOString()
     };
     
