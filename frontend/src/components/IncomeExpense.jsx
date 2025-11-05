@@ -158,11 +158,12 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const newIncome = addIncomeRecord({
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate
+        date: selectedDate,
+        mpp: formData.mpp || false
       });
       
       if (newIncome) {
-        setFormData({ description: '', amount: '' });
+        setFormData({ description: '', amount: '', mpp: false });
         toast({
           title: "Success",
           description: `Income added. Add more ${activeType}.`,
@@ -173,11 +174,12 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const newExpense = addExpenseRecord({
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate
+        date: selectedDate,
+        mpp: formData.mpp || false
       });
       
       if (newExpense) {
-        setFormData({ description: '', amount: '' });
+        setFormData({ description: '', amount: '', mpp: false });
         toast({
           title: "Success",
           description: `Expense added. Add more ${activeType}.`,
