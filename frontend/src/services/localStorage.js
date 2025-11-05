@@ -406,6 +406,30 @@ class LocalStorageService {
   }
 
   // Export all data (for backup)
+  exportDataByDate(selectedDate) {
+    // Filter data by selected date
+    const salesData = this.getSalesData().filter(s => s.date === selectedDate);
+    const creditData = this.getCreditData().filter(c => c.date === selectedDate);
+    const incomeData = this.getIncomeData().filter(i => i.date === selectedDate);
+    const expenseData = this.getExpenseData().filter(e => e.date === selectedDate);
+    const payments = this.getPayments().filter(p => p.date === selectedDate);
+    const settlements = this.getSettlements().filter(s => s.date === selectedDate);
+
+    return {
+      salesData,
+      creditData,
+      incomeData,
+      expenseData,
+      payments,
+      settlements,
+      fuelSettings: this.getFuelSettings(),
+      customers: this.getCustomers(),
+      exportDate: new Date().toISOString(),
+      selectedDate: selectedDate,
+      version: '2.0-date-filtered'
+    };
+  }
+
   exportAllData() {
     // Get all stock data for all fuel types
     const stockData = {};
@@ -439,6 +463,7 @@ class LocalStorageService {
       fuelSettings: this.getFuelSettings(),
       customers: this.getCustomers(),
       payments: this.getPayments(),
+      settlements: this.getSettlements(),
       stockData: stockData,
       contactInfo: contactInfo ? JSON.parse(contactInfo) : null,
       notes: notes || '',
