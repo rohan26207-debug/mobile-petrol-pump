@@ -80,7 +80,16 @@ const CreditSalesManagement = ({
   };
 
   const handleDeleteClick = (credit) => {
-    setDeleteConfirm({ show: true, credit });
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      if (onDeleteCredit) {
+        onDeleteCredit(credit.id);
+      }
+    } else {
+      // Show confirmation dialog
+      setDeleteConfirm({ show: true, credit });
+    }
   };
 
   const confirmDelete = () => {
