@@ -220,13 +220,15 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     console.log('Formula: ', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount, '=', totalMPPCash);
     console.log('==========================================');
     
-    if (totalMPPCash > 0) {
-      // Show MPP cash as a single entry in "Received" column
+    if (totalMPPCash !== 0) {
+      // Show MPP cash as a single entry
+      // If positive: shows in "Received" column (reduces outstanding)
+      // If negative: shows in "Credit" column (increases outstanding)
       const mppCashEntry = {
         date: toDate, // Show on end date for summary
         type: 'mpp_cash',
-        credit: 0,
-        received: totalMPPCash,
+        credit: totalMPPCash < 0 ? Math.abs(totalMPPCash) : 0,
+        received: totalMPPCash > 0 ? totalMPPCash : 0,
         description: 'MPP Cash'
       };
       ledgerEntries.push(mppCashEntry);
