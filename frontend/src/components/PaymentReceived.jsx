@@ -123,7 +123,14 @@ const PaymentReceived = ({
   };
 
   const handleDeleteClick = (payment) => {
-    setDeleteConfirm({ show: true, payment });
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      onDeletePayment(payment.id);
+    } else {
+      // Show confirmation dialog
+      setDeleteConfirm({ show: true, payment });
+    }
   };
 
   const confirmDelete = () => {
