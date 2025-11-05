@@ -338,20 +338,72 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
           <div className="grid grid-cols-12 gap-0.5 items-start">
             {/* Description - 7 cols */}
             <div className="col-span-7">
-              <Input
-                type="text"
-                value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                placeholder={`Select or enter ${activeType} category...`}
-                className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
-                list={`${activeType}-categories`}
-                autoComplete="off"
-              />
-              <datalist id={`${activeType}-categories`}>
-                {(activeType === 'income' ? incomeCategories : expenseCategories).map((category) => (
-                  <option key={category.id} value={category.name} />
-                ))}
-              </datalist>
+              <Popover open={descriptionOpen} onOpenChange={setDescriptionOpen}>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={descriptionOpen}
+                    className={`w-full justify-between text-sm font-normal ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white hover:bg-gray-600 hover:text-white' : ''}`}
+                  >
+                    {formData.description || `Select or enter ${activeType} description...`}
+                    <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className={`w-[300px] p-2 ${isDarkMode ? 'bg-gray-700 border-gray-600' : ''}`}>
+                  <div className="space-y-2">
+                    {/* Input for custom description */}
+                    <Input
+                      type="text"
+                      value={formData.description}
+                      onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder={`Type ${activeType} description...`}
+                      className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
+                      autoComplete="off"
+                    />
+                    
+                    {/* History suggestions */}
+                    {(activeType === 'income' ? incomeDescHistory : expenseDescHistory).length > 0 && (
+                      <>
+                        <div className={`text-xs font-medium pt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                          Recent Suggestions
+                        </div>
+                        <ScrollArea className="max-h-[200px]">
+                          <div className="space-y-1">
+                            {(activeType === 'income' ? incomeDescHistory : expenseDescHistory).map((desc, index) => (
+                              <div
+                                key={index}
+                                className={`flex items-center justify-between p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer group ${isDarkMode ? 'text-white' : ''}`}
+                              >
+                                <span
+                                  onClick={() => {
+                                    setFormData(prev => ({ ...prev, description: desc }));
+                                    setDescriptionOpen(false);
+                                  }}
+                                  className="flex-1 text-sm"
+                                >
+                                  {desc}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-100 dark:hover:bg-red-900"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeleteDescriptionHistory(desc);
+                                  }}
+                                >
+                                  <X className="h-3 w-3 text-red-600 dark:text-red-400" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </ScrollArea>
+                      </>
+                    )}
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
 
             {/* Amount - 5 cols */}
