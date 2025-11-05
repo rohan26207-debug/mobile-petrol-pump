@@ -48,11 +48,19 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     return customers && customers.some(c => c.isMPP === true);
   }, [customers]);
 
-  // Load categories on mount
+  // Load categories and description history on mount
   useEffect(() => {
     setIncomeCategories(localStorageService.getIncomeCategories());
     setExpenseCategories(localStorageService.getExpenseCategories());
+    setIncomeDescHistory(localStorageService.getIncomeDescHistory());
+    setExpenseDescHistory(localStorageService.getExpenseDescHistory());
   }, []);
+
+  // Reload description history when activeType changes
+  useEffect(() => {
+    setIncomeDescHistory(localStorageService.getIncomeDescHistory());
+    setExpenseDescHistory(localStorageService.getExpenseDescHistory());
+  }, [activeType]);
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
