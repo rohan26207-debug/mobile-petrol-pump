@@ -193,7 +193,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     setFormData({
       amount: '',
       description: '',
-      type: activeType
+      type: activeType,
+      mpp: false
     });
     setEditingId(null);
   };
