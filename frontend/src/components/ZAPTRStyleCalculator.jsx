@@ -64,6 +64,11 @@ const ZAPTRStyleCalculator = () => {
   const [settlementData, setSettlementData] = useState([]);
   const [fuelSettings, setFuelSettings] = useState({});
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [mppTransferState, setMppTransferState] = useState(() => {
+    // Check if there's an active transfer for today
+    const saved = localStorage.getItem(`mpump_transfer_state_${new Date().toISOString().split('T')[0]}`);
+    return saved ? JSON.parse(saved) : null;
+  });
   const [customers, setCustomers] = useState([]);
   const [payments, setPayments] = useState([]);
   
