@@ -52,6 +52,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   const [proMode, setProMode] = useState(() => {
     return localStorage.getItem('mpump_pro_mode') === 'true';
   });
+  const [showProPasswordDialog, setShowProPasswordDialog] = useState(false);
+  const [proPassword, setProPassword] = useState('');
   const { toast } = useToast();
   
   // Auto-backup weekly hook
