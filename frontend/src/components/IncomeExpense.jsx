@@ -146,6 +146,10 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         });
         
         if (newIncome) {
+          // Save description to history
+          localStorageService.addIncomeDescHistory(formData.description);
+          setIncomeDescHistory(localStorageService.getIncomeDescHistory());
+          
           setFormData({ description: '', amount: '', mpp: false });
           // Close dialog after adding
           if (onRecordSaved) onRecordSaved();
