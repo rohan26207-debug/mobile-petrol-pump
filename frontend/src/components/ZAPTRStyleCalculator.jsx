@@ -260,8 +260,10 @@ const ZAPTRStyleCalculator = () => {
       fuelSalesByType[sale.fuelType].amount += sale.amount;
     });
     
-    // Base cash from fuel sales
-    const fuelCashSales = todaySales.reduce((sum, sale) => sum + (sale.type === 'cash' ? sale.amount : 0), 0);
+    // Calculate fuel cash sales (Reading sales with type='cash' WITHOUT MPP tag)
+    const fuelCashSales = todaySales
+      .filter(sale => sale.type === 'cash' && !sale.mpp && sale.mpp !== true && sale.mpp !== 'true')
+      .reduce((sum, sale) => sum + sale.amount, 0);
     
     // Calculate income from direct entries
     const directIncome = todayIncome.reduce((sum, income) => sum + income.amount, 0);
