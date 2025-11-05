@@ -875,6 +875,54 @@ const ZAPTRStyleCalculator = () => {
     }
   };
 
+  // Function to transfer MPP Cash to In Hand
+  const handleTransferMPPCash = () => {
+    try {
+      const stats = getTodayStats();
+      const mppCashAmount = stats.mppCash;
+      
+      if (mppCashAmount <= 0) {
+        toast({
+          title: "No MPP Cash",
+          description: "There is no MPP cash available to transfer.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Create a settlement to zero out the MPP cash
+      const settlementData = {
+        description: 'Transfer MPP Cash to In Hand',
+        amount: mppCashAmount,
+        date: selectedDate,
+        mpp: true
+      };
+      
+      const newSettlement = localStorageService.addSettlement(settlementData);
+      setSettlementData(prev => [...prev, newSettlement]);
+
+      // Create receipt for Mobile Petrol Pump customer
+      createAutoReceiptForMPP(
+        mppCashAmount, 
+        'Auto-receipt: MPP Cash Transfer to In Hand'
+      );
+
+      toast({
+        title: "MPP Cash Transferred",
+        description: `₹${mppCashAmount.toFixed(2)} transferred from MPP Cash to Cash in Hand`,
+        variant: "default"
+      });
+
+    } catch (error) {
+      console.error('Error transferring MPP cash:', error);
+      toast({
+        title: "Transfer Failed",
+        description: "Failed to transfer MPP cash",
+        variant: "destructive"
+      });
+    }
+  };
+
   const handleUpdatePayment = (id, paymentData) => {
     try {
       localStorageService.updatePayment(id, paymentData);
