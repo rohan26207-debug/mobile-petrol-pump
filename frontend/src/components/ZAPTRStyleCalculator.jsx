@@ -2012,7 +2012,7 @@ window.onload = function() {
     }
     
     text += `\n************************\n`;
-    text += `*Total Amount: ${stats.adjustedCashSales.toFixed(2)}*\n`;
+    text += `*Total Amount: ${stats.cashInHand.toFixed(2)}*\n`;
     
     return text;
   };
