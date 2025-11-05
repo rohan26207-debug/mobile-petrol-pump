@@ -14,7 +14,8 @@ import {
   Users,
   Receipt,
   Edit,
-  Trash2
+  Trash2,
+  Wallet
 } from 'lucide-react';
 
 const UnifiedRecords = ({ 
