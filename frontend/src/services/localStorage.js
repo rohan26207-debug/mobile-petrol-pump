@@ -820,8 +820,13 @@ class LocalStorageService {
       customerName: paymentData.customerName,
       amount: parseFloat(paymentData.amount),
       date: paymentData.date,
-      mode: paymentData.mode || 'cash', // Payment mode (cash/card/wallet/bank)
-      timestamp: new Date().toISOString()
+      mode: paymentData.mode || 'cash', // Payment mode (cash/card/wallet/bank/auto)
+      timestamp: new Date().toISOString(),
+      // MPP auto-tracking fields
+      linkedMPPCreditId: paymentData.linkedMPPCreditId || null,
+      linkedMPPSettlementId: paymentData.linkedMPPSettlementId || null,
+      isAutoMPPTracking: paymentData.isAutoMPPTracking || false,
+      description: paymentData.description || null
     };
     
     payments.push(newPayment);
