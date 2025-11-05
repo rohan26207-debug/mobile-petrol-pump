@@ -265,8 +265,10 @@ const ZAPTRStyleCalculator = () => {
       .filter(sale => sale.type === 'cash' && !sale.mpp && sale.mpp !== true && sale.mpp !== 'true')
       .reduce((sum, sale) => sum + sale.amount, 0);
     
-    // Calculate income from direct entries
-    const directIncome = todayIncome.reduce((sum, income) => sum + income.amount, 0);
+    // Calculate income from direct entries (separated by MPP tag)
+    const directIncomeNoMPP = todayIncome.filter(income => !income.mpp).reduce((sum, income) => sum + income.amount, 0);
+    const directIncomeMPP = todayIncome.filter(income => income.mpp === true || income.mpp === 'true').reduce((sum, income) => sum + income.amount, 0);
+    const directIncome = directIncomeNoMPP + directIncomeMPP;
     
     // Calculate income from credit sales
     const creditIncome = todayCredits.reduce((sum, credit) => {
@@ -276,11 +278,15 @@ const ZAPTRStyleCalculator = () => {
       return sum;
     }, 0);
     
-    // Total income includes both direct and credit income
+    // Total income (no MPP) = direct income (no MPP) + credit income
+    const otherIncomeNoMPP = directIncomeNoMPP + creditIncome;
+    const otherIncomeMPP = directIncomeMPP;
     const otherIncome = directIncome + creditIncome;
     
-    // Calculate expenses from direct entries
-    const directExpenses = todayExpenses.reduce((sum, expense) => sum + expense.amount, 0);
+    // Calculate expenses from direct entries (separated by MPP tag)
+    const directExpensesNoMPP = todayExpenses.filter(expense => !expense.mpp).reduce((sum, expense) => sum + expense.amount, 0);
+    const directExpensesMPP = todayExpenses.filter(expense => expense.mpp === true || expense.mpp === 'true').reduce((sum, expense) => sum + expense.amount, 0);
+    const directExpenses = directExpensesNoMPP + directExpensesMPP;
     
     // Calculate expenses from credit sales
     const creditExpenses = todayCredits.reduce((sum, credit) => {
@@ -290,7 +296,9 @@ const ZAPTRStyleCalculator = () => {
       return sum;
     }, 0);
     
-    // Total expenses includes both direct and credit expenses
+    // Total expenses (no MPP) = direct expenses (no MPP) + credit expenses
+    const totalExpensesNoMPP = directExpensesNoMPP + creditExpenses;
+    const totalExpensesMPP = directExpensesMPP;
     const totalExpenses = directExpenses + creditExpenses;
     
     // Calculate credit amount and liters (separated by MPP tag)
