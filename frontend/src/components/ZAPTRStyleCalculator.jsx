@@ -906,11 +906,34 @@ const ZAPTRStyleCalculator = () => {
       const newSettlement = localStorageService.addSettlement(settlementData);
       setSettlementData(prev => [...prev, newSettlement]);
 
-      // Create receipt for Mobile Petrol Pump customer
-      createAutoReceiptForMPP(
-        mppCashAmount, 
-        'Auto-receipt: MPP Cash Transfer to In Hand'
-      );
+      // Create receipt for Mobile Petrol Pump customer and get receipt ID
+      const mppCustomer = customers.find(c => c.isMPP === true);
+      let receiptId = null;
+      
+      if (mppCustomer) {
+        const receiptData = {
+          customerId: mppCustomer.id,
+          customerName: mppCustomer.name,
+          amount: mppCashAmount,
+          date: selectedDate,
+          paymentDate: selectedDate,
+          description: 'Auto-receipt: MPP Cash Transfer to In Hand'
+        };
+        const newReceipt = localStorageService.addPayment(receiptData);
+        setPayments(localStorageService.getPayments());
+        receiptId = newReceipt?.id;
+      }
+
+      // Save transfer state
+      const transferState = {
+        amount: mppCashAmount,
+        settlementId: newSettlement.id,
+        receiptId: receiptId,
+        transferDate: selectedDate,
+        timestamp: new Date().getTime()
+      };
+      setMppTransferState(transferState);
+      localStorage.setItem(`mpump_transfer_state_${selectedDate}`, JSON.stringify(transferState));
 
       toast({
         title: "MPP Cash Transferred",
@@ -923,6 +946,50 @@ const ZAPTRStyleCalculator = () => {
       toast({
         title: "Transfer Failed",
         description: "Failed to transfer MPP cash",
+        variant: "destructive"
+      });
+    }
+  };
+
+  // Function to undo MPP Cash transfer
+  const handleUndoMPPTransfer = () => {
+    try {
+      if (!mppTransferState) {
+        toast({
+          title: "No Transfer to Undo",
+          description: "There is no recent transfer to undo.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      // Delete the settlement that was created for the transfer
+      if (mppTransferState.settlementId) {
+        localStorageService.deleteSettlement(mppTransferState.settlementId);
+        setSettlementData(localStorageService.getSettlements());
+      }
+
+      // Delete the receipt that was created for the transfer
+      if (mppTransferState.receiptId) {
+        localStorageService.deletePayment(mppTransferState.receiptId);
+        setPayments(localStorageService.getPayments());
+      }
+
+      // Clear transfer state
+      setMppTransferState(null);
+      localStorage.removeItem(`mpump_transfer_state_${selectedDate}`);
+
+      toast({
+        title: "Transfer Undone",
+        description: `₹${mppTransferState.amount.toFixed(2)} transferred back to MPP Cash`,
+        variant: "default"
+      });
+
+    } catch (error) {
+      console.error('Error undoing MPP transfer:', error);
+      toast({
+        title: "Undo Failed",
+        description: "Failed to undo the transfer",
         variant: "destructive"
       });
     }
