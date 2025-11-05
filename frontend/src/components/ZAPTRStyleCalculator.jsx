@@ -1061,16 +1061,16 @@ const ZAPTRStyleCalculator = () => {
         return;
       }
 
-      // Create a settlement WITH MPP tag to zero out the MPP cash
-      const settlementData = {
+      // Create an expense WITH MPP tag to reduce MPP cash
+      const expenseData = {
         description: 'Transfer MPP Cash to In Hand',
         amount: mppCashAmount,
         date: selectedDate,
         mpp: true  // This removes from MPP cash
       };
       
-      const newSettlement = localStorageService.addSettlement(settlementData);
-      setSettlementData(prev => [...prev, newSettlement]);
+      const newExpense = localStorageService.addExpenseRecord(expenseData);
+      setExpenseData(prev => [...prev, newExpense]);
 
       // Create an income record WITHOUT MPP tag to add to Cash in Hand
       const incomeData = {
@@ -1104,7 +1104,7 @@ const ZAPTRStyleCalculator = () => {
       // Save transfer state
       const transferState = {
         amount: mppCashAmount,
-        settlementId: newSettlement.id,
+        expenseId: newExpense.id,  // Changed from settlementId
         incomeId: newIncome.id,
         receiptId: receiptId,
         transferDate: selectedDate,
