@@ -136,10 +136,14 @@ The MPP Cash calculation had TWO major issues:
 1. **Updated CustomerLedger.jsx** to accept `incomeData` and `expenseData` props
 2. **Implemented correct MPP Cash calculation** matching the formula used in ZAPTRStyleCalculator.jsx
 3. **Updated ZAPTRStyleCalculator.jsx** to pass incomeData and expenseData to CustomerLedger component
-4. **Changed description** from "MPP Cash Amount" to "MPP Cash" for consistency
-5. **Fixed filtering** to check both `mpp === true` and `mpp === 'true'` (boolean and string)
-6. **Added console logging** for debugging MPP Cash calculation
-7. **Handle negative MPP Cash** - shows in Credit column if negative, Received column if positive
+4. **Fixed filtering** to check both `mpp === true` and `mpp === 'true'` (boolean and string)
+5. **Added detailed console logging** for debugging each component of the calculation
+6. **Handle negative MPP Cash** - shows in Credit column if negative, Received column if positive
+7. **CRITICAL FIX: Removed duplicate entries** - No longer showing individual MPP-tagged credits and settlements as line items. Only showing the consolidated "MPP Cash" entry.
+8. **Simplified ledger display** - Now shows:
+   - Normal credit sales (no MPP tag) in Credit column
+   - Normal payments in Received column
+   - ONE "MPP Cash" entry in Received column (net of all MPP transactions)
 
 ### Implementation Details
 **File**: `/app/frontend/src/components/CustomerLedger.jsx`
