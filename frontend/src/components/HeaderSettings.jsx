@@ -135,6 +135,37 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     }
   };
 
+  const handleProModeToggle = (checked) => {
+    if (checked) {
+      // Enabling Pro mode - ask for password
+      const password = window.prompt('Enter password to enable Pro mode:');
+      if (password === 'rash') {
+        setProMode(true);
+        localStorage.setItem('mpump_pro_mode', 'true');
+        toast({
+          title: "Pro Mode Enabled",
+          description: "Confirmation dialogs will be hidden.",
+          variant: "default"
+        });
+      } else {
+        toast({
+          title: "Incorrect Password",
+          description: "Pro mode not enabled.",
+          variant: "destructive"
+        });
+      }
+    } else {
+      // Disabling Pro mode - no password needed
+      setProMode(false);
+      localStorage.setItem('mpump_pro_mode', 'false');
+      toast({
+        title: "Pro Mode Disabled",
+        description: "Confirmation dialogs will be shown.",
+        variant: "default"
+      });
+    }
+  };
+
   const handleUpdateSettlementType = (id, name) => {
     try {
       localStorageService.updateSettlementType(id, name);
