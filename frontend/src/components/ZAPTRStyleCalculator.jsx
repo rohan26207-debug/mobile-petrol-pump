@@ -2498,7 +2498,7 @@ window.onload = function() {
                     <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      ₹{stats.totalCashInHand.toFixed(2)}
+                      ₹{stats.cashInHand.toFixed(2)}
                     </div>
                   </div>
                 </div>
