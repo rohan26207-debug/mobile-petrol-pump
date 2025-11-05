@@ -293,9 +293,22 @@ const ZAPTRStyleCalculator = () => {
     // Total expenses includes both direct and credit expenses
     const totalExpenses = directExpenses + creditExpenses;
     
-    // Calculate credit amount and liters (without MPP tag)
-    const creditTotalAmountNoMPP = todayCredits.filter(c => !c.mpp).reduce((sum, credit) => sum + credit.amount, 0);
+    // Calculate credit amount and liters (separated by MPP tag)
+    const creditNoMPP = todayCredits.filter(c => !c.mpp && c.mpp !== true && c.mpp !== 'true');
+    const creditWithMPP = todayCredits.filter(c => c.mpp === true || c.mpp === 'true');
+    
+    const creditTotalAmountNoMPP = creditNoMPP.reduce((sum, credit) => sum + credit.amount, 0);
     const creditTotalAmount = todayCredits.reduce((sum, credit) => sum + credit.amount, 0);
+    
+    const creditLitersNoMPP = creditNoMPP.reduce((sum, credit) => {
+      if (credit.fuelEntries && credit.fuelEntries.length > 0) {
+        return sum + credit.fuelEntries.reduce((literSum, entry) => literSum + entry.liters, 0);
+      } else if (credit.liters) {
+        return sum + credit.liters;
+      }
+      return sum;
+    }, 0);
+    
     const creditLiters = todayCredits.reduce((sum, credit) => {
       if (credit.fuelEntries && credit.fuelEntries.length > 0) {
         return sum + credit.fuelEntries.reduce((literSum, entry) => literSum + entry.liters, 0);
@@ -304,6 +317,17 @@ const ZAPTRStyleCalculator = () => {
       }
       return sum;
     }, 0);
+    
+    const creditLitersMPP = creditWithMPP.reduce((sum, credit) => {
+      if (credit.fuelEntries && credit.fuelEntries.length > 0) {
+        return sum + credit.fuelEntries.reduce((literSum, entry) => literSum + entry.liters, 0);
+      } else if (credit.liters) {
+        return sum + credit.liters;
+      }
+      return sum;
+    }, 0);
+    
+    const creditAmountMPP = creditWithMPP.reduce((sum, credit) => sum + credit.amount, 0);
     
     // Calculate settlements without MPP tag
     const todaySettlements = settlementData.filter(s => s.date === selectedDate);
