@@ -206,7 +206,7 @@ const SettlementManagement = ({
           Settlements are amounts transferred from cash sales to bank. This reduces your cash in hand but doesn't affect total sales.
         </p>
         <p className={`text-xs mt-2 ${isDarkMode ? 'text-blue-300' : 'text-blue-600'}`}>
-          🔒 <strong>Protected Types:</strong> Card, DTP, Paytm, and PhonePe are system settlement types and cannot be edited or deleted.
+          <strong>Note:</strong> Card, DTP, Paytm, and PhonePe are system settlement types and cannot be edited or deleted.
         </p>
       </div>
     </div>
