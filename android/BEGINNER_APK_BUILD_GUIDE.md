@@ -209,7 +209,7 @@ Before building, you need to update one file:
 
 5. **Change it to your web app URL:**
    ```java
-   private static final String APP_URL = "https://fuelstation-app-2.preview.emergentagent.com";
+   private static final String APP_URL = "https://petrol-pump-app-1.preview.emergentagent.com";
    ```
 
 6. **Save the file:**
