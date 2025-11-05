@@ -560,7 +560,9 @@ const ZAPTRStyleCalculator = () => {
         if (fuelAmount > 0) {
           createAutoReceiptForMPP(
             fuelAmount, 
-            `Auto-receipt: MPP Credit Sale (Fuel) - ${newCredit.customerName || 'Credit Sale'}`
+            `Auto-receipt: MPP Credit Sale (Fuel) - ${newCredit.customerName || 'Credit Sale'}`,
+            newCredit.id,
+            'credit'
           );
         }
       }
