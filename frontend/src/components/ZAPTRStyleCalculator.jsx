@@ -2056,7 +2056,7 @@ window.onload = function() {
                   </div>
                 </div>
 
-                {/* Income */}
+                {/* Income (No MPP) */}
                 <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-700' : 'bg-green-50'
                 }`}>
@@ -2074,12 +2074,12 @@ window.onload = function() {
                     <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      ₹{stats.otherIncome.toFixed(2)}
+                      ₹{stats.otherIncomeNoMPP.toFixed(2)}
                     </div>
                   </div>
                 </div>
 
-                {/* Expenses */}
+                {/* Expenses (No MPP) */}
                 <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
                   isDarkMode ? 'bg-gray-700' : 'bg-red-50'
                 }`}>
@@ -2097,7 +2097,7 @@ window.onload = function() {
                     <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
                       isDarkMode ? 'text-white' : 'text-slate-800'
                     }`}>
-                      ₹{stats.totalExpenses.toFixed(2)}
+                      ₹{stats.totalExpensesNoMPP.toFixed(2)}
                     </div>
                   </div>
                 </div>
