@@ -594,6 +594,14 @@ const ZAPTRStyleCalculator = () => {
       // Update local state immediately
       setSettlementData(prev => [...prev, newSettlement]);
       
+      // If this settlement has MPP tag, auto-generate receipt for MPP customer
+      if (newSettlement.mpp === true && newSettlement.amount > 0) {
+        createAutoReceiptForMPP(
+          newSettlement.amount, 
+          `Auto-receipt: MPP Settlement - ${newSettlement.description || 'Settlement'}`
+        );
+      }
+      
       return newSettlement;
     } catch (error) {
       console.error('Failed to add settlement record:', error);
