@@ -79,10 +79,6 @@ const SettlementManagement = ({
   const handleDelete = (id, name) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
       onDeleteSettlementType(id);
-      toast({
-        title: "Settlement Type Deleted",
-        description: `${name} has been removed`,
-      });
     }
   };
 
