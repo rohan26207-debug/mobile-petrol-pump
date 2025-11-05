@@ -619,7 +619,9 @@ const ZAPTRStyleCalculator = () => {
       if (newSettlement.mpp === true && newSettlement.amount > 0) {
         createAutoReceiptForMPP(
           newSettlement.amount, 
-          `Auto-receipt: MPP Settlement - ${newSettlement.description || 'Settlement'}`
+          `Auto-receipt: MPP Settlement - ${newSettlement.description || 'Settlement'}`,
+          newSettlement.id,
+          'settlement'
         );
       }
       
