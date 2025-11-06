@@ -7,7 +7,7 @@ import { Button } from './ui/button';
 import { Wallet, Calendar, Printer, FileSpreadsheet } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
-const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, salesData, selectedDate }) => {
+const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, salesData, incomeData, expenseData, selectedDate }) => {
   // Initialize date range with current selected date
   const [fromDate, setFromDate] = useState(selectedDate);
   const [toDate, setToDate] = useState(selectedDate);
