@@ -4,6 +4,14 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from './ui/sheet';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 import { IndianRupee, Wallet, Trash2, Search, ChevronDown, Edit, X, AlertTriangle } from 'lucide-react';
 import localStorageService from '../services/localStorage';
 
