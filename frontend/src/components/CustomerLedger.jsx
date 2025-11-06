@@ -139,24 +139,16 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const mppFuelSales = mppSalesWithTag.reduce((sum, sale) => sum + (sale.amount || 0), 0);
     console.log('Total MPP Fuel Sales:', mppFuelSales);
     
-    // Get MPP credit sales amount (fuel portion only)
+    // Get MPP credit sales amount (TOTAL amount including fuel + income + expenses)
     const mppCreditsInRange = creditData.filter(c => c.date >= fromDate && c.date <= toDate);
     console.log('Credits in date range:', mppCreditsInRange.map(c => ({ date: c.date, mpp: c.mpp, customerName: c.customerName, amount: c.amount })));
     
     const mppCreditsWithTag = mppCreditsInRange.filter(c => c.mpp === true || c.mpp === 'true');
     console.log('MPP Tagged Credits:', mppCreditsWithTag.map(c => ({ date: c.date, mpp: c.mpp, customerName: c.customerName, amount: c.amount })));
     
-    // Calculate fuel amount only from MPP credits
-    const mppCreditAmount = mppCreditsWithTag.reduce((sum, credit) => {
-      if (credit.fuelEntries && credit.fuelEntries.length > 0) {
-        return sum + credit.fuelEntries.reduce((fuelSum, entry) => {
-          return fuelSum + (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0));
-        }, 0);
-      } else {
-        return sum + (credit.amount || 0);
-      }
-    }, 0);
-    console.log('Total MPP Credit Amount (fuel only):', mppCreditAmount);
+    // Use TOTAL credit amount (fuel + income + expenses) - same as Cash in Hand calculation
+    const mppCreditAmount = mppCreditsWithTag.reduce((sum, credit) => sum + (credit.amount || 0), 0);
+    console.log('Total MPP Credit Amount (TOTAL including fuel + income + expenses):', mppCreditAmount);
     
     // Get MPP income in date range (direct + from credit sales)
     const mppDirectIncome = incomeData
