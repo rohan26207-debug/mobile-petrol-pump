@@ -370,8 +370,6 @@ const Settlement = ({
                 </ScrollArea>
               )}
             </div>
-          </>
-        )}
       </CardContent>
     </Card>
   );
