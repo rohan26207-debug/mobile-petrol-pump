@@ -1,6 +1,6 @@
 // Firebase Configuration and Initialization
 import { initializeApp } from 'firebase/app';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
+import { getFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // Your web app's Firebase configuration
@@ -17,21 +17,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// Initialize Firestore with offline persistence
-const db = getFirestore(app);
-
-// Enable offline persistence (works even without internet)
-enableIndexedDbPersistence(db)
-  .then(() => {
-    console.log('✅ Firebase offline persistence enabled');
+// Initialize Firestore with new cache settings (recommended approach)
+// Using persistentLocalCache with multiple tab support for offline functionality
+const db = getFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
   })
-  .catch((err) => {
-    if (err.code === 'failed-precondition') {
-      console.warn('⚠️ Multiple tabs open, persistence can only be enabled in one tab at a time');
-    } else if (err.code === 'unimplemented') {
-      console.warn('⚠️ Browser does not support offline persistence');
-    }
-  });
+});
+
+console.log('✅ Firebase offline persistence enabled (new cache API)');
 
 // Initialize Auth
 const auth = getAuth(app);
