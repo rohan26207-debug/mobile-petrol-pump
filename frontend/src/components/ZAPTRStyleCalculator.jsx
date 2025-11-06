@@ -1142,6 +1142,8 @@ const ZAPTRStyleCalculator = () => {
       fuelLitersNoMPP,
       fuelSalesMPP,
       fuelLitersMPP,
+      fuelSalesByTypeNoMPP,
+      fuelSalesByTypeMPP,
       creditTotalAmountNoMPP,
       creditLitersNoMPP,
       creditAmountMPP,
