@@ -505,94 +505,86 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
 
       {/* Records List - Always show */}
       <div className="space-y-3">
-        <Card className={`${
-          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
-        } shadow-lg`}>
-          <CardHeader className={`${
-            activeType === 'income' 
-              ? 'bg-gradient-to-r from-blue-600 to-blue-700' 
-              : 'bg-gradient-to-r from-purple-600 to-purple-700'
-          } text-white rounded-t-lg`}>
-            <CardTitle className="flex items-center gap-2">
-              <Receipt className="w-5 h-5" />
-              {activeType === 'income' ? 'Income' : 'Expense'} Records ({currentData.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="p-0">
-            <ScrollArea className="h-[500px]">
-              <div className="p-4 space-y-3">
-                {currentData.length === 0 ? (
-                  <div className="text-center py-8 text-slate-500">
-                    {activeType === 'income' ? (
-                      <TrendingUp className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    ) : (
-                      <TrendingDown className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                    )}
-                    <p>No {activeType} records for {selectedDate === new Date().toISOString().split('T')[0] ? 'today' : 'selected date'}</p>
-                  </div>
-                ) : (
-                  currentData.map((record) => (
-                    <div key={record.id} className={`border rounded-lg p-3 sm:p-4 hover:shadow-md transition-shadow ${
-                      isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-white'
-                    }`}>
-                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-3">
+        <div className="flex items-center justify-between">
+          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+            {activeType === 'income' ? 'Income' : 'Expense'} Records
+          </h3>
+          <Badge variant="outline" className={activeType === 'income' ? 'text-green-600 border-green-600' : 'text-red-600 border-red-600'}>
+            {currentData.length} records
+          </Badge>
+        </div>
+
+        {currentData.length === 0 ? (
+          <p className={`text-sm text-center py-4 ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+            No {activeType} records for {new Date(selectedDate).toLocaleDateString()}
+          </p>
+        ) : (
+          <ScrollArea className="h-[300px]">
+            <div className="space-y-2">
+              {currentData.map((record) => (
+                <div 
+                  key={record.id}
+                  className={`border rounded-lg p-3 ${
+                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                  }`}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
                         <Badge className={`${
                           activeType === 'income' 
                             ? 'bg-green-100 text-green-800' 
                             : 'bg-red-100 text-red-800'
-                        } border-0 text-xs w-fit`}>
+                        } border-0 text-xs`}>
                           {activeType === 'income' ? 'Income' : 'Expense'}
                         </Badge>
-                        <div className="flex items-center gap-1">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => editRecord(record, activeType)}
-                          >
-                            <Edit className="w-3 h-3" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
-                            onClick={() => deleteRecord(record.id, activeType)}
-                          >
-                            <Trash2 className="w-3 h-3" />
-                          </Button>
-                        </div>
+                        {record.mpp && (
+                          <Badge className="bg-blue-100 text-blue-800 border-0 text-xs">
+                            MPP
+                          </Badge>
+                        )}
                       </div>
-
                       {record.description && (
-                        <p className={`text-xs sm:text-sm mb-3 break-words ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>{record.description}</p>
+                        <p className={`text-sm mb-2 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                          {record.description}
+                        </p>
                       )}
-
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-xs sm:text-sm mb-2 gap-1">
-                        <span className={`font-medium ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>Date:</span>
-                        <span className="font-medium">{record.date}</span>
+                      <div className="flex items-center gap-2 text-lg font-semibold">
+                        <IndianRupee className={`w-4 h-4 ${
+                          activeType === 'income' ? 'text-green-600' : 'text-red-600'
+                        }`} />
+                        <span className={activeType === 'income' ? 'text-green-600' : 'text-red-600'}>
+                          {record.amount.toFixed(2)}
+                        </span>
                       </div>
-
-                      <Separator className="my-3" />
-
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1">
-                        <span className={`font-semibold text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>Amount:</span>
-                        <div className="flex items-center gap-1">
-                          <IndianRupee className={`w-4 h-4 ${
-                            activeType === 'income' ? 'text-green-600' : 'text-red-600'
-                          }`} />
-                          <span className={`text-lg sm:text-xl font-bold ${
-                            activeType === 'income' ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {record.amount.toFixed(2)}
-                          </span>
-                        </div>
-                      </div>
+                      <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+                        {new Date(record.date).toLocaleDateString()}
+                      </p>
                     </div>
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-        ) : null}
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editRecord(record, activeType)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => deleteRecord(record.id, activeType)}
+                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+        )}
       </div>
     </div>
   );
