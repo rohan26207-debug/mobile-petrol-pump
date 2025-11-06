@@ -50,7 +50,7 @@ service cloud.firestore {
 
 ### **Step 2: Test Web App**
 
-1. Open: https://petrolapp-mobile.preview.emergentagent.com
+1. Open: https://mobilepetrolpump.vercel.app/
 2. Look for sync indicator (bottom-right corner)
 3. Add a customer
 4. Status should show "Online | Synced" ✅
