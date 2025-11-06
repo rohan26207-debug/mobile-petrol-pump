@@ -1542,14 +1542,13 @@ STOCK: ${fuelSettings ? Object.keys(fuelSettings).map(fuelType => {
 
 <div class="s">SUMMARY</div>
 <table>
-<tr><th>Category<th>Litres<th>Amount</tr>
-${Object.entries(stats.fuelSalesByType).map(([fuelType, data]) => 
-  `<tr><td>${fuelType} Sales<td class="r">${data.liters.toFixed(2)}L<td class="r">${data.amount.toFixed(2)}</tr>`
-).join('')}
-<tr><td>Credit Sales<td class="r">${stats.creditLiters.toFixed(2)}L<td class="r">${stats.creditAmount.toFixed(2)}</tr>
-<tr><td>Income<td class="r">-<td class="r">${stats.otherIncome.toFixed(2)}</tr>
-<tr><td>Expenses<td class="r">-<td class="r">${stats.totalExpenses.toFixed(2)}</tr>
-<tr class="t"><td><b>Cash in Hand</b><td class="r"><b>${stats.totalLiters.toFixed(2)}L</b><td class="r"><b>${stats.cashInHand.toFixed(2)}</b></tr>
+<tr><th>Category<th>Non-MPP<br>Litres<th>Non-MPP<br>Amount<th>MPP<br>Litres<th>MPP<br>Amount</tr>
+<tr><td>1. Fuel Sales<td class="r">${stats.fuelLitersNoMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesNoMPP.toFixed(2)}<td class="r">${stats.fuelLitersMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesMPP.toFixed(2)}</tr>
+<tr><td>2. Credit Sales<td class="r">${stats.creditLitersNoMPP.toFixed(2)}<td class="r">₹${stats.creditTotalAmountNoMPP.toFixed(2)}<td class="r">${stats.creditLitersMPP.toFixed(2)}<td class="r">₹${stats.creditAmountMPP.toFixed(2)}</tr>
+<tr><td>3. Income<td class="r">-<td class="r">₹${stats.otherIncomeNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.otherIncomeMPP.toFixed(2)}</tr>
+<tr><td>4. Expenses<td class="r">-<td class="r">₹${stats.totalExpensesNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.totalExpensesMPP.toFixed(2)}</tr>
+<tr><td>5. Settlement<td class="r">-<td class="r">₹${stats.settlementNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.settlementMPP.toFixed(2)}</tr>
+<tr class="t"><td><b>Cash in Hand / MPP Cash</b><td class="r"><b>-</b><td class="r"><b>₹${stats.cashInHand.toFixed(2)}</b><td class="r"><b>-</b><td class="r"><b>₹${stats.mppCash.toFixed(2)}</b></tr>
 </table>
 
 ${todaySales.length > 0 ? `
