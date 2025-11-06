@@ -1407,6 +1407,52 @@ const ZAPTRStyleCalculator = () => {
         yPos = doc.lastAutoTable.finalY + 10;
       }
 
+      // SETTLEMENT RECORDS (moved here after credit sales)
+      if (filteredSettlements.length > 0 && yPos < 250) {
+        if (yPos > 220) {
+          doc.addPage();
+          yPos = 20;
+        }
+
+        doc.setFontSize(12);
+        doc.setFont('helvetica', 'bold');
+        doc.text('SETTLEMENT RECORDS', 14, yPos);
+        yPos += 5;
+
+        const settlementTableData = filteredSettlements.map((settlement, index) => [
+          index + 1,
+          settlement.date,
+          settlement.description || 'Settlement',
+          `₹${settlement.amount.toFixed(2)}`,
+          settlement.mpp ? 'Yes' : 'No'
+        ]);
+
+        // Add total row
+        const totalSettlement = filteredSettlements.reduce((sum, s) => sum + s.amount, 0);
+        settlementTableData.push([
+          { content: 'Total', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
+          { content: `₹${totalSettlement.toFixed(2)}`, styles: { fontStyle: 'bold', halign: 'right' } },
+          ''
+        ]);
+
+        doc.autoTable({
+          startY: yPos,
+          head: [['#', 'Date', 'Description', 'Amount', 'MPP']],
+          body: settlementTableData,
+          theme: 'grid',
+          styles: { fontSize: 8, cellPadding: 2 },
+          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+          columnStyles: {
+            0: { cellWidth: 10 },
+            1: { cellWidth: 25 },
+            3: { halign: 'right' },
+            4: { halign: 'center' }
+          }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
       // INCOME & EXPENSES (if enabled and has data)
       const showIncome = pdfSettings.includeIncome && filteredIncome.length > 0;
       const showExpense = pdfSettings.includeExpense && filteredExpenses.length > 0;
