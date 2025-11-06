@@ -3612,20 +3612,25 @@ window.onload = function() {
                 <TabsList className={`flex w-full mb-4 ${
                   isDarkMode ? 'bg-gray-800' : 'bg-slate-100'
                 }`}>
-                  <TabsTrigger value="bank-settlement" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
-                    <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Bank Settlement</span>
-                    <span className="sm:hidden">Bank</span>
+                  <TabsTrigger value="bank-settlement" className="flex items-center justify-center gap-1 text-xs w-[20%]">
+                    <Wallet className="w-3 h-3" />
+                    <span className="hidden lg:inline">Bank</span>
                   </TabsTrigger>
-                  <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[34%]">
-                    <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Outstanding</span>
-                    <span className="sm:hidden">Ot</span>
+                  <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 text-xs w-[20%]">
+                    <FileText className="w-3 h-3" />
+                    <span className="hidden lg:inline">Outstanding</span>
                   </TabsTrigger>
-                  <TabsTrigger value="report" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
-                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Customer Ledger</span>
-                    <span className="sm:hidden">Cust</span>
+                  <TabsTrigger value="report" className="flex items-center justify-center gap-1 text-xs w-[20%]">
+                    <Users className="w-3 h-3" />
+                    <span className="hidden lg:inline">Ledger</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="credit-manage" className="flex items-center justify-center gap-1 text-xs w-[20%]">
+                    <CreditCard className="w-3 h-3" />
+                    <span className="hidden lg:inline">Credit</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="receipt-manage" className="flex items-center justify-center gap-1 text-xs w-[20%]">
+                    <Receipt className="w-3 h-3" />
+                    <span className="hidden lg:inline">Receipt</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
