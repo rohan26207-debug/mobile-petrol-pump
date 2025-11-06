@@ -12,8 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { IndianRupee, Wallet, Trash2, Search, ChevronDown, Edit, X, AlertTriangle } from 'lucide-react';
+import { IndianRupee, Wallet, Trash2, Search, ChevronDown, Edit, X, AlertTriangle, Printer, FileSpreadsheet, Plus } from 'lucide-react';
+import { Checkbox } from './ui/checkbox';
 import localStorageService from '../services/localStorage';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const PaymentReceived = ({ 
   customers, 
