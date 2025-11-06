@@ -3454,27 +3454,143 @@ window.onload = function() {
         {/* Outstanding View */}
         {parentTab === 'outstanding' && (
           <div className="mt-4">
-            {/* Outstanding Sub-tabs */}
-            <Tabs value={outstandingSubTab} onValueChange={setOutstandingSubTab} className="w-full">
-              <TabsList className={`flex w-full mb-4 ${
-                isDarkMode ? 'bg-gray-800' : 'bg-slate-100'
-              }`}>
-                <TabsTrigger value="bank-settlement" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
-                  <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Bank Settlement</span>
-                  <span className="sm:hidden">Bank</span>
-                </TabsTrigger>
-                <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[34%]">
-                  <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Outstanding</span>
-                  <span className="sm:hidden">Ot</span>
-                </TabsTrigger>
-                <TabsTrigger value="report" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
-                  <Users className="w-3 h-3 sm:w-4 sm:h-4" />
-                  <span className="hidden sm:inline">Customer Ledger</span>
-                  <span className="sm:hidden">Cust</span>
-                </TabsTrigger>
-              </TabsList>
+            {/* Mobile Block Layout for screens < 768px */}
+            <div className="block md:hidden">
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                {/* Bank Settlement Block */}
+                <div 
+                  onClick={() => setOutstandingSubTab('bank-settlement')}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    outstandingSubTab === 'bank-settlement'
+                      ? isDarkMode 
+                        ? 'bg-blue-900 border-blue-500 shadow-lg' 
+                        : 'bg-blue-50 border-blue-600 shadow-lg'
+                      : isDarkMode
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <Wallet className={`w-8 h-8 ${
+                      outstandingSubTab === 'bank-settlement'
+                        ? isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                        : isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      outstandingSubTab === 'bank-settlement'
+                        ? isDarkMode ? 'text-blue-200' : 'text-blue-700'
+                        : isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}>
+                      Bank Settlement
+                    </span>
+                  </div>
+                </div>
+
+                {/* Outstanding Block */}
+                <div 
+                  onClick={() => setOutstandingSubTab('outstanding-settings')}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    outstandingSubTab === 'outstanding-settings'
+                      ? isDarkMode 
+                        ? 'bg-blue-900 border-blue-500 shadow-lg' 
+                        : 'bg-blue-50 border-blue-600 shadow-lg'
+                      : isDarkMode
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <FileText className={`w-8 h-8 ${
+                      outstandingSubTab === 'outstanding-settings'
+                        ? isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                        : isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      outstandingSubTab === 'outstanding-settings'
+                        ? isDarkMode ? 'text-blue-200' : 'text-blue-700'
+                        : isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}>
+                      Outstanding
+                    </span>
+                  </div>
+                </div>
+
+                {/* Customer Ledger Block */}
+                <div 
+                  onClick={() => setOutstandingSubTab('report')}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    outstandingSubTab === 'report'
+                      ? isDarkMode 
+                        ? 'bg-blue-900 border-blue-500 shadow-lg' 
+                        : 'bg-blue-50 border-blue-600 shadow-lg'
+                      : isDarkMode
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                  }`}
+                >
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <Users className={`w-8 h-8 ${
+                      outstandingSubTab === 'report'
+                        ? isDarkMode ? 'text-blue-300' : 'text-blue-600'
+                        : isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      outstandingSubTab === 'report'
+                        ? isDarkMode ? 'text-blue-200' : 'text-blue-700'
+                        : isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                    }`}>
+                      Customer Ledger
+                    </span>
+                  </div>
+                </div>
+
+                {/* Placeholder block for symmetry (optional) */}
+                <div className={`p-4 rounded-lg border-2 ${
+                  isDarkMode
+                    ? 'bg-gray-800 border-gray-600 opacity-50'
+                    : 'bg-white border-slate-300 opacity-50'
+                }`}>
+                  <div className="flex flex-col items-center text-center space-y-2">
+                    <div className={`w-8 h-8 rounded ${
+                      isDarkMode ? 'bg-gray-600' : 'bg-slate-200'
+                    }`} />
+                    <span className={`text-sm font-medium ${
+                      isDarkMode ? 'text-gray-500' : 'text-slate-400'
+                    }`}>
+                      Coming Soon
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Tab Layout for screens >= 768px */}
+            <div className="hidden md:block">
+              <Tabs value={outstandingSubTab} onValueChange={setOutstandingSubTab} className="w-full">
+                <TabsList className={`flex w-full mb-4 ${
+                  isDarkMode ? 'bg-gray-800' : 'bg-slate-100'
+                }`}>
+                  <TabsTrigger value="bank-settlement" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
+                    <Wallet className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Bank Settlement</span>
+                    <span className="sm:hidden">Bank</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="outstanding-settings" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[34%]">
+                    <FileText className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Outstanding</span>
+                    <span className="sm:hidden">Ot</span>
+                  </TabsTrigger>
+                  <TabsTrigger value="report" className="flex items-center justify-center gap-1 sm:gap-2 text-xs sm:text-sm w-[33%]">
+                    <Users className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <span className="hidden sm:inline">Customer Ledger</span>
+                    <span className="sm:hidden">Cust</span>
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+            </div>
+
+            {/* Content (same for both mobile and desktop) */}
+            <div className="mt-4">
 
               <TabsContent value="bank-settlement">
                 <BankSettlement
