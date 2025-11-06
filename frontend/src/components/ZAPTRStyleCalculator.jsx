@@ -3367,18 +3367,6 @@ window.onload = function() {
             />
           </TabsContent>
 
-          <TabsContent value="c-sales">
-            <CreditSalesManagement 
-              isDarkMode={isDarkMode}
-              creditData={creditData}
-              fuelSettings={fuelSettings}
-              selectedDate={selectedDate}
-              onEditCredit={handleEditCredit}
-              onDeleteCredit={deleteCreditRecord}
-              customers={customers}
-            />
-          </TabsContent>
-
           <TabsContent value="receipt">
             <PaymentReceived
               customers={customers}
