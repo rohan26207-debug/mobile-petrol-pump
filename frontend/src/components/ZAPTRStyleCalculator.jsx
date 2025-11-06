@@ -3182,6 +3182,7 @@ window.onload = function() {
                   </SheetHeader>
                   <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
                 <IncomeExpense 
+                  key={editingIncomeExpenseData ? editingIncomeExpenseData.id : 'new'}
                   isDarkMode={isDarkMode}
                   incomeData={incomeData}
                   addIncomeRecord={addIncomeRecord}
