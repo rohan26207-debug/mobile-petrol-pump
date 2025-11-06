@@ -194,7 +194,7 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
                         <span className={`font-medium block ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
                           {customer.name}
                         </span>
-                        {customer.name.toLowerCase().includes('mobile petrol pump') && (
+                        {customer.name.toLowerCase().includes('manager petrol pump') && (
                           <label className="flex items-center gap-1 cursor-pointer">
                             <input
                               type="checkbox"
