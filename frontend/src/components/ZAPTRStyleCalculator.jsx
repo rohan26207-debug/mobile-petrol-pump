@@ -3638,8 +3638,8 @@ window.onload = function() {
 
             {/* Content (same for both mobile and desktop) */}
             <div className="mt-4">
-              {/* Only show content on desktop OR when blocks are hidden on mobile */}
-              {(!isMobile || !showBalanceBlocks) && (
+              {/* Show content when blocks are hidden */}
+              {!showBalanceBlocks && (
                 <>
                   {outstandingSubTab === 'bank-settlement' && (
                     <BankSettlement
