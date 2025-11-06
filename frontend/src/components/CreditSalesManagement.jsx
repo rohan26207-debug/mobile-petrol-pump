@@ -406,7 +406,7 @@ ${filteredCreditData.map(credit => {
 </div>
 <script>
 // Auto print on load (with delay for content loading)
-setTimeout(() => {
+setTimeout(function() {
     window.print();
 }, 500);
 </script>
