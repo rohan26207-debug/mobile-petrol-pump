@@ -1496,7 +1496,6 @@ const ZAPTRStyleCalculator = () => {
       }
 
       // BANK SETTLEMENT REPORT (moved to end)
-      // Calculate payment mode totals from settlements and payments
       const dateFilter = pdfSettings.dateRange === 'single' 
         ? (item) => item.date === pdfSettings.startDate
         : (item) => item.date >= pdfSettings.startDate && item.date <= pdfSettings.endDate;
@@ -1504,29 +1503,30 @@ const ZAPTRStyleCalculator = () => {
       const relevantSettlements = settlementData.filter(dateFilter);
       const relevantPayments = payments.filter(dateFilter);
       
-      let cashTotal = 0, cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
+      // Cash = Cash in Hand + MPP Cash (from summary)
+      const cashTotal = filteredStats.cashInHand + filteredStats.mppCash;
+      
+      // Other modes = Settlements (by mode) + Payments (by mode)
+      let cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
       
       relevantSettlements.forEach(s => {
         const amount = s.amount || 0;
         switch(s.mode?.toLowerCase()) {
-          case 'cash': cashTotal += amount; break;
           case 'card': cardTotal += amount; break;
           case 'paytm': paytmTotal += amount; break;
           case 'phonepe': phonepeTotal += amount; break;
           case 'dtp': dtpTotal += amount; break;
-          default: cashTotal += amount;
         }
       });
       
       relevantPayments.forEach(p => {
         const amount = p.amount || 0;
         switch(p.mode?.toLowerCase()) {
-          case 'cash': cashTotal += amount; break;
           case 'card': cardTotal += amount; break;
           case 'paytm': paytmTotal += amount; break;
           case 'phonepe': phonepeTotal += amount; break;
           case 'wallet': phonepeTotal += amount; break;
-          default: cashTotal += amount;
+          case 'dtp': dtpTotal += amount; break;
         }
       });
       
