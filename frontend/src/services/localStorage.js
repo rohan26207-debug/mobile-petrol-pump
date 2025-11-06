@@ -378,6 +378,13 @@ class LocalStorageService {
     return true;
   }
 
+  // Combined Income/Expense Data Method (for Firebase sync)
+  getIncomeExpenseData() {
+    const income = this.getIncomeData();
+    const expenses = this.getExpenseData();
+    return [...income, ...expenses];
+  }
+
   // Update methods
   updateSaleRecord(id, updatedData) {
     const sales = this.getSalesData();
