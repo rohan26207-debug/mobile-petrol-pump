@@ -1754,7 +1754,7 @@ window.onload = function() {
       summaryData.push([
         `${rowNum}. Credit Sales`,
         currentStats.creditLitersNoMPP.toFixed(2),
-        `₹${currentStats.creditTotalAmountNoMPP.toFixed(2)}`,
+        `₹${currentStats.creditAmountNoMPP.toFixed(2)}`,
         currentStats.creditLitersMPP.toFixed(2),
         `₹${currentStats.creditAmountMPP.toFixed(2)}`
       ]);
