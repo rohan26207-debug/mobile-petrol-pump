@@ -194,11 +194,19 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     const mppTotalExpenses = mppDirectExpenses + mppCreditExpenses;
     
-    // NOTE: We do NOT include MPP-tagged credits and settlements in MPP Cash calculation
-    // because they are now shown as separate auto-payment line items in the ledger
+    // Get MPP settlements amount
+    const mppSettlementsInRange = settlementData.filter(s => s.date >= fromDate && s.date <= toDate);
+    console.log('Settlements in date range:', mppSettlementsInRange.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
     
-    // Calculate MPP Cash: CASH Sales - Expenses + Income
-    const totalMPPCash = mppCashSales - mppTotalExpenses + mppTotalIncome;
+    const mppSettlementsWithTag = mppSettlementsInRange.filter(s => s.mpp === true || s.mpp === 'true');
+    console.log('MPP Tagged Settlements:', mppSettlementsWithTag.map(s => ({ date: s.date, mpp: s.mpp, amount: s.amount })));
+    
+    const mppSettlementAmount = mppSettlementsWithTag.reduce((sum, s) => sum + (s.amount || 0), 0);
+    console.log('Total MPP Settlement Amount:', mppSettlementAmount);
+    
+    // Calculate MPP Cash using FULL formula
+    // Formula: MPP Fuel Sales - MPP Credit Sales + MPP Income - MPP Expenses - MPP Settlements
+    const totalMPPCash = mppFuelSales - mppCreditAmount + mppTotalIncome - mppTotalExpenses - mppSettlementAmount;
     
     // Debug logging
     console.log('=== Customer Ledger MPP Cash Calculation ===');
