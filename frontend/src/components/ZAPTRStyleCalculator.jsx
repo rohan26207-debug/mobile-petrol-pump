@@ -1503,8 +1503,15 @@ const ZAPTRStyleCalculator = () => {
       const relevantSettlements = settlementData.filter(dateFilter);
       const relevantPayments = payments.filter(dateFilter);
       
-      // Cash = Cash in Hand + MPP Cash (from summary)
+      // Cash = Cash in Hand + MPP Cash + Home Cash
       const cashTotal = filteredStats.cashInHand + filteredStats.mppCash;
+      
+      // Add Home Cash (settlements with "home" in description)
+      const homeCash = relevantSettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('home'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      const finalCashTotal = cashTotal + homeCash;
       
       // Card = Settlements with "card" in description + Payments with mode "card"
       const cardFromSettlements = relevantSettlements
