@@ -83,6 +83,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const recordType = editingRecord.type || 'income';
       setActiveType(recordType);
       setFormData({
+        date: editingRecord.date || selectedDate,
         amount: editingRecord.amount?.toString() || '',
         description: editingRecord.description || '',
         type: recordType,
@@ -93,7 +94,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       // Reset when editingRecord is null (adding new record)
       setEditingId(null);
     }
-  }, [editingRecord]);
+  }, [editingRecord, selectedDate]);
 
   // Reset form when date changes (formResetKey changes) - but NOT when editing
   useEffect(() => {
