@@ -1506,29 +1506,41 @@ const ZAPTRStyleCalculator = () => {
       // Cash = Cash in Hand + MPP Cash (from summary)
       const cashTotal = filteredStats.cashInHand + filteredStats.mppCash;
       
-      // Other modes = Settlements (by mode) + Payments (by mode)
-      let cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
+      // Card = Settlements with "card" in description + Payments with mode "card"
+      const cardFromSettlements = relevantSettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('card'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      const cardFromPayments = relevantPayments
+        .filter(p => p.mode && p.mode.toLowerCase() === 'card')
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      const cardTotal = cardFromSettlements + cardFromPayments;
       
-      relevantSettlements.forEach(s => {
-        const amount = s.amount || 0;
-        switch(s.mode?.toLowerCase()) {
-          case 'card': cardTotal += amount; break;
-          case 'paytm': paytmTotal += amount; break;
-          case 'phonepe': phonepeTotal += amount; break;
-          case 'dtp': dtpTotal += amount; break;
-        }
-      });
+      // Paytm = Settlements with "paytm" in description + Payments with mode "paytm" or "wallet"
+      const paytmFromSettlements = relevantSettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('paytm'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      const paytmFromPayments = relevantPayments
+        .filter(p => p.mode && (p.mode.toLowerCase() === 'wallet' || p.mode.toLowerCase().includes('paytm')))
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      const paytmTotal = paytmFromSettlements + paytmFromPayments;
       
-      relevantPayments.forEach(p => {
-        const amount = p.amount || 0;
-        switch(p.mode?.toLowerCase()) {
-          case 'card': cardTotal += amount; break;
-          case 'paytm': paytmTotal += amount; break;
-          case 'phonepe': phonepeTotal += amount; break;
-          case 'wallet': phonepeTotal += amount; break;
-          case 'dtp': dtpTotal += amount; break;
-        }
-      });
+      // PhonePe = Settlements with "phonepe" in description + Payments with mode "phonepe"
+      const phonepeFromSettlements = relevantSettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('phonepe'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      const phonepeFromPayments = relevantPayments
+        .filter(p => p.mode && p.mode.toLowerCase().includes('phonepe'))
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      const phonepeTotal = phonepeFromSettlements + phonepeFromPayments;
+      
+      // DTP = Settlements with "dtp" in description + Payments with mode "dtp"
+      const dtpFromSettlements = relevantSettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('dtp'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      const dtpFromPayments = relevantPayments
+        .filter(p => p.mode && p.mode.toLowerCase() === 'dtp')
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      const dtpTotal = dtpFromSettlements + dtpFromPayments;
       
       if (yPos > 220) {
         doc.addPage();
