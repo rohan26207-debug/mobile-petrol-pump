@@ -351,4 +351,61 @@ const cash = cashFromSummary + homeCash + cashModePayments;
 
 ---
 
+## Test Session: Payment Received - Settlement Type Field Update
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Record Receipt Form Field Update
+
+### Change Request
+User requested to replace the "Mode" field in the Receipt Record window with a "Settlement Type" dropdown, matching the one used in the Settlement window.
+
+### Changes Implemented
+
+**Modified File**: `/app/frontend/src/components/PaymentReceived.jsx`
+
+1. **Imported Select Components**:
+   - Added Shadcn/Radix Select component imports (same as Settlement.jsx)
+
+2. **State Variable Changes**:
+   - Renamed `paymentMode` to `settlementType`
+   - Renamed `editPaymentMode` to `editSettlementType`
+   - Added `settlementTypes` state array
+   - Added `useEffect` to load settlement types from localStorage on mount
+
+3. **Form Field Replacement**:
+   - **Record Receipt Form**: Replaced HTML `<select>` dropdown with Shadcn `<Select>` component
+   - **Edit Receipt Form**: Replaced HTML `<select>` dropdown with Shadcn `<Select>` component
+   - Both now show "Settlement Type" label instead of "Mode"
+   - Both use the same settlement types loaded from Settings
+
+4. **Data Structure**:
+   - Payment records still use `mode` field internally for consistency
+   - The value stored is the settlement type name (e.g., "card", "paytm", "home")
+
+### User Interface Changes
+**Before:**
+- Label: "Mode"
+- Field: HTML select dropdown with hardcoded options (Cash, Card, Wallet, Bank, DTP)
+
+**After:**
+- Label: "Settlement Type"
+- Field: Shadcn Select component with settlement types from Settings
+- Placeholder: "Select settlement type..."
+- Dynamic options loaded from user-defined settlement types
+- Matches the exact design and behavior of Settlement window
+
+### Benefits
+1. **Consistency**: Payment receipts now use the same settlement types as settlements
+2. **Centralized Management**: Settlement types managed in one place (Settings)
+3. **User Control**: Users can add/edit settlement types that apply to both settlements and receipts
+4. **Better UX**: Consistent terminology and design across the application
+
+### Testing Status
+✅ **IMPLEMENTED AND VERIFIED**
+- Code syntax validated (no lint errors)
+- Frontend restarted successfully
+- Screenshot confirms "Settlement Type" field visible in Record Receipt form
+
+---
+
 *Last Updated: November 6, 2025*
