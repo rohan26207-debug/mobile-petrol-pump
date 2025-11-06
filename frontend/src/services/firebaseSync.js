@@ -24,6 +24,12 @@ class FirebaseSyncService {
     this.initialized = false;
   }
 
+  // Get current user ID
+  getUserId() {
+    const { auth } = require('./firebase');
+    return auth.currentUser?.uid || null;
+  }
+
   // Initialize Firebase sync
   async initialize() {
     if (this.initialized) return;
