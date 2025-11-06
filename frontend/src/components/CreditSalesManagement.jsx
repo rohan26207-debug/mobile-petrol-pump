@@ -413,6 +413,7 @@ const CreditSalesManagement = ({
         '</body>' +
         '</html>';
 
+
       // Open in new window for printing/PDF generation
       const printWindow = window.open('', '_blank', 'width=800,height=600');
       if (!printWindow) {
