@@ -2280,4 +2280,201 @@ User wanted the Balance tab to display a block/grid layout optimized for mobile 
 
 ---
 
+## Test Session: Balance Tab - Hide/Show Block Navigation
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Block Visibility Toggle on Mobile Balance Tab
+
+### Feature Request
+User wanted the blocks in Balance tab to:
+1. Show blocks when Balance tab is first clicked
+2. Hide blocks when any block (like Customer Ledger) is clicked
+3. Show blocks again when Balance tab is clicked again
+
+### Implementation
+
+**Navigation Flow**:
+```
+Balance Tab → Show Blocks → Click Block → Hide Blocks + Show Content → Click Balance → Show Blocks
+```
+
+**Modified File**: `/app/frontend/src/components/ZAPTRStyleCalculator.jsx`
+
+### Key Changes
+
+**1. Added Navigation State** (line ~734):
+```javascript
+const [showBalanceBlocks, setShowBalanceBlocks] = useState(true);
+const [isMobile, setIsMobile] = useState(false);
+```
+
+**2. Enhanced Balance Tab Click Handler**:
+```javascript
+const handleBalanceTabClick = () => {
+  if (parentTab === 'outstanding' && !showBalanceBlocks) {
+    // If already in Balance tab showing content, go back to blocks
+    setShowBalanceBlocks(true);
+  } else {
+    // Normal tab switch to Balance
+    setParentTab('outstanding');
+    setShowBalanceBlocks(true);
+  }
+};
+```
+
+**3. Enhanced Block Click Handler**:
+```javascript
+const handleBalanceBlockClick = (blockType) => {
+  setOutstandingSubTab(blockType);  // Set the content to show
+  setShowBalanceBlocks(false);      // Hide the blocks
+};
+```
+
+**4. Conditional Rendering**:
+- Blocks: Only show when `showBalanceBlocks === true`
+- Content: Only show when blocks are hidden OR on desktop
+- Helper text: Shows when content is displayed ("Tap 'Balance' to go back to blocks")
+
+### Mobile User Experience
+
+**Step 1: Open Balance Tab**
+```
+┌─────────────────────────┐
+│ Today Summary  Balance  │ ← Balance active
+├─────────────────────────┤
+│ ┌─────────┐ ┌─────────┐ │
+│ │[Wallet] │ │[File   ]│ │
+│ │Bank     │ │Outstanding│ │
+│ └─────────┘ └─────────┘ │
+│ ┌─────────┐ ┌─────────┐ │
+│ │[Users]  │ │[Coming ]│ │
+│ │Customer │ │Soon    │ │
+│ │Ledger   │ │        │ │
+│ └─────────┘ └─────────┘ │
+└─────────────────────────┘
+```
+
+**Step 2: Click Customer Ledger Block**
+```
+┌─────────────────────────┐
+│ Today Summary  Balance  │ ← Balance still active
+├─────────────────────────┤
+│ Tap "Balance" to go     │
+│ back to blocks          │
+├─────────────────────────┤
+│ Customer Ledger Report  │
+│                         │
+│ Select Customer         │
+│ [Search dropdown]       │
+│                         │
+│ From Date    To Date    │
+│ [date]      [date]      │
+│                         │
+│ [Generate Report]       │
+└─────────────────────────┘
+```
+
+**Step 3: Click Balance Tab Again**
+```
+┌─────────────────────────┐
+│ Today Summary  Balance  │ ← Balance active
+├─────────────────────────┤
+│ ┌─────────┐ ┌─────────┐ │ ← Blocks return!
+│ │[Wallet] │ │[File   ]│ │
+│ │Bank     │ │Outstanding│ │
+│ └─────────┘ └─────────┘ │
+│ ┌─────────┐ ┌─────────┐ │
+│ │[Users]  │ │[Coming ]│ │
+│ │Customer │ │Soon    │ │
+│ │Ledger   │ │        │ │
+│ └─────────┘ └─────────┘ │
+└─────────────────────────┘
+```
+
+### Technical Implementation
+
+**Mobile Detection**:
+```javascript
+useEffect(() => {
+  const checkScreenSize = () => {
+    setIsMobile(window.innerWidth < 768);
+  };
+  checkScreenSize();
+  window.addEventListener('resize', checkScreenSize);
+  return () => window.removeEventListener('resize', checkScreenSize);
+}, []);
+```
+
+**Conditional Block Rendering**:
+```javascript
+{showBalanceBlocks ? (
+  <div className="grid grid-cols-2 gap-3 mb-4">
+    {/* Blocks */}
+  </div>
+) : (
+  <div className="mb-4">
+    <div className="text-sm font-medium mb-3">
+      Tap "Balance" to go back to blocks
+    </div>
+  </div>
+)}
+```
+
+**Conditional Content Rendering**:
+```javascript
+{(!isMobile || !showBalanceBlocks) && (
+  // Content components
+)}
+```
+
+### Benefits
+
+1. **Clean Navigation**: Clear separation between block selection and content viewing
+2. **Intuitive UX**: Clicking Balance acts as a "back" button when in content view
+3. **Space Efficient**: Full screen for content when blocks are hidden
+4. **User Guidance**: Helper text explains how to return to blocks
+5. **Desktop Unchanged**: Desktop still shows both tabs and content simultaneously
+
+### Expected User Flow
+
+**Your Use Case**:
+1. Tap "Balance" → See 4 blocks in 2x2 grid
+2. Tap "Customer Ledger" block → Blocks disappear, Customer Ledger form appears
+3. Use Customer Ledger Report (same functionality as tab)
+4. Tap "Balance" again → Blocks return, content disappears
+5. Tap different block → New content appears, blocks hide again
+
+### Screenshots Verified
+
+✅ **Initial Blocks**: 2x2 grid layout displays correctly  
+✅ **Content View**: Customer Ledger opens, blocks hidden, helper text shown  
+✅ **Back to Blocks**: Clicking Balance returns to block view  
+
+### Desktop Behavior
+
+**Unchanged**: Desktop users still see traditional tabs with content always visible below tabs.
+
+### Testing Status
+✅ **IMPLEMENTED AND VERIFIED**
+- Code syntax validated (no lint errors)
+- Frontend restarted successfully
+- Mobile navigation flow tested and confirmed
+- Screenshots verify all 3 states working correctly
+
+### User Testing Instructions
+
+**Test Complete Navigation Flow**:
+1. Open app on mobile (6.7" screen)
+2. Tap "Balance" → **Verify**: See 4 blocks
+3. Tap "Customer Ledger" block → **Verify**: Blocks disappear, Customer Ledger appears
+4. **Verify**: See "Tap 'Balance' to go back to blocks" message
+5. Use Customer Ledger features
+6. Tap "Balance" → **Verify**: Blocks return, content disappears
+7. Tap "Bank Settlement" block → **Verify**: Bank Settlement appears, blocks hide
+8. Tap "Balance" → **Verify**: Back to blocks
+
+**Expected Result**: Perfect mobile navigation with hide/show block behavior exactly as requested!
+
+---
+
 *Last Updated: November 6, 2025*
