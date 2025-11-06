@@ -3712,6 +3712,16 @@ window.onload = function() {
                       selectedDate={selectedDate}
                     />
                   )}
+
+                  {outstandingSubTab === 'customer-manage' && (
+                    <CustomerManagement 
+                      customers={customers}
+                      onAddCustomer={addCustomer}
+                      onDeleteCustomer={deleteCustomer}
+                      onUpdateCustomer={updateCustomer}
+                      isDarkMode={isDarkMode}
+                    />
+                  )}
                 </>
               )}
             </div>
