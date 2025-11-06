@@ -2209,31 +2209,6 @@ window.onload = function() {
                     </div>
                   </div>
                 </div>
-              
-              {/* Show total if there are multiple fuel types */}
-              {Object.keys(stats.fuelSalesByType).length > 1 && (
-                <div className={`flex items-center justify-between py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-slate-50'
-                } border-2 border-dashed ${isDarkMode ? 'border-gray-600' : 'border-slate-300'}`}>
-                  <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-slate-600 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm flex-shrink-0">
-                      T
-                    </div>
-                    <span className={`font-medium text-xs sm:text-base truncate ${
-                      isDarkMode ? 'text-white' : 'text-slate-800'
-                    }`}>
-                      Total Reading Sales
-                    </span>
-                  </div>
-                  <div className="text-right flex-shrink-0">
-                    <div className={`text-xs sm:text-lg font-bold whitespace-nowrap ${
-                      isDarkMode ? 'text-white' : 'text-slate-800'
-                    }`}>
-                      {stats.totalLiters.toFixed(2)}L • ₹{stats.fuelCashSales.toFixed(2)}
-                    </div>
-                  </div>
-                </div>
-              )}
 
                 {/* Credit Sales (No MPP) */}
                 <div className={`flex justify-between items-center p-2 sm:p-3 rounded-lg border-l-4 border-orange-500 ${
