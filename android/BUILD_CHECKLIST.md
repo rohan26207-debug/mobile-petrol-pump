@@ -47,7 +47,7 @@ Print this and check off each step as you complete it!
 - [ ] Opened `MainActivity.java` file:
   - Path: `app/java/com/mpumpcalc/MainActivity.java`
 - [ ] Found line 45: `private static final String APP_URL = ...`
-- [ ] Updated URL to: `"https://petrol-pump-app-1.preview.emergentagent.com"`
+- [ ] Updated URL to: `"https://petro-ledger-sync.preview.emergentagent.com"`
 - [ ] Saved file (Ctrl+S or Cmd+S)
 - [ ] Green checkmark shows (no red errors)
 
