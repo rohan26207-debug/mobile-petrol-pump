@@ -1,7 +1,7 @@
-# Mobile Petrol Pump Application - Test Results
+# Manager Petrol Pump Application - Test Results
 
 ## Testing Protocol
-This document tracks testing activities and results for the Mobile Petrol Pump application.
+This document tracks testing activities and results for the Manager Petrol Pump application.
 
 ---
 
