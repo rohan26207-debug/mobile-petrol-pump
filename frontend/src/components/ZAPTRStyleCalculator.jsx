@@ -1789,8 +1789,15 @@ ${(() => {
   const todaySettlements = settlementData.filter(s => s.date === selectedDate);
   const todayPayments = payments.filter(p => p.date === selectedDate);
   
-  // Cash = Cash in Hand + MPP Cash (from summary)
-  const cash = stats.cashInHand + stats.mppCash;
+  // Cash = Cash in Hand + MPP Cash + Home Cash
+  const cashFromSummary = stats.cashInHand + stats.mppCash;
+  
+  // Add Home Cash (settlements with "home" in description)
+  const homeCash = todaySettlements
+    .filter(s => s.description && s.description.toLowerCase().includes('home'))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+  
+  const cash = cashFromSummary + homeCash;
   
   // Card = Settlements with "card" in description + Payments with mode "card"
   const cardFromSettlements = todaySettlements
