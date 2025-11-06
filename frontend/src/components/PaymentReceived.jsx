@@ -743,48 +743,57 @@ const PaymentReceived = ({
               <p>No receipts in selected date range</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="space-y-2">
               {filteredPayments.map((payment) => (
                 <div
                   key={payment.id}
-                  className={`flex items-center justify-between p-3 rounded-lg border ${
+                  className={`flex items-center gap-2 p-3 rounded-lg border ${
                     isDarkMode 
                       ? 'bg-gray-700 border-gray-600' 
                       : 'bg-slate-50 border-slate-200'
-                  }`}
+                  } ${selectedPayments.has(payment.id) ? (isDarkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400') : ''}`}
                 >
-                  <div className="flex-1">
-                    <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-                      {payment.customerName}
+                  {/* Checkbox */}
+                  <Checkbox
+                    checked={selectedPayments.has(payment.id)}
+                    onCheckedChange={(checked) => handleSelectPayment(payment.id, checked)}
+                    className={isDarkMode ? 'border-gray-500' : ''}
+                  />
+                  
+                  <div className="flex items-center justify-between flex-1">
+                    <div className="flex-1">
+                      <div className={`font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                        {payment.customerName}
+                      </div>
+                      <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
+                        {new Date(payment.date).toLocaleDateString()} • {payment.mode || 'N/A'}
+                      </div>
                     </div>
-                    <div className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-slate-500'}`}>
-                      {new Date(payment.date).toLocaleDateString()}
+                    <div className="flex items-center gap-3">
+                      <span className={`font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
+                        ₹{payment.amount.toFixed(2)}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleEditPayment(payment)}
+                        className={`hover:bg-blue-100 hover:text-blue-600 ${
+                          isDarkMode ? 'text-gray-400 hover:bg-blue-900 hover:text-blue-400' : ''
+                        }`}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteClick(payment)}
+                        className={`hover:bg-red-100 hover:text-red-600 ${
+                          isDarkMode ? 'text-gray-400 hover:bg-red-900 hover:text-red-400' : ''
+                        }`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className={`font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
-                      ₹{payment.amount.toFixed(2)}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleEditPayment(payment)}
-                      className={`hover:bg-blue-100 hover:text-blue-600 ${
-                        isDarkMode ? 'text-gray-400 hover:bg-blue-900 hover:text-blue-400' : ''
-                      }`}
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDeleteClick(payment)}
-                      className={`hover:bg-red-100 hover:text-red-600 ${
-                        isDarkMode ? 'text-gray-400 hover:bg-red-900 hover:text-red-400' : ''
-                      }`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
                   </div>
                 </div>
               ))}
