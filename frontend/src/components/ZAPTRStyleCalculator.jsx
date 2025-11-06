@@ -746,6 +746,7 @@ const ZAPTRStyleCalculator = () => {
   };
 
   const handleEditSettlement = (settlementRecord) => {
+    console.log('handleEditSettlement called with:', settlementRecord);
     setEditingSettlementData(settlementRecord);
     setSettlementDialogOpen(true);
   };
