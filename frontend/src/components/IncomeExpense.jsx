@@ -147,7 +147,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const recordData = {
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate,
+        date: formData.date,
         mpp: formData.mpp || false
       };
       
@@ -157,7 +157,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         updateExpenseRecord(editingId, recordData);
       }
       setEditingId(null);
-      setFormData({ description: '', amount: '', mpp: false });
+      setFormData({ date: selectedDate, description: '', amount: '', mpp: false });
       // Close dialog after updating
       if (onRecordSaved) onRecordSaved();
     } else {
@@ -165,7 +165,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         const newIncome = addIncomeRecord({
           description: formData.description,
           amount: parseFloat(formData.amount),
-          date: selectedDate,
+          date: formData.date,
           mpp: formData.mpp || false
         });
         
@@ -174,7 +174,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
           localStorageService.addIncomeDescHistory(formData.description);
           setIncomeDescHistory(localStorageService.getIncomeDescHistory());
           
-          setFormData({ description: '', amount: '', mpp: false });
+          setFormData({ date: selectedDate, description: '', amount: '', mpp: false });
           // Close dialog after adding
           if (onRecordSaved) onRecordSaved();
         }
@@ -182,7 +182,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         const newExpense = addExpenseRecord({
           description: formData.description,
           amount: parseFloat(formData.amount),
-          date: selectedDate,
+          date: formData.date,
           mpp: formData.mpp || false
         });
         
@@ -191,7 +191,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
           localStorageService.addExpenseDescHistory(formData.description);
           setExpenseDescHistory(localStorageService.getExpenseDescHistory());
           
-          setFormData({ description: '', amount: '', mpp: false });
+          setFormData({ date: selectedDate, description: '', amount: '', mpp: false });
           // Close dialog after adding
           if (onRecordSaved) onRecordSaved();
         }
