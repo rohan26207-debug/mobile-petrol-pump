@@ -1,6 +1,6 @@
 // Firebase Configuration and Initialization
 import { initializeApp } from 'firebase/app';
-import { getFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // Your web app's Firebase configuration
