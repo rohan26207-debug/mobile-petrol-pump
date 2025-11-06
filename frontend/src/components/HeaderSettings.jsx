@@ -1089,6 +1089,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     </div>
                   </div>
                 </div>
+                </ScrollArea>
               </TabsContent>
               
               <TabsContent value="fuel" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
