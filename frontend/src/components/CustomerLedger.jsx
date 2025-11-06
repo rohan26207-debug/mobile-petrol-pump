@@ -196,42 +196,93 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const mppSettlementAmount = mppSettlementsWithTag.reduce((sum, s) => sum + (s.amount || 0), 0);
     console.log('Total MPP Settlement Amount:', mppSettlementAmount);
     
-    // Calculate MPP Cash using FULL formula (matches Today Summary calculation)
-    // Formula: MPP Fuel Sales - MPP Credit Total (fuel + income + expenses) - MPP Expenses + MPP Income - MPP Settlements
-    // Note: Credit amount already includes income/expenses from credits, separate income/expenses are direct entries
-    const totalMPPCash = mppFuelSales - mppCreditAmount - mppTotalExpenses + mppTotalIncome - mppSettlementAmount;
+    // Calculate MPP Cash DAY-WISE (not accumulated)
+    // Get unique dates in the range
+    const allDates = new Set();
+    salesData.filter(s => s.date >= fromDate && s.date <= toDate).forEach(s => allDates.add(s.date));
+    creditData.filter(c => c.date >= fromDate && c.date <= toDate).forEach(c => allDates.add(c.date));
+    incomeData.filter(i => i.date >= fromDate && i.date <= toDate).forEach(i => allDates.add(i.date));
+    expenseData.filter(e => e.date >= fromDate && e.date <= toDate).forEach(e => allDates.add(e.date));
+    settlementData.filter(s => s.date >= fromDate && s.date <= toDate).forEach(s => allDates.add(s.date));
     
-    // Debug logging
-    console.log('=== Customer Ledger MPP Cash Calculation (FULL FORMULA) ===');
+    const sortedDates = Array.from(allDates).sort();
+    
+    console.log('=== Customer Ledger MPP Cash Calculation (DAY-WISE) ===');
     console.log('Customer:', customer.name);
     console.log('Date Range:', fromDate, 'to', toDate);
+    console.log('Dates with transactions:', sortedDates);
     console.log('');
-    console.log('MPP Fuel Sales (All tagged sales):', mppFuelSales);
-    console.log('MPP Credit Amount (TOTAL: fuel + income + expenses):', mppCreditAmount);
-    console.log('MPP Total Expenses (Tagged direct expenses):', mppTotalExpenses);
-    console.log('MPP Total Income (Tagged direct income):', mppTotalIncome);
-    console.log('MPP Settlement Amount (Tagged settlements):', mppSettlementAmount);
-    console.log('');
-    console.log('Formula:', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount);
-    console.log('Final MPP Cash:', totalMPPCash);
-    console.log('');
-    console.log('NOTE: Matches Today Summary MPP Cash calculation');
-    console.log('NOTE: Auto-payments for MPP credits show fuel amount only (separate line items)');
-    console.log('==========================================');
     
-    if (totalMPPCash !== 0) {
-      // Show MPP cash as a single entry
-      // If positive: shows in "Received" column (reduces outstanding)
-      // If negative: shows in "Credit" column (increases outstanding)
-      const mppCashEntry = {
-        date: toDate, // Show on end date for summary
-        type: 'mpp_cash',
-        credit: totalMPPCash < 0 ? Math.abs(totalMPPCash) : 0,
-        received: totalMPPCash > 0 ? totalMPPCash : 0,
-        description: 'MPP Cash'
-      };
-      ledgerEntries.push(mppCashEntry);
-    }
+    // Calculate MPP Cash for each day
+    sortedDates.forEach(date => {
+      // MPP Fuel Sales for this day
+      const dayMPPSales = salesData
+        .filter(s => s.date === date && (s.mpp === true || s.mpp === 'true'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      // MPP Credit Total for this day
+      const dayMPPCredits = creditData
+        .filter(c => c.date === date && (c.mpp === true || c.mpp === 'true'))
+        .reduce((sum, c) => sum + (c.amount || 0), 0);
+      
+      // MPP Income for this day (direct + from credits)
+      const dayMPPDirectIncome = incomeData
+        .filter(i => i.date === date && (i.mpp === true || i.mpp === 'true'))
+        .reduce((sum, i) => sum + (i.amount || 0), 0);
+      
+      const dayMPPCreditIncome = creditData
+        .filter(c => c.date === date && (c.mpp === true || c.mpp === 'true'))
+        .reduce((sum, c) => {
+          if (c.incomeEntries && c.incomeEntries.length > 0) {
+            return sum + c.incomeEntries.reduce((incSum, entry) => incSum + (entry.amount || 0), 0);
+          }
+          return sum;
+        }, 0);
+      
+      const dayMPPIncome = dayMPPDirectIncome + dayMPPCreditIncome;
+      
+      // MPP Expenses for this day (direct + from credits)
+      const dayMPPDirectExpenses = expenseData
+        .filter(e => e.date === date && (e.mpp === true || e.mpp === 'true'))
+        .reduce((sum, e) => sum + (e.amount || 0), 0);
+      
+      const dayMPPCreditExpenses = creditData
+        .filter(c => c.date === date && (c.mpp === true || c.mpp === 'true'))
+        .reduce((sum, c) => {
+          if (c.expenseEntries && c.expenseEntries.length > 0) {
+            return sum + c.expenseEntries.reduce((expSum, entry) => expSum + (entry.amount || 0), 0);
+          }
+          return sum;
+        }, 0);
+      
+      const dayMPPExpenses = dayMPPDirectExpenses + dayMPPCreditExpenses;
+      
+      // MPP Settlements for this day
+      const dayMPPSettlements = settlementData
+        .filter(s => s.date === date && (s.mpp === true || s.mpp === 'true'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      // Calculate day's MPP Cash
+      const dayMPPCash = dayMPPSales - dayMPPCredits - dayMPPExpenses + dayMPPIncome - dayMPPSettlements;
+      
+      console.log(`Date ${date}:`);
+      console.log(`  Sales: ${dayMPPSales}, Credits: ${dayMPPCredits}, Income: ${dayMPPIncome}, Expenses: ${dayMPPExpenses}, Settlements: ${dayMPPSettlements}`);
+      console.log(`  MPP Cash: ${dayMPPCash}`);
+      
+      // Only add entry if there's MPP cash for this day
+      if (dayMPPCash !== 0) {
+        const mppCashEntry = {
+          date: date,
+          type: 'mpp_cash',
+          credit: dayMPPCash < 0 ? Math.abs(dayMPPCash) : 0,
+          received: dayMPPCash > 0 ? dayMPPCash : 0,
+          description: 'MPP Cash'
+        };
+        ledgerEntries.push(mppCashEntry);
+      }
+    });
+    
+    console.log('==========================================');
 
     // 5. All payments to Mobile Petrol Pump customer (including auto-generated ones)
     const allMPPPayments = payments
