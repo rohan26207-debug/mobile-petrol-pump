@@ -3347,6 +3347,8 @@ window.onload = function() {
                   payments={payments}
                   creditData={creditData}
                   salesData={salesData}
+                  incomeData={incomeData}
+                  expenseData={expenseData}
                   selectedDate={selectedDate}
                 />
               </TabsContent>
