@@ -454,7 +454,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
               htmlFor="mpp-incexp"
               className={`text-sm font-medium cursor-pointer ${isDarkMode ? 'text-white' : 'text-slate-700'}`}
             >
-              Mobile Petrol Pump (MPP)
+              Manager Petrol Pump (MPP)
             </Label>
           </div>
         )}
