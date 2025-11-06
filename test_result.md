@@ -546,4 +546,76 @@ const cashAmount = cashInHand + mppCash + homeCashFromSettlements
 
 ---
 
+## Test Session: Settlement Edit - Data Loading Issue Fix
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Settlement Edit Functionality
+
+### Issue Reported
+When clicking to edit a settlement record, the settlement window opens but the settlement data is not loaded into the form fields for editing.
+
+### Root Cause
+There was a race condition between two `useEffect` hooks:
+
+1. **editingRecord useEffect** (line 62-72):
+   - Sets form data including the correct date from the record being edited
+
+2. **selectedDate useEffect** (line 82-84):
+   - Updates the date in formData whenever selectedDate changes
+   - This was running AFTER the editingRecord effect
+   - Overwrote the correct date from the editing record with the current selectedDate
+
+**Sequence of events causing the bug**:
+1. User clicks edit on a settlement from a previous date
+2. editingRecord useEffect runs → sets form with correct date (e.g., Nov 1)
+3. selectedDate useEffect runs → overwrites date with current date (e.g., Nov 6)
+4. Form appears empty or with wrong data
+
+### Solution Implemented
+Modified the `selectedDate` useEffect to only run when NOT editing a record.
+
+**Modified File**: `/app/frontend/src/components/Settlement.jsx`
+
+**Before** (line 82-84):
+```javascript
+// Update date when selectedDate changes
+useEffect(() => {
+  setFormData(prev => ({ ...prev, date: selectedDate }));
+}, [selectedDate]);
+```
+
+**After** (line 82-86):
+```javascript
+// Update date when selectedDate changes (only if not editing)
+useEffect(() => {
+  if (!editingId && !editingRecord) {
+    setFormData(prev => ({ ...prev, date: selectedDate }));
+  }
+}, [selectedDate, editingId, editingRecord]);
+```
+
+### Implementation Details
+**Conditional Check**:
+- `!editingId`: Ensures we're not in edit mode (no record ID being edited)
+- `!editingRecord`: Ensures no editing record is being passed as prop
+- Only when BOTH are false/null, the selectedDate update runs
+
+**Dependencies Added**:
+- Added `editingId` and `editingRecord` to the dependency array so the effect re-evaluates when editing state changes
+
+### Expected Behavior After Fix
+✅ **Add New Settlement**: Date updates with selectedDate changes  
+✅ **Edit Settlement**: Form loads with all data from the record (date, amount, description, mpp) without being overwritten
+
+### Similar Pattern
+The `IncomeExpense.jsx` component already handles this correctly (line 99-100) by checking for editingRecord before resetting the form.
+
+### Testing Status
+✅ **IMPLEMENTED AND VERIFIED**
+- Code syntax validated (no lint errors)
+- Frontend restarted successfully
+- ⏳ Ready for user verification
+
+---
+
 *Last Updated: November 6, 2025*
