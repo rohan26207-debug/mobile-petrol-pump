@@ -3295,50 +3295,52 @@ window.onload = function() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all">
-            <UnifiedRecords 
-              isDarkMode={isDarkMode}
-              salesData={salesData}
-              creditData={creditData}
-              incomeData={incomeData}
-              expenseData={expenseData}
-              settlementData={settlementData}
-              selectedDate={selectedDate}
-              onEditSale={handleEditSale}
-              deleteSaleRecord={deleteSaleRecord}
-              onEditCredit={handleEditCredit}
-              deleteCreditRecord={deleteCreditRecord}
-              onEditIncome={(record) => handleEditIncomeExpense(record, 'income')}
-              deleteIncomeRecord={deleteIncomeRecord}
-              onEditExpense={(record) => handleEditIncomeExpense(record, 'expense')}
-              deleteExpenseRecord={deleteExpenseRecord}
-              onEditSettlement={handleEditSettlement}
-              deleteSettlementRecord={deleteSettlementRecord}
-            />
-          </TabsContent>
+          <div className="max-h-[60vh] overflow-y-auto" style={{ scrollBehavior: 'smooth' }}>
+            <TabsContent value="all">
+              <UnifiedRecords 
+                isDarkMode={isDarkMode}
+                salesData={salesData}
+                creditData={creditData}
+                incomeData={incomeData}
+                expenseData={expenseData}
+                settlementData={settlementData}
+                selectedDate={selectedDate}
+                onEditSale={handleEditSale}
+                deleteSaleRecord={deleteSaleRecord}
+                onEditCredit={handleEditCredit}
+                deleteCreditRecord={deleteCreditRecord}
+                onEditIncome={(record) => handleEditIncomeExpense(record, 'income')}
+                deleteIncomeRecord={deleteIncomeRecord}
+                onEditExpense={(record) => handleEditIncomeExpense(record, 'expense')}
+                deleteExpenseRecord={deleteExpenseRecord}
+                onEditSettlement={handleEditSettlement}
+                deleteSettlementRecord={deleteSettlementRecord}
+              />
+            </TabsContent>
 
-          <TabsContent value="c-sales">
-            <CreditSalesManagement
-              customers={customers}
-              creditData={creditData}
-              selectedDate={selectedDate}
-              onEditCredit={handleEditCredit}
-              onDeleteCredit={deleteCreditRecord}
-              isDarkMode={isDarkMode}
-            />
-          </TabsContent>
+            <TabsContent value="c-sales">
+              <CreditSalesManagement
+                customers={customers}
+                creditData={creditData}
+                selectedDate={selectedDate}
+                onEditCredit={handleEditCredit}
+                onDeleteCredit={deleteCreditRecord}
+                isDarkMode={isDarkMode}
+              />
+            </TabsContent>
 
-          <TabsContent value="receipt">
-            <PaymentReceived
-              customers={customers}
-              payments={payments}
-              selectedDate={selectedDate}
-              onAddPayment={handleAddPayment}
-              onUpdatePayment={handleUpdatePayment}
-              onDeletePayment={handleDeletePayment}
-              isDarkMode={isDarkMode}
-            />
-          </TabsContent>
+            <TabsContent value="receipt">
+              <PaymentReceived
+                customers={customers}
+                payments={payments}
+                selectedDate={selectedDate}
+                onAddPayment={handleAddPayment}
+                onUpdatePayment={handleUpdatePayment}
+                onDeletePayment={handleDeletePayment}
+                isDarkMode={isDarkMode}
+              />
+            </TabsContent>
+          </div>
         </Tabs>
 
         {/* Stock Dialog/Sheet */}
