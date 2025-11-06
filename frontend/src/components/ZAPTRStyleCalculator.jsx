@@ -2056,6 +2056,38 @@ window.onload = function() {
         yPos = 20;
       }
 
+      // Settlement Records (moved here after credits)
+      const todaySettlements = settlementData.filter(s => s.date === selectedDate);
+      if (todaySettlements.length > 0 && yPos < 250) {
+        doc.setFontSize(14);
+        doc.text('SETTLEMENT RECORDS', 14, yPos);
+        yPos += 5;
+
+        const settlementTableData = todaySettlements.map((settlement, index) => [
+          index + 1,
+          settlement.description || 'Settlement',
+          settlement.amount.toFixed(2),
+          settlement.mpp ? 'Yes' : 'No'
+        ]);
+
+        doc.autoTable({
+          startY: yPos,
+          head: [['#', 'Description', 'Amount', 'MPP']],
+          body: settlementTableData,
+          theme: 'grid',
+          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
+          styles: { fontSize: 9 }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
+      // Add new page if needed
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+
       // Income Records
       if (todayIncome.length > 0 && yPos < 250) {
         doc.setFontSize(14);
