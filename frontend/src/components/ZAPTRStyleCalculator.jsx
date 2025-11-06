@@ -1029,22 +1029,24 @@ const ZAPTRStyleCalculator = () => {
   // Export functions
   
   // Helper function to calculate stats for any data set
-  const calculateStats = (sales, credits, income, expenses) => {
-    const fuelSalesByType = {};
-    let totalLiters = 0;
-    let fuelCashSales = 0;
+  const calculateStatsWithMPP = (sales, credits, income, expenses, settlements) => {
+    // Separate sales by MPP tag
+    const salesNoMPP = sales.filter(s => !s.mpp && s.mpp !== true && s.mpp !== 'true');
+    const salesMPP = sales.filter(s => s.mpp === true || s.mpp === 'true');
+    
+    const fuelSalesNoMPP = salesNoMPP.reduce((sum, s) => sum + s.amount, 0);
+    const fuelLitersNoMPP = salesNoMPP.reduce((sum, s) => sum + s.liters, 0);
+    const fuelSalesMPP = salesMPP.reduce((sum, s) => sum + s.amount, 0);
+    const fuelLitersMPP = salesMPP.reduce((sum, s) => sum + s.liters, 0);
 
-    sales.forEach(sale => {
-      if (!fuelSalesByType[sale.fuelType]) {
-        fuelSalesByType[sale.fuelType] = { liters: 0, amount: 0 };
-      }
-      fuelSalesByType[sale.fuelType].liters += sale.liters;
-      fuelSalesByType[sale.fuelType].amount += sale.amount;
-      totalLiters += sale.liters;
-      fuelCashSales += sale.amount;
-    });
-
-    const creditLiters = credits.reduce((sum, credit) => {
+    // Separate credits by MPP tag
+    const creditsNoMPP = credits.filter(c => !c.mpp && c.mpp !== true && c.mpp !== 'true');
+    const creditsMPP = credits.filter(c => c.mpp === true || c.mpp === 'true');
+    
+    const creditTotalAmountNoMPP = creditsNoMPP.reduce((sum, c) => sum + c.amount, 0);
+    const creditAmountMPP = creditsMPP.reduce((sum, c) => sum + c.amount, 0);
+    
+    const creditLitersNoMPP = creditsNoMPP.reduce((sum, credit) => {
       if (credit.fuelEntries && credit.fuelEntries.length > 0) {
         return sum + credit.fuelEntries.reduce((literSum, entry) => literSum + entry.liters, 0);
       } else if (credit.liters) {
@@ -1052,47 +1054,87 @@ const ZAPTRStyleCalculator = () => {
       }
       return sum;
     }, 0);
-    const creditAmount = credits.reduce((sum, credit) => sum + credit.amount, 0);
     
-    // Calculate income from direct entries
-    const directIncome = income.reduce((sum, inc) => sum + inc.amount, 0);
+    const creditLitersMPP = creditsMPP.reduce((sum, credit) => {
+      if (credit.fuelEntries && credit.fuelEntries.length > 0) {
+        return sum + credit.fuelEntries.reduce((literSum, entry) => literSum + entry.liters, 0);
+      } else if (credit.liters) {
+        return sum + credit.liters;
+      }
+      return sum;
+    }, 0);
     
-    // Calculate income from credit sales
-    const creditIncome = credits.reduce((sum, credit) => {
+    // Separate income by MPP tag
+    const directIncomeNoMPP = income.filter(i => !i.mpp).reduce((sum, i) => sum + i.amount, 0);
+    const directIncomeMPP = income.filter(i => i.mpp === true || i.mpp === 'true').reduce((sum, i) => sum + i.amount, 0);
+    
+    const creditIncomeNoMPP = creditsNoMPP.reduce((sum, credit) => {
       if (credit.incomeEntries && credit.incomeEntries.length > 0) {
         return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + entry.amount, 0);
       }
       return sum;
     }, 0);
     
-    // Total income includes both direct and credit income
-    const otherIncome = directIncome + creditIncome;
+    const creditIncomeMPP = creditsMPP.reduce((sum, credit) => {
+      if (credit.incomeEntries && credit.incomeEntries.length > 0) {
+        return sum + credit.incomeEntries.reduce((incSum, entry) => incSum + entry.amount, 0);
+      }
+      return sum;
+    }, 0);
     
-    // Calculate expenses from direct entries
-    const directExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+    const otherIncomeNoMPP = directIncomeNoMPP + creditIncomeNoMPP;
+    const otherIncomeMPP = directIncomeMPP + creditIncomeMPP;
     
-    // Calculate expenses from credit sales
-    const creditExpenses = credits.reduce((sum, credit) => {
+    // Separate expenses by MPP tag
+    const directExpensesNoMPP = expenses.filter(e => !e.mpp).reduce((sum, e) => sum + e.amount, 0);
+    const directExpensesMPP = expenses.filter(e => e.mpp === true || e.mpp === 'true').reduce((sum, e) => sum + e.amount, 0);
+    
+    const creditExpensesNoMPP = creditsNoMPP.reduce((sum, credit) => {
       if (credit.expenseEntries && credit.expenseEntries.length > 0) {
         return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + entry.amount, 0);
       }
       return sum;
     }, 0);
     
-    // Total expenses includes both direct and credit expenses
-    const totalExpenses = directExpenses + creditExpenses;
+    const creditExpensesMPP = creditsMPP.reduce((sum, credit) => {
+      if (credit.expenseEntries && credit.expenseEntries.length > 0) {
+        return sum + credit.expenseEntries.reduce((expSum, entry) => expSum + entry.amount, 0);
+      }
+      return sum;
+    }, 0);
     
-    const cashInHand = fuelCashSales - creditAmount + otherIncome - totalExpenses;
+    const totalExpensesNoMPP = directExpensesNoMPP + creditExpensesNoMPP;
+    const totalExpensesMPP = directExpensesMPP + creditExpensesMPP;
+    
+    // Separate settlements by MPP tag
+    const settlementNoMPP = settlements.filter(s => !s.mpp).reduce((sum, s) => sum + (s.amount || 0), 0);
+    const settlementMPP = settlements.filter(s => s.mpp === true || s.mpp === 'true').reduce((sum, s) => sum + (s.amount || 0), 0);
+    
+    // Calculate Cash in Hand and MPP Cash
+    const cashInHand = fuelSalesNoMPP - creditTotalAmountNoMPP - totalExpensesNoMPP + otherIncomeNoMPP - settlementNoMPP;
+    const mppCash = fuelSalesMPP - creditAmountMPP - totalExpensesMPP + otherIncomeMPP - settlementMPP;
+    
+    // Check if there's any MPP data
+    const hasMPPData = fuelSalesMPP > 0 || creditAmountMPP > 0 || settlementMPP > 0 || otherIncomeMPP > 0 || totalExpensesMPP > 0;
 
     return {
-      fuelSalesByType,
-      totalLiters,
-      fuelCashSales,
-      creditLiters,
-      creditAmount,
-      otherIncome,
-      totalExpenses,
-      cashInHand
+      fuelSalesNoMPP,
+      fuelLitersNoMPP,
+      fuelSalesMPP,
+      fuelLitersMPP,
+      creditTotalAmountNoMPP,
+      creditLitersNoMPP,
+      creditAmountMPP,
+      creditLitersMPP,
+      otherIncomeNoMPP,
+      otherIncomeMPP,
+      totalExpensesNoMPP,
+      totalExpensesMPP,
+      settlementNoMPP,
+      settlementMPP,
+      cashInHand,
+      mppCash,
+      hasMPPData
     };
   };
   
