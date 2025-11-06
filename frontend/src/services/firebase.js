@@ -1,7 +1,7 @@
 // Firebase Configuration and Initialization
 import { initializeApp } from 'firebase/app';
 import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
