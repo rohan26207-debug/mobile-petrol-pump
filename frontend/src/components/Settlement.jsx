@@ -80,10 +80,10 @@ const Settlement = ({
 
   // Update date when selectedDate changes (only if not editing)
   useEffect(() => {
-    if (!editingId) {
+    if (!editingId && !editingRecord) {
       setFormData(prev => ({ ...prev, date: selectedDate }));
     }
-  }, [selectedDate, editingId]);
+  }, [selectedDate, editingId, editingRecord]);
 
   const resetForm = () => {
     setFormData({
