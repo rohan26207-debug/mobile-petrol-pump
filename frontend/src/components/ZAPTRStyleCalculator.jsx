@@ -733,6 +733,7 @@ const ZAPTRStyleCalculator = () => {
   // Balance tab navigation state (for mobile blocks)
   const [showBalanceBlocks, setShowBalanceBlocks] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
+  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
 
   // Check screen size for mobile detection
   useEffect(() => {
