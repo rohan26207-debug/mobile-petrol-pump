@@ -3157,6 +3157,7 @@ window.onload = function() {
                   </SheetHeader>
                   <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
                     <Settlement 
+                      key={editingSettlementData ? editingSettlementData.id : 'new'}
                       isDarkMode={isDarkMode}
                       settlementData={settlementData}
                       addSettlementRecord={addSettlementRecord}
