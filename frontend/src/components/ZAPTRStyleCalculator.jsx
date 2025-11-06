@@ -3572,12 +3572,7 @@ window.onload = function() {
                 </div>
               ) : (
                 <div className="mb-4">
-                  {/* Back button or indicator */}
-                  <div className={`text-sm font-medium mb-3 ${
-                    isDarkMode ? 'text-gray-400' : 'text-slate-600'
-                  }`}>
-                    Tap "Balance" to go back to blocks
-                  </div>
+                  {/* No helper text - just empty space */}
                 </div>
               )}
             </div>
