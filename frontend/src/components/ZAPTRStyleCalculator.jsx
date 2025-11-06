@@ -1560,7 +1560,7 @@ const ZAPTRStyleCalculator = () => {
       yPos += 5;
 
       const bankSettlementData = [
-        ['Cash', `₹${cashTotal.toFixed(2)}`],
+        ['Cash', `₹${finalCashTotal.toFixed(2)}`],
         ['Card', `₹${cardTotal.toFixed(2)}`],
         ['Paytm', `₹${paytmTotal.toFixed(2)}`],
         ['PhonePe', `₹${phonepeTotal.toFixed(2)}`],
