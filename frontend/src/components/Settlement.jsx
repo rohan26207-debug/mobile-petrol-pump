@@ -264,7 +264,7 @@ const Settlement = ({
           </div>
 
           {/* Action Buttons */}
-          {editingId ? (
+          {(editingId || editingRecord) ? (
             <div className="flex gap-2">
               <Button 
                 onClick={() => handleSubmit(true)}
