@@ -48,6 +48,7 @@ import OutstandingReport from './OutstandingReport';
 import OutstandingPDFReport from './OutstandingPDFReport';
 import CustomerLedger from './CustomerLedger';
 import BankSettlement from './BankSettlement';
+import SyncStatus from './SyncStatus';
 import MPPStock from './MPPStock';
 import localStorageService from '../services/localStorage';
 
