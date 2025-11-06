@@ -73,7 +73,38 @@ const CreditSalesManagement = ({
 
   // Calculate total - handle undefined/null values and backward compatibility
   const totalAmount = filteredCreditData.reduce((sum, credit) => {
-    const amount = credit.totalAmount || credit.amount || 0;
+    // Calculate fuel total
+    let fuelTotal = 0;
+    if (credit.fuelEntries && credit.fuelEntries.length > 0) {
+      fuelTotal = credit.fuelEntries.reduce((fuelSum, entry) => {
+        return fuelSum + (parseFloat(entry.amount) || (parseFloat(entry.liters || 0) * parseFloat(entry.rate || 0)));
+      }, 0);
+    } else if (credit.liters && credit.rate) {
+      // Backward compatibility for old single fuel entry
+      fuelTotal = parseFloat(credit.liters) * parseFloat(credit.rate);
+    }
+
+    // Calculate income total
+    let incomeTotal = 0;
+    if (credit.incomeEntries && credit.incomeEntries.length > 0) {
+      incomeTotal = credit.incomeEntries.reduce((incSum, entry) => {
+        return incSum + parseFloat(entry.amount || 0);
+      }, 0);
+    }
+
+    // Calculate expense total (to subtract)
+    let expenseTotal = 0;
+    if (credit.expenseEntries && credit.expenseEntries.length > 0) {
+      expenseTotal = credit.expenseEntries.reduce((expSum, entry) => {
+        return expSum + parseFloat(entry.amount || 0);
+      }, 0);
+    }
+
+    // Total = fuel + income - expense
+    const creditTotal = fuelTotal + incomeTotal - expenseTotal;
+    
+    // Fallback to stored amount if calculation fails
+    const amount = creditTotal || credit.totalAmount || credit.amount || 0;
     return sum + amount;
   }, 0);
 
