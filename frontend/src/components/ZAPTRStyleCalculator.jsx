@@ -1116,7 +1116,12 @@ const ZAPTRStyleCalculator = () => {
       }
 
       // Calculate stats for filtered data
-      const filteredStats = calculateStats(filteredSales, filteredCredits, filteredIncome, filteredExpenses);
+      // Calculate stats including MPP data
+      const filteredSettlements = pdfSettings.dateRange === 'single'
+        ? settlementData.filter(s => s.date === pdfSettings.startDate)
+        : settlementData.filter(s => s.date >= pdfSettings.startDate && s.date <= pdfSettings.endDate);
+        
+      const filteredStats = calculateStatsWithMPP(filteredSales, filteredCredits, filteredIncome, filteredExpenses, filteredSettlements);
 
       // Create PDF with settings
       const doc = new jsPDF({
