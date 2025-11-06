@@ -232,7 +232,7 @@ const CreditSalesManagement = ({
             fuelDetails,
             credit.liters || (credit.fuelEntries ? credit.fuelEntries.reduce((sum, f) => sum + parseFloat(f.liters || 0), 0) : 0),
             credit.rate || '',
-            (credit.totalAmount || credit.amount || 0).toFixed(2)
+            calculateCreditAmount(credit).toFixed(2)
           ];
         }),
         // Total row
