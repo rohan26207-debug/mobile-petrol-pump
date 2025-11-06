@@ -1,0 +1,82 @@
+// FIRESTORE SECURITY RULES - USER-SPECIFIC DATA
+// Copy and paste this into Firebase Console → Firestore Database → Rules
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Customers collection - user-specific
+    match /customers/{customerId} {
+      // Allow read if authenticated and document belongs to user
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      
+      // Allow create if authenticated and setting correct userId
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      
+      // Allow update/delete if authenticated and user owns the document
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Credit Sales collection - user-specific
+    match /creditSales/{saleId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Payments collection - user-specific
+    match /payments/{paymentId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Settlements collection - user-specific
+    match /settlements/{settlementId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Sales collection - user-specific
+    match /sales/{saleId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Income/Expenses collection - user-specific
+    match /incomeExpenses/{recordId} {
+      allow read: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// WHAT THESE RULES DO:
+// 1. Only authenticated users can access data
+// 2. Users can only see their OWN data (not others')
+// 3. Each document must have a "userId" field
+// 4. Users can only create/update/delete their own documents
+// 5. No public access - everything is private
+
+// SECURITY LEVEL: HIGH
+// Each user has completely isolated data
+// Perfect for business use with multiple users
