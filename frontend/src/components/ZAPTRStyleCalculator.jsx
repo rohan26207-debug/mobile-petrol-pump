@@ -2155,17 +2155,19 @@ window.onload = function() {
       doc.text('BANK SETTLEMENT REPORT', 14, yPos);
       yPos += 5;
       
-      let cashTotal = 0, cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
+      // Cash = Cash in Hand + MPP Cash (from summary)
+      const cashTotal = currentStats.cashInHand + currentStats.mppCash;
+      
+      // Other modes = Settlements + Payments filtered by mode
+      let cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
       
       todaySettlements.forEach(s => {
         const amount = s.amount || 0;
         switch(s.mode?.toLowerCase()) {
-          case 'cash': cashTotal += amount; break;
           case 'card': cardTotal += amount; break;
           case 'paytm': paytmTotal += amount; break;
           case 'phonepe': phonepeTotal += amount; break;
           case 'dtp': dtpTotal += amount; break;
-          default: cashTotal += amount;
         }
       });
       
@@ -2173,12 +2175,11 @@ window.onload = function() {
       todayPayments.forEach(p => {
         const amount = p.amount || 0;
         switch(p.mode?.toLowerCase()) {
-          case 'cash': cashTotal += amount; break;
           case 'card': cardTotal += amount; break;
           case 'paytm': paytmTotal += amount; break;
           case 'phonepe': phonepeTotal += amount; break;
           case 'wallet': phonepeTotal += amount; break;
-          default: cashTotal += amount;
+          case 'dtp': dtpTotal += amount; break;
         }
       });
       
