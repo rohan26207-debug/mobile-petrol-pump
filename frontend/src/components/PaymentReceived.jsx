@@ -110,7 +110,7 @@ const PaymentReceived = ({
     setEditCustomerSearch(payment.customerName);
     setEditAmount(payment.amount.toString());
     setEditPaymentDate(payment.date);
-    setEditPaymentMode(payment.mode || 'cash'); // Set edit mode
+    setEditSettlementType(payment.mode || ''); // Changed to settlementType
     setEditDialogOpen(true);
   };
 
