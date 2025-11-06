@@ -408,4 +408,57 @@ User requested to replace the "Mode" field in the Receipt Record window with a "
 
 ---
 
+## Test Session: Reading Sales Window - MPP Close Bug Fix
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Sales Window "Add Sales & Close" Button
+
+### Issue Reported
+When MPP checkbox is marked in the Reading Sales window and user clicks "Add Sales & Close", the sales record is added successfully but the window doesn't close. However, when MPP is unmarked, the button works correctly and closes the window.
+
+### Root Cause
+Found a call to a non-existent function `createAutoReceiptForMPP()` in the `addSaleRecord` function (line 520-525). This function was part of an old implementation that was removed but the function call remained.
+
+When MPP was marked:
+- The code tried to call `createAutoReceiptForMPP()`
+- This threw an error (function not defined)
+- The error prevented the callback `onRecordSaved()` from being executed
+- Without the callback, the dialog didn't close
+
+When MPP was unmarked:
+- The condition `if (newSale.mpp === true)` was false
+- The problematic code didn't execute
+- The callback executed normally and closed the dialog
+
+### Solution Implemented
+Removed the orphaned function call and the entire MPP auto-receipt block from the `addSaleRecord` function.
+
+**Modified File**: `/app/frontend/src/components/ZAPTRStyleCalculator.jsx`
+
+**Code Removed** (lines ~518-526):
+```javascript
+// If this sale has MPP tag, auto-generate receipt for MPP customer
+if (newSale.mpp === true && newSale.amount > 0) {
+  createAutoReceiptForMPP(
+    newSale.amount,
+    `Auto-receipt: MPP Fuel Sale - ${newSale.fuelType || 'Fuel'}`,
+    newSale.id,
+    'sale'
+  );
+}
+```
+
+### Expected Behavior After Fix
+✅ MPP unmarked + "Add Sales & Close" → Sales added, window closes  
+✅ MPP marked + "Add Sales & Close" → Sales added, window closes  
+✅ Both scenarios now work identically
+
+### Testing Status
+⏳ **PENDING USER VERIFICATION**
+
+### Note
+This was leftover code from a previously removed auto-receipt feature. The MPP sales functionality still works correctly - it just doesn't attempt to call the non-existent function anymore.
+
+---
+
 *Last Updated: November 6, 2025*
