@@ -778,13 +778,30 @@ class LocalStorageService {
     // Sort alphabetically by name
     customers.sort((a, b) => a.name.localeCompare(b.name));
     this.setCustomers(customers);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncCustomer(newCustomer, 'add');
+    }
+    
     return newCustomer;
   }
 
   deleteCustomer(id) {
     const customers = this.getCustomers();
+    const customerToDelete = customers.find(c => c.id === id);
     const updated = customers.filter(c => c.id !== id);
     this.setCustomers(updated);
+    
+    // Sync to Firebase
+    if (customerToDelete) {
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncCustomer(customerToDelete, 'delete');
+      }
+    }
+    
     return true;
   }
 
@@ -810,7 +827,18 @@ class LocalStorageService {
       return c;
     });
     this.setCustomers(updated);
-    return updated.find(c => c.id === id);
+    
+    const updatedCustomer = updated.find(c => c.id === id);
+    
+    // Sync to Firebase
+    if (updatedCustomer) {
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncCustomer(updatedCustomer, 'update');
+      }
+    }
+    
+    return updatedCustomer;
   }
   
   // Check if MPP checkbox should be visible (any customer has isMPP = true)
