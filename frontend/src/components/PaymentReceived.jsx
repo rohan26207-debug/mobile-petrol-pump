@@ -516,17 +516,6 @@ const PaymentReceived = ({
 
   return (
     <div className="space-y-4">
-      {/* Record Receipt Button */}
-      <Button
-        onClick={() => setRecordReceiptOpen(true)}
-        className={`w-full ${
-          isDarkMode ? 'bg-green-600 hover:bg-green-700' : 'bg-green-600 hover:bg-green-700'
-        } text-white`}
-      >
-        <Wallet className="w-4 h-4 mr-2" />
-        Record Receipt
-      </Button>
-
       {/* Receipts List with Customer and Date Range Filters */}
       <Card className={`${
         isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
