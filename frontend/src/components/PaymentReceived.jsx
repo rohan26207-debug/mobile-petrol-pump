@@ -221,6 +221,299 @@ const PaymentReceived = ({
     return `${day} ${month} ${year}`;
   };
 
+  // Handle select all checkbox
+  const handleSelectAll = (checked) => {
+    setSelectAll(checked);
+    if (checked) {
+      const allIds = new Set(filteredPayments.map(payment => payment.id));
+      setSelectedPayments(allIds);
+    } else {
+      setSelectedPayments(new Set());
+    }
+  };
+
+  // Handle individual checkbox
+  const handleSelectPayment = (paymentId, checked) => {
+    const newSelected = new Set(selectedPayments);
+    if (checked) {
+      newSelected.add(paymentId);
+    } else {
+      newSelected.delete(paymentId);
+    }
+    setSelectedPayments(newSelected);
+    setSelectAll(newSelected.size === filteredPayments.length && filteredPayments.length > 0);
+  };
+
+  // Update selectAll when filtered data changes
+  useEffect(() => {
+    if (selectedPayments.size > 0 && selectedPayments.size === filteredPayments.length) {
+      setSelectAll(true);
+    } else if (selectedPayments.size === 0 || filteredPayments.length === 0) {
+      setSelectAll(false);
+    }
+  }, [filteredPayments, selectedPayments]);
+
+  // Delete selected payments
+  const handleDeleteSelected = () => {
+    if (selectedPayments.size === 0) return;
+    
+    const message = `Are you sure you want to delete ${selectedPayments.size} selected receipt(s)?`;
+    
+    // Check if Pro Mode is enabled
+    if (localStorageService.isProModeEnabled()) {
+      // Skip confirmation dialog, delete directly
+      selectedPayments.forEach(id => {
+        if (onDeletePayment) {
+          onDeletePayment(id);
+        }
+      });
+      setSelectedPayments(new Set());
+      setSelectAll(false);
+    } else {
+      // Show confirmation dialog
+      if (window.confirm(message)) {
+        selectedPayments.forEach(id => {
+          if (onDeletePayment) {
+            onDeletePayment(id);
+          }
+        });
+        setSelectedPayments(new Set());
+        setSelectAll(false);
+      }
+    }
+  };
+
+  // Excel Export functionality
+  const handleExcelExport = () => {
+    try {
+      // Prepare data for Excel
+      const excelData = [
+        // Title row
+        ['Payment Receipts Report'],
+        [],
+        [`From: ${new Date(fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })} To: ${new Date(toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}`],
+        [],
+        // Table headers
+        ['Sr. No', 'Date', 'Customer Name', 'Settlement Type', 'Amount (₹)'],
+        // Table data
+        ...filteredPayments.map((payment, index) => [
+          index + 1,
+          new Date(payment.date).toLocaleDateString('en-IN'),
+          payment.customerName || customers.find(c => c.id === payment.customerId)?.name || 'Unknown',
+          payment.mode || 'N/A',
+          payment.amount.toFixed(2)
+        ]),
+        // Total row
+        ['Total', '', '', '', totalReceived.toFixed(2)],
+        [],
+        // Footer
+        [`Generated on: ${new Date().toLocaleString('en-IN')}`]
+      ];
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+      // Set column widths
+      ws['!cols'] = [
+        { wch: 8 },   // Sr. No
+        { wch: 12 },  // Date
+        { wch: 20 },  // Customer Name
+        { wch: 15 },  // Settlement Type
+        { wch: 15 }   // Amount
+      ];
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Receipts');
+
+      // Generate filename with date
+      const filename = `Payment_Receipts_${fromDate}_to_${toDate}.xlsx`;
+
+      // Export file
+      XLSX.writeFile(wb, filename);
+      
+      console.log('Excel file exported successfully');
+    } catch (error) {
+      console.error('Excel export error:', error);
+      alert('Error exporting to Excel: ' + error.message);
+    }
+  };
+
+  // Print/PDF functionality
+  const handlePrint = () => {
+    try {
+      // Check if running in Android WebView
+      const isAndroid = typeof window.MPumpCalcAndroid !== 'undefined';
+      
+      if (isAndroid) {
+        // Generate PDF using jsPDF for Android
+        generatePDFForAndroid();
+        return;
+      }
+      
+      // For web browser - use print dialog
+      generateHTMLForWeb();
+    } catch (error) {
+      console.error('Print error:', error);
+      alert('Error generating report: ' + error.message);
+    }
+  };
+
+  const generatePDFForAndroid = () => {
+    try {
+      const doc = new jsPDF();
+      let yPos = 20;
+
+      // Title
+      doc.setFontSize(18);
+      doc.text('Payment Receipts Report', 105, yPos, { align: 'center' });
+      yPos += 10;
+
+      // Date Range
+      doc.setFontSize(12);
+      const dateStr = `From: ${new Date(fromDate).toLocaleDateString('en-IN')} To: ${new Date(toDate).toLocaleDateString('en-IN')}`;
+      doc.text(dateStr, 105, yPos, { align: 'center' });
+      yPos += 15;
+
+      if (filteredPayments.length === 0) {
+        doc.setFontSize(12);
+        doc.text('No receipts in selected date range', 105, yPos, { align: 'center' });
+      } else {
+        // Table headers
+        const headers = ['Date', 'Customer', 'Settlement Type', 'Amount'];
+
+        // Build table data
+        const tableData = filteredPayments.map((payment) => {
+          const customerName = payment.customerName || customers.find(c => c.id === payment.customerId)?.name || 'Unknown';
+          
+          return [
+            new Date(payment.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }),
+            customerName,
+            payment.mode || 'N/A',
+            payment.amount.toFixed(2)
+          ];
+        });
+
+        // Add total row
+        const totalRow = ['Total', '', '', totalReceived.toFixed(2)];
+        tableData.push(totalRow);
+
+        doc.autoTable({
+          startY: yPos,
+          head: [headers],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
+          styles: { fontSize: 10 },
+          footStyles: { fillColor: [240, 240, 240], fontStyle: 'bold' }
+        });
+      }
+
+      // Footer
+      yPos = doc.internal.pageSize.height - 15;
+      doc.setFontSize(9);
+      doc.text(`Generated on: ${new Date().toLocaleString('en-IN')}`, 105, yPos, { align: 'center' });
+
+      // Convert to base64 and send to Android
+      const pdfBase64 = doc.output('dataurlstring').split(',')[1];
+      const fileName = `Payment_Receipts_${fromDate}_to_${toDate}.pdf`;
+      
+      if (window.MPumpCalcAndroid && window.MPumpCalcAndroid.openPdfWithViewer) {
+        window.MPumpCalcAndroid.openPdfWithViewer(pdfBase64, fileName);
+      } else {
+        console.error('Android interface not available');
+        alert('PDF generation is only available in the Android app');
+      }
+    } catch (error) {
+      console.error('Error generating PDF for Android:', error);
+      alert('Error generating PDF: ' + error.message);
+    }
+  };
+
+  const generateHTMLForWeb = () => {
+    try {
+      // Build table rows
+      const tableRows = filteredPayments.map(payment => {
+        const customerName = payment.customerName || customers.find(c => c.id === payment.customerId)?.name || 'Unknown';
+        
+        return '<tr>' +
+          '<td>' + new Date(payment.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td>' +
+          '<td>' + customerName + '</td>' +
+          '<td>' + (payment.mode || 'N/A') + '</td>' +
+          '<td class="r">' + payment.amount.toFixed(2) + '</td>' +
+          '</tr>';
+      }).join('');
+
+      // HTML generation for web browsers
+      const htmlContent = '<!DOCTYPE html>' +
+        '<html>' +
+        '<head>' +
+        '<meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+        '<title>Payment Receipts Report</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;margin:20px;padding:0;line-height:1.4}' +
+        'h1{font-size:24px;margin:10px 0;text-align:center;color:#333}' +
+        'p{font-size:14px;margin:5px 0;text-align:center;color:#666}' +
+        'table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px}' +
+        'th{background:#f0f0f0;border:1px solid #333;padding:8px;text-align:left;font-weight:bold}' +
+        'td{border:1px solid #333;padding:6px}' +
+        '.r{text-align:right}' +
+        '.total-row{font-weight:bold;background:#f8f8f8}' +
+        '.print-btn{background:#007bff;color:white;border:none;padding:10px 20px;font-size:16px;cursor:pointer;border-radius:5px;margin:10px auto;display:block;box-shadow:0 2px 4px rgba(0,0,0,0.2)}' +
+        '.print-btn:hover{background:#0056b3}' +
+        '.no-print{display:block}' +
+        '@media print{body{margin:8mm}.no-print{display:none}}' +
+        '</style>' +
+        '</head>' +
+        '<body>' +
+        '<h1>Payment Receipts Report</h1>' +
+        '<p>From: ' + new Date(fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) + ' To: ' + new Date(toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) + '</p>' +
+        '<table>' +
+        '<thead>' +
+        '<tr>' +
+        '<th>Date</th>' +
+        '<th>Customer Name</th>' +
+        '<th>Settlement Type</th>' +
+        '<th class="r">Amount (₹)</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>' +
+        tableRows +
+        '<tr class="total-row">' +
+        '<td colspan="3" class="r">Total:</td>' +
+        '<td class="r">₹' + totalReceived.toFixed(2) + '</td>' +
+        '</tr>' +
+        '</tbody>' +
+        '</table>' +
+        '<p style="margin-top:20px;font-size:11px">Generated on: ' + new Date().toLocaleString('en-IN') + '</p>' +
+        '<div class="no-print" style="text-align:center;margin:20px 0">' +
+        '<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>' +
+        '</div>' +
+        '<script>' +
+        'setTimeout(function() { window.print(); }, 500);' +
+        '</script>' +
+        '</body>' +
+        '</html>';
+
+      // Open in new window for printing/PDF generation
+      const printWindow = window.open('', '_blank', 'width=800,height=600');
+      if (!printWindow) {
+        alert('Please allow pop-ups for this site to enable PDF export and printing.');
+        return;
+      }
+
+      printWindow.document.write(htmlContent);
+      printWindow.document.close();
+      
+      // Focus the new window
+      printWindow.focus();
+    } catch (error) {
+      console.error('Error generating HTML for web:', error);
+      alert('Error generating report: ' + error.message);
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Record Receipt Button */}
