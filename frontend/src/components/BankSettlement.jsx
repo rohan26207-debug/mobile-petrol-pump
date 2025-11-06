@@ -375,14 +375,8 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
   };
 
   return (
-    <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'}`}>
-      <CardHeader className="pb-3">
-        <CardTitle className={`flex items-center gap-2 text-lg ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
-          <Wallet className="w-5 h-5 text-green-600" />
-          Bank Settlement Report
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'} shadow-lg`}>
+      <CardContent className="p-2 sm:p-3 space-y-3">
         {/* Date Range Selector and Print Button */}
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
