@@ -1785,29 +1785,41 @@ ${(() => {
   // Cash = Cash in Hand + MPP Cash (from summary)
   const cash = stats.cashInHand + stats.mppCash;
   
-  // Other modes = Settlements + Payments filtered by mode
-  let card = 0, paytm = 0, phonepe = 0, dtp = 0;
+  // Card = Settlements with "card" in description + Payments with mode "card"
+  const cardFromSettlements = todaySettlements
+    .filter(s => s.description && s.description.toLowerCase().includes('card'))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+  const cardFromPayments = todayPayments
+    .filter(p => p.mode && p.mode.toLowerCase() === 'card')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+  const card = cardFromSettlements + cardFromPayments;
   
-  todaySettlements.forEach(s => {
-    const amt = s.amount || 0;
-    switch(s.mode?.toLowerCase()) {
-      case 'card': card += amt; break;
-      case 'paytm': paytm += amt; break;
-      case 'phonepe': phonepe += amt; break;
-      case 'dtp': dtp += amt; break;
-    }
-  });
+  // Paytm = Settlements with "paytm" in description + Payments with mode "paytm" or "wallet"
+  const paytmFromSettlements = todaySettlements
+    .filter(s => s.description && s.description.toLowerCase().includes('paytm'))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+  const paytmFromPayments = todayPayments
+    .filter(p => p.mode && (p.mode.toLowerCase() === 'wallet' || p.mode.toLowerCase().includes('paytm')))
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+  const paytm = paytmFromSettlements + paytmFromPayments;
   
-  todayPayments.forEach(p => {
-    const amt = p.amount || 0;
-    switch(p.mode?.toLowerCase()) {
-      case 'card': card += amt; break;
-      case 'paytm': paytm += amt; break;
-      case 'phonepe': phonepe += amt; break;
-      case 'wallet': phonepe += amt; break;
-      case 'dtp': dtp += amt; break;
-    }
-  });
+  // PhonePe = Settlements with "phonepe" in description + Payments with mode "phonepe"
+  const phonepeFromSettlements = todaySettlements
+    .filter(s => s.description && s.description.toLowerCase().includes('phonepe'))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+  const phonepeFromPayments = todayPayments
+    .filter(p => p.mode && p.mode.toLowerCase().includes('phonepe'))
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+  const phonepe = phonepeFromSettlements + phonepeFromPayments;
+  
+  // DTP = Settlements with "dtp" in description + Payments with mode "dtp"
+  const dtpFromSettlements = todaySettlements
+    .filter(s => s.description && s.description.toLowerCase().includes('dtp'))
+    .reduce((sum, s) => sum + (s.amount || 0), 0);
+  const dtpFromPayments = todayPayments
+    .filter(p => p.mode && p.mode.toLowerCase() === 'dtp')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+  const dtp = dtpFromSettlements + dtpFromPayments;
   
   const total = cash + card + paytm + phonepe + dtp;
   
