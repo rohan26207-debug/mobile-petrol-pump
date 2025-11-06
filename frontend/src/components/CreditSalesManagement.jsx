@@ -4,9 +4,13 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { CreditCard, Edit, Trash2, ChevronDown, AlertTriangle, IndianRupee } from 'lucide-react';
+import { CreditCard, Edit, Trash2, ChevronDown, AlertTriangle, IndianRupee, Printer, FileSpreadsheet, Plus } from 'lucide-react';
 import { Badge } from './ui/badge';
+import { Checkbox } from './ui/checkbox';
 import localStorageService from '../services/localStorage';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 const CreditSalesManagement = ({ 
   customers, 
@@ -14,6 +18,7 @@ const CreditSalesManagement = ({
   selectedDate,
   onEditCredit,
   onDeleteCredit,
+  onAddCredit,
   isDarkMode 
 }) => {
   const [selectedCustomer, setSelectedCustomer] = useState('');
@@ -23,6 +28,8 @@ const CreditSalesManagement = ({
   const [fromDate, setFromDate] = useState(selectedDate);
   const [toDate, setToDate] = useState(selectedDate);
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, credit: null });
+  const [selectedCredits, setSelectedCredits] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
   
   const customerDropdownRef = useRef(null);
 
