@@ -461,7 +461,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       </div>
 
       <div className="flex flex-col gap-2 pt-4">
-        {!editingId && (
+        {!editingId && !editingRecord && (
           <Button 
             onClick={handleAddAndContinue} 
             className={`w-full ${
