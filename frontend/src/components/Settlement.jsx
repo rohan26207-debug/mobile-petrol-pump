@@ -304,12 +304,10 @@ const Settlement = ({
           )}
         </div>
 
-        {!hideRecordsList && (
-          <>
-            <Separator />
+        <Separator />
 
-            {/* Records List */}
-            <div className="space-y-3">
+        {/* Records List */}
+        <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                   Today's Settlements
