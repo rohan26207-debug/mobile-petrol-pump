@@ -209,17 +209,20 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const totalMPPCash = mppFuelSales - mppCreditAmount + mppTotalIncome - mppTotalExpenses - mppSettlementAmount;
     
     // Debug logging
-    console.log('=== Customer Ledger MPP Cash Calculation ===');
+    console.log('=== Customer Ledger MPP Cash Calculation (FULL FORMULA) ===');
     console.log('Customer:', customer.name);
     console.log('Date Range:', fromDate, 'to', toDate);
     console.log('');
-    console.log('MPP CASH Sales (Tagged CASH Sales only):', mppCashSales);
-    console.log('MPP Total Expenses (Tagged Expenses):', mppTotalExpenses);
-    console.log('MPP Total Income (Tagged Income):', mppTotalIncome);
+    console.log('MPP Fuel Sales (All tagged sales):', mppFuelSales);
+    console.log('MPP Credit Amount (Fuel only from tagged credits):', mppCreditAmount);
+    console.log('MPP Total Income (Tagged income):', mppTotalIncome);
+    console.log('MPP Total Expenses (Tagged expenses):', mppTotalExpenses);
+    console.log('MPP Settlement Amount (Tagged settlements):', mppSettlementAmount);
     console.log('');
-    console.log('NOTE: MPP Credits and Settlements are shown as separate auto-payment line items');
-    console.log('Calculation:', mppCashSales, '-', mppTotalExpenses, '+', mppTotalIncome);
+    console.log('Formula:', mppFuelSales, '-', mppCreditAmount, '+', mppTotalIncome, '-', mppTotalExpenses, '-', mppSettlementAmount);
     console.log('Final MPP Cash:', totalMPPCash);
+    console.log('');
+    console.log('NOTE: Auto-payments for MPP credits/settlements are ALSO shown as separate line items above');
     console.log('==========================================');
     
     if (totalMPPCash !== 0) {
