@@ -3946,6 +3946,9 @@ window.onload = function() {
           </SheetContent>
         </Sheet>
 
+        {/* Firebase Sync Status Indicator */}
+        <SyncStatus isDarkMode={isDarkMode} />
+
       </div>
     </div>
   );
