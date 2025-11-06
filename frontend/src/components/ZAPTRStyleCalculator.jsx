@@ -1698,11 +1698,18 @@ STOCK: ${fuelSettings ? Object.keys(fuelSettings).map(fuelType => {
 <div class="s">SUMMARY</div>
 <table>
 <tr><th>Category<th>Non-MPP<br>Litres<th>Non-MPP<br>Amount<th>MPP<br>Litres<th>MPP<br>Amount</tr>
-<tr><td>1. Fuel Sales<td class="r">${stats.fuelLitersNoMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesNoMPP.toFixed(2)}<td class="r">${stats.fuelLitersMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesMPP.toFixed(2)}</tr>
-<tr><td>2. Credit Sales<td class="r">${stats.creditLitersNoMPP.toFixed(2)}<td class="r">₹${stats.creditAmountNoMPP.toFixed(2)}<td class="r">${stats.creditLitersMPP.toFixed(2)}<td class="r">₹${stats.creditAmountMPP.toFixed(2)}</tr>
-<tr><td>3. Income<td class="r">-<td class="r">₹${stats.otherIncomeNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.otherIncomeMPP.toFixed(2)}</tr>
-<tr><td>4. Expenses<td class="r">-<td class="r">₹${stats.totalExpensesNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.totalExpensesMPP.toFixed(2)}</tr>
-<tr><td>5. Settlement<td class="r">-<td class="r">₹${stats.settlementNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.settlementMPP.toFixed(2)}</tr>
+${Object.keys(stats.fuelSalesByType).map((fuelType, idx) => {
+  const noMPPData = stats.fuelSalesByType[fuelType] || { liters: 0, amount: 0 };
+  // Try to find MPP data for this fuel type from current day's sales
+  const mppSales = todaySales.filter(s => s.fuelType === fuelType && (s.mpp === true || s.mpp === 'true'));
+  const mppLiters = mppSales.reduce((sum, s) => sum + s.liters, 0);
+  const mppAmount = mppSales.reduce((sum, s) => sum + s.amount, 0);
+  return `<tr><td>${idx + 1}. ${fuelType} Sales<td class="r">${noMPPData.liters.toFixed(2)}<td class="r">₹${noMPPData.amount.toFixed(2)}<td class="r">${mppLiters.toFixed(2)}<td class="r">₹${mppAmount.toFixed(2)}</tr>`;
+}).join('')}
+<tr><td>${Object.keys(stats.fuelSalesByType).length + 1}. Credit Sales<td class="r">${stats.creditLitersNoMPP.toFixed(2)}<td class="r">₹${stats.creditAmountNoMPP.toFixed(2)}<td class="r">${stats.creditLitersMPP.toFixed(2)}<td class="r">₹${stats.creditAmountMPP.toFixed(2)}</tr>
+<tr><td>${Object.keys(stats.fuelSalesByType).length + 2}. Settlement<td class="r">-<td class="r">₹${stats.settlementNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.settlementMPP.toFixed(2)}</tr>
+<tr><td>${Object.keys(stats.fuelSalesByType).length + 3}. Income<td class="r">-<td class="r">₹${stats.otherIncomeNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.otherIncomeMPP.toFixed(2)}</tr>
+<tr><td>${Object.keys(stats.fuelSalesByType).length + 4}. Expenses<td class="r">-<td class="r">₹${stats.totalExpensesNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.totalExpensesMPP.toFixed(2)}</tr>
 <tr class="t"><td><b>Cash in Hand / MPP Cash</b><td class="r"><b>-</b><td class="r"><b>₹${stats.cashInHand.toFixed(2)}</b><td class="r"><b>-</b><td class="r"><b>₹${stats.mppCash.toFixed(2)}</b></tr>
 </table>
 
