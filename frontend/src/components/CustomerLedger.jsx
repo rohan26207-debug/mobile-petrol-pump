@@ -103,7 +103,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
   const generateMPPReport = (customer) => {
     const ledgerEntries = [];
 
-    // 1. Normal credit sales for Mobile Petrol Pump customer (without MPP tag)
+    // 1. Normal credit sales for Manager Petrol Pump customer (without MPP tag)
     const mppNormalCredits = creditData
       .filter(c => c.customerName === customer.name && c.mpp !== true && c.mpp !== 'true')
       .filter(c => c.date >= fromDate && c.date <= toDate)
