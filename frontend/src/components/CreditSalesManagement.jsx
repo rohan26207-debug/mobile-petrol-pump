@@ -537,31 +537,97 @@ setTimeout(() => {
               </div>
             </div>
 
-            {/* Date Range */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-                  From Date
-                </Label>
-                <Input
-                  type="date"
-                  value={fromDate}
-                  onChange={(e) => setFromDate(e.target.value)}
-                  className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
-                />
+            {/* Date Range with Select All and Delete */}
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                    From Date
+                  </Label>
+                  <Input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                  />
+                </div>
+                <div>
+                  <Label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+                    To Date
+                  </Label>
+                  <Input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                  />
+                </div>
               </div>
-              <div>
-                <Label className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
-                  To Date
-                </Label>
-                <Input
-                  type="date"
-                  value={toDate}
-                  onChange={(e) => setToDate(e.target.value)}
-                  className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
-                />
+              
+              {/* Select All and Delete Row */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    id="select-all"
+                    checked={selectAll}
+                    onCheckedChange={handleSelectAll}
+                    className={isDarkMode ? 'border-gray-500' : ''}
+                  />
+                  <Label
+                    htmlFor="select-all"
+                    className={`text-sm font-medium cursor-pointer ${
+                      isDarkMode ? 'text-gray-200' : 'text-slate-700'
+                    }`}
+                  >
+                    Select All
+                  </Label>
+                </div>
+                
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={handleDeleteSelected}
+                  disabled={selectedCredits.size === 0}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete ({selectedCredits.size})
+                </Button>
               </div>
             </div>
+          </div>
+
+          {/* Action Buttons Row */}
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrint}
+                className={`${isDarkMode ? 'bg-gray-700 border-gray-600 text-white hover:bg-gray-600' : ''}`}
+              >
+                <Printer className="w-4 h-4 mr-2" />
+                Print
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExcelExport}
+                className={`${isDarkMode ? 'bg-gray-700 border-gray-600 text-white hover:bg-gray-600' : ''}`}
+              >
+                <FileSpreadsheet className="w-4 h-4 mr-2" />
+                Excel
+              </Button>
+            </div>
+            
+            <Button 
+              onClick={onAddCredit}
+              className="bg-green-600 hover:bg-green-700 text-white"
+              size="sm"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Credit
+            </Button>
           </div>
 
           {/* Header with Total */}
