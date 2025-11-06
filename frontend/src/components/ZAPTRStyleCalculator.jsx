@@ -1769,29 +1769,31 @@ ${todayExpenses.map((expense, index) =>
 ${(() => {
   const todaySettlements = settlementData.filter(s => s.date === selectedDate);
   const todayPayments = payments.filter(p => p.date === selectedDate);
-  let cash = 0, card = 0, paytm = 0, phonepe = 0, dtp = 0;
+  
+  // Cash = Cash in Hand + MPP Cash (from summary)
+  const cash = stats.cashInHand + stats.mppCash;
+  
+  // Other modes = Settlements + Payments filtered by mode
+  let card = 0, paytm = 0, phonepe = 0, dtp = 0;
   
   todaySettlements.forEach(s => {
     const amt = s.amount || 0;
     switch(s.mode?.toLowerCase()) {
-      case 'cash': cash += amt; break;
       case 'card': card += amt; break;
       case 'paytm': paytm += amt; break;
       case 'phonepe': phonepe += amt; break;
       case 'dtp': dtp += amt; break;
-      default: cash += amt;
     }
   });
   
   todayPayments.forEach(p => {
     const amt = p.amount || 0;
     switch(p.mode?.toLowerCase()) {
-      case 'cash': cash += amt; break;
       case 'card': card += amt; break;
       case 'paytm': paytm += amt; break;
       case 'phonepe': phonepe += amt; break;
       case 'wallet': phonepe += amt; break;
-      default: cash += amt;
+      case 'dtp': dtp += amt; break;
     }
   });
   
