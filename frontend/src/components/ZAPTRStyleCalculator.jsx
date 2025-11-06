@@ -2193,8 +2193,15 @@ window.onload = function() {
       doc.text('BANK SETTLEMENT REPORT', 14, yPos);
       yPos += 5;
       
-      // Cash = Cash in Hand + MPP Cash (from summary)
-      const cashTotal = currentStats.cashInHand + currentStats.mppCash;
+      // Cash = Cash in Hand + MPP Cash + Home Cash
+      const cashFromSummary = currentStats.cashInHand + currentStats.mppCash;
+      
+      // Add Home Cash (settlements with "home" in description)
+      const homeCash = todaySettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('home'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      const cashTotal = cashFromSummary + homeCash;
       
       // Card = Settlements with "card" in description + Payments with mode "card"
       const cardFromSettlements = todaySettlements
