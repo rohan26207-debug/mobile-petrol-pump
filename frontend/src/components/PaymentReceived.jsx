@@ -167,17 +167,17 @@ const PaymentReceived = ({
           customerName: customer.name,
           amount: parseFloat(amount),
           date: paymentDate,
-          mode: paymentMode // Include payment mode
+          mode: settlementType // Changed to settlementType
         });
         // Save the current payment date before clearing
         const currentDate = paymentDate;
-        const currentMode = paymentMode;
+        const currentType = settlementType;
         setCustomerId('');
         setCustomerSearch('');
         setAmount('');
-        // Keep the same date and mode for next payment
+        // Keep the same date and settlement type for next payment
         setPaymentDate(currentDate);
-        setPaymentMode(currentMode);
+        setSettlementType(currentType);
       }
     }
   };
