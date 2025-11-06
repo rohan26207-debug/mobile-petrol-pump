@@ -1495,51 +1495,79 @@ const ZAPTRStyleCalculator = () => {
         yPos = doc.lastAutoTable.finalY + 10;
       }
 
-      // SETTLEMENT RECORDS
-      if (filteredSettlements.length > 0 && yPos < 250) {
-        if (yPos > 220) {
-          doc.addPage();
-          yPos = 20;
+      // BANK SETTLEMENT REPORT (moved to end)
+      // Calculate payment mode totals from settlements and payments
+      const dateFilter = pdfSettings.dateRange === 'single' 
+        ? (item) => item.date === pdfSettings.startDate
+        : (item) => item.date >= pdfSettings.startDate && item.date <= pdfSettings.endDate;
+      
+      const relevantSettlements = settlementData.filter(dateFilter);
+      const relevantPayments = payments.filter(dateFilter);
+      
+      let cashTotal = 0, cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
+      
+      relevantSettlements.forEach(s => {
+        const amount = s.amount || 0;
+        switch(s.mode?.toLowerCase()) {
+          case 'cash': cashTotal += amount; break;
+          case 'card': cardTotal += amount; break;
+          case 'paytm': paytmTotal += amount; break;
+          case 'phonepe': phonepeTotal += amount; break;
+          case 'dtp': dtpTotal += amount; break;
+          default: cashTotal += amount;
         }
-
-        doc.setFontSize(12);
-        doc.setFont('helvetica', 'bold');
-        doc.text('SETTLEMENT RECORDS', 14, yPos);
-        yPos += 5;
-
-        const settlementTableData = filteredSettlements.map((settlement, index) => [
-          index + 1,
-          settlement.date,
-          settlement.description || 'Settlement',
-          `₹${settlement.amount.toFixed(2)}`,
-          settlement.mpp ? 'Yes' : 'No'
-        ]);
-
-        // Add total row
-        const totalSettlement = filteredSettlements.reduce((sum, s) => sum + s.amount, 0);
-        settlementTableData.push([
-          { content: 'Total', colSpan: 3, styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
-          { content: `₹${totalSettlement.toFixed(2)}`, styles: { fontStyle: 'bold', halign: 'right' } },
-          ''
-        ]);
-
-        doc.autoTable({
-          startY: yPos,
-          head: [['#', 'Date', 'Description', 'Amount', 'MPP']],
-          body: settlementTableData,
-          theme: 'grid',
-          styles: { fontSize: 8, cellPadding: 2 },
-          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
-          columnStyles: {
-            0: { cellWidth: 10 },
-            1: { cellWidth: 25 },
-            3: { halign: 'right' },
-            4: { halign: 'center' }
-          }
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
+      });
+      
+      relevantPayments.forEach(p => {
+        const amount = p.amount || 0;
+        switch(p.mode?.toLowerCase()) {
+          case 'cash': cashTotal += amount; break;
+          case 'card': cardTotal += amount; break;
+          case 'paytm': paytmTotal += amount; break;
+          case 'phonepe': phonepeTotal += amount; break;
+          case 'wallet': phonepeTotal += amount; break;
+          default: cashTotal += amount;
+        }
+      });
+      
+      if (yPos > 220) {
+        doc.addPage();
+        yPos = 20;
       }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('BANK SETTLEMENT REPORT', 14, yPos);
+      yPos += 5;
+
+      const bankSettlementData = [
+        ['Cash', `₹${cashTotal.toFixed(2)}`],
+        ['Card', `₹${cardTotal.toFixed(2)}`],
+        ['Paytm', `₹${paytmTotal.toFixed(2)}`],
+        ['PhonePe', `₹${phonepeTotal.toFixed(2)}`],
+        ['DTP', `₹${dtpTotal.toFixed(2)}`]
+      ];
+      
+      const grandTotal = cashTotal + cardTotal + paytmTotal + phonepeTotal + dtpTotal;
+      bankSettlementData.push([
+        { content: 'Total', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
+        { content: `₹${grandTotal.toFixed(2)}`, styles: { fontStyle: 'bold', halign: 'right' } }
+      ]);
+
+      doc.autoTable({
+        startY: yPos,
+        head: [['Payment Mode', 'Amount']],
+        body: bankSettlementData,
+        theme: 'grid',
+        styles: { fontSize: 10, cellPadding: 3 },
+        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold' },
+        columnStyles: {
+          0: { cellWidth: 80 },
+          1: { halign: 'right', cellWidth: 80 }
+        }
+      });
+
+      yPos = doc.lastAutoTable.finalY + 10;
 
       // Footer
       const pageCount = doc.internal.getNumberOfPages();
