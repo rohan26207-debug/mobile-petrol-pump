@@ -3681,33 +3681,20 @@ window.onload = function() {
                   )}
 
                   {outstandingSubTab === 'credit-manage' && (
-                    <div className="space-y-4">
-                      {/* Add Credit Sales Button */}
-                      <div className="flex justify-center">
-                        <Button 
-                          onClick={() => {
-                            saveScrollPosition();
-                            setEditingCreditData(null);
-                            setCreditDialogOpen(true);
-                          }}
-                          className="bg-green-600 hover:bg-green-700 text-white px-6 py-2"
-                        >
-                          <Plus className="w-4 h-4 mr-2" />
-                          Add Credit Sales
-                        </Button>
-                      </div>
-                      
-                      {/* Credit Sales Management */}
-                      <CreditSalesManagement 
-                        isDarkMode={isDarkMode}
-                        creditData={creditData}
-                        fuelSettings={fuelSettings}
-                        selectedDate={selectedDate}
-                        onEditCredit={handleEditCredit}
-                        onDeleteCredit={deleteCreditRecord}
-                        customers={customers}
-                      />
-                    </div>
+                    <CreditSalesManagement 
+                      isDarkMode={isDarkMode}
+                      creditData={creditData}
+                      fuelSettings={fuelSettings}
+                      selectedDate={selectedDate}
+                      onEditCredit={handleEditCredit}
+                      onDeleteCredit={deleteCreditRecord}
+                      onAddCredit={() => {
+                        saveScrollPosition();
+                        setEditingCreditData(null);
+                        setCreditDialogOpen(true);
+                      }}
+                      customers={customers}
+                    />
                   )}
 
                   {outstandingSubTab === 'receipt-manage' && (
