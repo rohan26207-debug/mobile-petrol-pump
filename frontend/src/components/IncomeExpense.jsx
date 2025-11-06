@@ -484,9 +484,9 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
             }`}
           >
             <Plus className="w-4 h-4 mr-2" />
-            {editingId ? `Update ${activeType}` : `Add ${activeType} & Close`}
+            {(editingId || editingRecord) ? `Update ${activeType}` : `Add ${activeType} & Close`}
           </Button>
-          {editingId && (
+          {(editingId || editingRecord) && (
             <Button variant="outline" onClick={resetForm}>
               Cancel
             </Button>
