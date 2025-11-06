@@ -3319,13 +3319,14 @@ window.onload = function() {
             </TabsContent>
 
             <TabsContent value="c-sales">
-              <CreditSalesManagement
-                customers={customers}
+              <CreditSalesManagement 
+                isDarkMode={isDarkMode}
                 creditData={creditData}
+                fuelSettings={fuelSettings}
                 selectedDate={selectedDate}
                 onEditCredit={handleEditCredit}
                 onDeleteCredit={deleteCreditRecord}
-                isDarkMode={isDarkMode}
+                customers={customers}
               />
             </TabsContent>
 
