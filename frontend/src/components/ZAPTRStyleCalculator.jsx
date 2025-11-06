@@ -1686,20 +1686,20 @@ window.onload = function() {
       // Fuel Sales
       summaryData.push([
         `${rowNum}. Fuel Sales`,
-        stats.fuelLitersNoMPP.toFixed(2),
-        `₹${stats.fuelSalesNoMPP.toFixed(2)}`,
-        stats.fuelLitersMPP.toFixed(2),
-        `₹${stats.fuelSalesMPP.toFixed(2)}`
+        currentStats.fuelLitersNoMPP.toFixed(2),
+        `₹${currentStats.fuelSalesNoMPP.toFixed(2)}`,
+        currentStats.fuelLitersMPP.toFixed(2),
+        `₹${currentStats.fuelSalesMPP.toFixed(2)}`
       ]);
       rowNum++;
 
       // Credit Sales
       summaryData.push([
         `${rowNum}. Credit Sales`,
-        stats.creditLitersNoMPP.toFixed(2),
-        `₹${stats.creditTotalAmountNoMPP.toFixed(2)}`,
-        stats.creditLitersMPP.toFixed(2),
-        `₹${stats.creditAmountMPP.toFixed(2)}`
+        currentStats.creditLitersNoMPP.toFixed(2),
+        `₹${currentStats.creditTotalAmountNoMPP.toFixed(2)}`,
+        currentStats.creditLitersMPP.toFixed(2),
+        `₹${currentStats.creditAmountMPP.toFixed(2)}`
       ]);
       rowNum++;
 
@@ -1707,9 +1707,9 @@ window.onload = function() {
       summaryData.push([
         `${rowNum}. Income`,
         '-',
-        `₹${stats.otherIncomeNoMPP.toFixed(2)}`,
+        `₹${currentStats.otherIncomeNoMPP.toFixed(2)}`,
         '-',
-        `₹${stats.otherIncomeMPP.toFixed(2)}`
+        `₹${currentStats.otherIncomeMPP.toFixed(2)}`
       ]);
       rowNum++;
 
@@ -1717,9 +1717,9 @@ window.onload = function() {
       summaryData.push([
         `${rowNum}. Expenses`,
         '-',
-        `₹${stats.totalExpensesNoMPP.toFixed(2)}`,
+        `₹${currentStats.totalExpensesNoMPP.toFixed(2)}`,
         '-',
-        `₹${stats.totalExpensesMPP.toFixed(2)}`
+        `₹${currentStats.totalExpensesMPP.toFixed(2)}`
       ]);
       rowNum++;
 
@@ -1727,18 +1727,18 @@ window.onload = function() {
       summaryData.push([
         `${rowNum}. Settlement`,
         '-',
-        `₹${stats.settlementNoMPP.toFixed(2)}`,
+        `₹${currentStats.settlementNoMPP.toFixed(2)}`,
         '-',
-        `₹${stats.settlementMPP.toFixed(2)}`
+        `₹${currentStats.settlementMPP.toFixed(2)}`
       ]);
 
       // Cash in Hand / MPP Cash
       summaryData.push([
         { content: 'Cash in Hand / MPP Cash', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
         '-',
-        { content: `₹${stats.cashInHand.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        { content: `₹${currentStats.cashInHand.toFixed(2)}`, styles: { fontStyle: 'bold' } },
         '-',
-        { content: `₹${stats.mppCash.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+        { content: `₹${currentStats.mppCash.toFixed(2)}`, styles: { fontStyle: 'bold' } }
       ]);
 
       doc.autoTable({
