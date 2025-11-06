@@ -3537,7 +3537,51 @@ window.onload = function() {
                     </div>
                   </div>
 
-                  {/* Placeholder block for symmetry (optional) */}
+                  {/* Credit Manage Block */}
+                  <div 
+                    onClick={() => handleBalanceBlockClick('credit-manage')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 transform ${
+                      isDarkMode
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
+                    }`}
+                    style={{ willChange: 'transform' }}
+                  >
+                    <div className="flex flex-col items-center text-center space-y-2">
+                      <CreditCard className={`w-8 h-8 ${
+                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`} />
+                      <span className={`text-sm font-medium ${
+                        isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                      }`}>
+                        Credit Manage
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Receipt Manage Block */}
+                  <div 
+                    onClick={() => handleBalanceBlockClick('receipt-manage')}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 transform ${
+                      isDarkMode
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
+                    }`}
+                    style={{ willChange: 'transform' }}
+                  >
+                    <div className="flex flex-col items-center text-center space-y-2">
+                      <Receipt className={`w-8 h-8 ${
+                        isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                      }`} />
+                      <span className={`text-sm font-medium ${
+                        isDarkMode ? 'text-gray-300' : 'text-slate-700'
+                      }`}>
+                        Receipt Manage
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Coming Soon Block */}
                   <div className={`p-4 rounded-lg border-2 ${
                     isDarkMode
                       ? 'bg-gray-800 border-gray-600 opacity-50'
