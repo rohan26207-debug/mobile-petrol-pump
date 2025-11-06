@@ -54,7 +54,7 @@ const PaymentReceived = ({
   const [editCustomerId, setEditCustomerId] = useState('');
   const [editAmount, setEditAmount] = useState('');
   const [editPaymentDate, setEditPaymentDate] = useState('');
-  const [editPaymentMode, setEditPaymentMode] = useState('cash'); // Edit payment mode
+  const [editSettlementType, setEditSettlementType] = useState(''); // Changed from editPaymentMode
   const [editCustomerSearch, setEditCustomerSearch] = useState('');
   const [showEditCustomerDropdown, setShowEditCustomerDropdown] = useState(false);
   
