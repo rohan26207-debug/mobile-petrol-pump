@@ -835,7 +835,7 @@ const CreditSalesManagement = ({
                   <p className={`text-sm mb-1 ${
                     isDarkMode ? 'text-gray-300' : 'text-slate-600'
                   }`}>
-                    Are you sure you want to delete credit sale of <span className="font-semibold">₹{(deleteConfirm.credit?.totalAmount || deleteConfirm.credit?.amount || 0).toFixed(2)}</span> for <span className="font-semibold">"{deleteConfirm.credit?.customerName}"</span>?
+                    Are you sure you want to delete credit sale of <span className="font-semibold">₹{deleteConfirm.credit ? calculateCreditAmount(deleteConfirm.credit).toFixed(2) : '0.00'}</span> for <span className="font-semibold">"{deleteConfirm.credit?.customerName}"</span>?
                   </p>
                   <p className={`text-sm ${
                     isDarkMode ? 'text-gray-400' : 'text-slate-500'
