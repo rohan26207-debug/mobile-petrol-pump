@@ -2540,7 +2540,7 @@ window.onload = function() {
               Today Summary
             </button>
             <button
-              onClick={() => setParentTab('outstanding')}
+              onClick={handleBalanceTabClick}
               className={`py-3 px-4 text-center font-semibold transition-colors ${
                 parentTab === 'outstanding'
                   ? isDarkMode
