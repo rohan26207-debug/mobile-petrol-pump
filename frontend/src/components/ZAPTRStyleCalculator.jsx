@@ -2148,31 +2148,62 @@ window.onload = function() {
         yPos = 20;
       }
 
-      // Settlement Records
-      const todaySettlements = settlementData.filter(s => s.date === selectedDate);
-      if (todaySettlements.length > 0 && yPos < 250) {
-        doc.setFontSize(14);
-        doc.text('SETTLEMENT RECORDS', 14, yPos);
-        yPos += 5;
+      // Bank Settlement Report (at end)
+      doc.setFontSize(14);
+      doc.text('BANK SETTLEMENT REPORT', 14, yPos);
+      yPos += 5;
+      
+      let cashTotal = 0, cardTotal = 0, paytmTotal = 0, phonepeTotal = 0, dtpTotal = 0;
+      
+      todaySettlements.forEach(s => {
+        const amount = s.amount || 0;
+        switch(s.mode?.toLowerCase()) {
+          case 'cash': cashTotal += amount; break;
+          case 'card': cardTotal += amount; break;
+          case 'paytm': paytmTotal += amount; break;
+          case 'phonepe': phonepeTotal += amount; break;
+          case 'dtp': dtpTotal += amount; break;
+          default: cashTotal += amount;
+        }
+      });
+      
+      const todayPayments = payments.filter(p => p.date === selectedDate);
+      todayPayments.forEach(p => {
+        const amount = p.amount || 0;
+        switch(p.mode?.toLowerCase()) {
+          case 'cash': cashTotal += amount; break;
+          case 'card': cardTotal += amount; break;
+          case 'paytm': paytmTotal += amount; break;
+          case 'phonepe': phonepeTotal += amount; break;
+          case 'wallet': phonepeTotal += amount; break;
+          default: cashTotal += amount;
+        }
+      });
+      
+      const bankSettlementData = [
+        ['Cash', `₹${cashTotal.toFixed(2)}`],
+        ['Card', `₹${cardTotal.toFixed(2)}`],
+        ['Paytm', `₹${paytmTotal.toFixed(2)}`],
+        ['PhonePe', `₹${phonepeTotal.toFixed(2)}`],
+        ['DTP', `₹${dtpTotal.toFixed(2)}`]
+      ];
+      
+      const grandTotal = cashTotal + cardTotal + paytmTotal + phonepeTotal + dtpTotal;
+      bankSettlementData.push([
+        { content: 'Total', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
+        { content: `₹${grandTotal.toFixed(2)}`, styles: { fontStyle: 'bold', halign: 'right' } }
+      ]);
 
-        const settlementTableData = todaySettlements.map((settlement, index) => [
-          index + 1,
-          settlement.description || 'Settlement',
-          settlement.amount.toFixed(2),
-          settlement.mpp ? 'Yes' : 'No'
-        ]);
+      doc.autoTable({
+        startY: yPos,
+        head: [['Payment Mode', 'Amount']],
+        body: bankSettlementData,
+        theme: 'grid',
+        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
+        styles: { fontSize: 10 }
+      });
 
-        doc.autoTable({
-          startY: yPos,
-          head: [['#', 'Description', 'Amount', 'MPP']],
-          body: settlementTableData,
-          theme: 'grid',
-          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
-          styles: { fontSize: 9 }
-        });
-
-        yPos = doc.lastAutoTable.finalY + 10;
-      }
+      yPos = doc.lastAutoTable.finalY + 10;
 
       // Get PDF as Base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
