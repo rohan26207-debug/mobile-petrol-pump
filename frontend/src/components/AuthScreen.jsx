@@ -41,7 +41,7 @@ const AuthScreen = ({ onAuthSuccess }) => {
     <div style={styles.container}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Mobile Petrol Pump</h1>
+          <h1 style={styles.title}>Manager Petrol Pump</h1>
           <p style={styles.subtitle}>Cloud Sync Enabled</p>
         </div>
 
