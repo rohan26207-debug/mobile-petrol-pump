@@ -377,11 +377,18 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
   return (
     <Card className={`${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'} shadow-lg`}>
       <CardContent className="p-2 sm:p-3 space-y-3">
-        {/* Date Range Selector and Print Button */}
-        <div className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
+        {/* Header */}
+        <h2 className={`text-lg sm:text-2xl font-bold mb-2 ${
+          isDarkMode ? 'text-white' : 'text-slate-800'
+        }`}>
+          Bank Settlement
+        </h2>
+        
+        {/* Date Range Selector and Action Buttons */}
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-2">
             <div className="space-y-1">
-              <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+              <Label className={`text-xs sm:text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                 <Calendar className="w-3 h-3" />
                 From Date
               </Label>
@@ -389,11 +396,11 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
                 type="date"
                 value={fromDate}
                 onChange={(e) => setFromDate(e.target.value)}
-                className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                className={`text-xs sm:text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
               />
             </div>
             <div className="space-y-1">
-              <Label className={`text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
+              <Label className={`text-xs sm:text-sm font-medium flex items-center gap-1 ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
                 <Calendar className="w-3 h-3" />
                 To Date
               </Label>
@@ -401,7 +408,7 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
                 type="date"
                 value={toDate}
                 onChange={(e) => setToDate(e.target.value)}
-                className={`text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                className={`text-xs sm:text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
               />
             </div>
           </div>
@@ -410,24 +417,24 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
           <div className="grid grid-cols-2 gap-2">
             <Button
               onClick={handlePrint}
-              className={`${
+              className={`text-xs sm:text-sm ${
                 isDarkMode 
                   ? 'bg-green-700 hover:bg-green-600 text-white' 
                   : 'bg-green-600 hover:bg-green-700 text-white'
               }`}
             >
-              <Printer className="w-4 h-4 mr-2" />
-              Print Outs
+              <Printer className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              Print
             </Button>
             <Button
               onClick={handleExcelExport}
-              className={`${
+              className={`text-xs sm:text-sm ${
                 isDarkMode 
                   ? 'bg-blue-700 hover:bg-blue-600 text-white' 
                   : 'bg-blue-600 hover:bg-blue-700 text-white'
               }`}
             >
-              <FileSpreadsheet className="w-4 h-4 mr-2" />
+              <FileSpreadsheet className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Excel
             </Button>
           </div>
