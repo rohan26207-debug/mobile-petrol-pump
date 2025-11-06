@@ -358,9 +358,9 @@ class FirebaseSyncService {
       }
     );
 
-    // Listen to credit sales
+    // Listen to credit sales (only user's own data)
     const creditSalesListener = onSnapshot(
-      collection(db, 'creditSales'),
+      query(collection(db, 'creditSales'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
