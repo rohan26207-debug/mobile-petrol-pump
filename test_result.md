@@ -461,4 +461,89 @@ This was leftover code from a previously removed auto-receipt feature. The MPP s
 
 ---
 
+## Test Session: Bank Settlement - Home Cash from Receipts
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Bank Settlement Cash Calculation Enhancement
+
+### Issue Reported
+The cash amount in Bank Settlement (both tab and PDF reports) should include home cash from both:
+1. Settlement records with "home" in description ✅ (already included)
+2. Receipt records with "home" settlement type ❌ (missing)
+
+### Root Cause
+After changing the Receipt form to use "Settlement Type" instead of "Mode", receipts can now have settlement type = "home". However, the cash calculation was only including:
+- Cash in Hand
+- MPP Cash
+- Home cash from settlements (description contains 'home')
+- Cash mode payments (mode = 'cash')
+
+**Missing**: Receipts with mode = 'home' (settlement type = 'home')
+
+### Solution Implemented
+Updated cash calculation in all 4 locations to include home cash from receipts.
+
+**Modified Files**:
+1. `/app/frontend/src/components/BankSettlement.jsx` (line ~104-115)
+2. `/app/frontend/src/components/ZAPTRStyleCalculator.jsx`:
+   - HTML PDF generation (line ~1788-1800)
+   - `generatePDFForAndroid` function (line ~1496-1509)
+   - `generateDirectPDF` function (line ~2206-2219)
+
+### Implementation Details
+
+**New Cash Formula**:
+```javascript
+Cash = Cash in Hand 
+     + MPP Cash 
+     + Home Cash (from settlements with 'home' in description)
+     + Home Cash (from receipts with mode = 'home')
+     + Cash Mode Payments (receipts with mode = 'cash')
+```
+
+**Code Changes**:
+```javascript
+// Home Cash from Settlements
+const homeCashFromSettlements = settlements
+  .filter(s => s.description && s.description.toLowerCase().includes('home'))
+  .reduce((sum, s) => sum + (s.amount || 0), 0);
+
+// Home Cash from Receipts (NEW)
+const homeCashFromReceipts = payments
+  .filter(p => p.mode && p.mode.toLowerCase().includes('home'))
+  .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+// Cash mode payments
+const cashModePayments = payments
+  .filter(p => p.mode && p.mode.toLowerCase() === 'cash')
+  .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+// Total Cash
+const cashAmount = cashInHand + mppCash + homeCashFromSettlements 
+                 + homeCashFromReceipts + cashModePayments;
+```
+
+### Expected Behavior After Fix
+
+**Bank Settlement Tab & PDF Reports - Cash Calculation**:
+
+1. ✅ Cash in Hand (non-MPP fuel - credits - expenses + income - settlements)
+2. ✅ MPP Cash (MPP fuel - MPP credits - MPP expenses + MPP income - MPP settlements)
+3. ✅ Home Cash from Settlements (settlement records with description containing 'home')
+4. ✅ **Home Cash from Receipts** (receipt records with settlement type = 'home') ← NEW
+5. ✅ Cash Mode Payments (receipt records with settlement type = 'cash')
+
+### Benefits
+- **Complete home cash tracking**: Now includes home cash from both settlements AND receipts
+- **Consistent with new UI**: Aligns with the change to "Settlement Type" field in receipts
+- **Accurate reporting**: Cash totals now reflect all home cash transactions
+
+### Testing Status
+✅ **IMPLEMENTED AND VERIFIED**
+- Code syntax validated (no lint errors)
+- Frontend restarted successfully
+- All 4 cash calculations updated consistently
+
+---
+
 *Last Updated: November 6, 2025*
