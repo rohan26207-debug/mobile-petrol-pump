@@ -498,38 +498,13 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
 
   return (
     <div className="space-y-6">
-      <div className={hideRecordsList ? "" : "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
-        {/* Input Form */}
-        {hideRecordsList ? (
-          // Dialog mode: Just render content without Card wrapper
-          renderFormContent()
-        ) : (
-          // Normal mode: Render with Card wrapper
-          <Card className={`${
-            isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
-          } shadow-lg`}>
-            <CardHeader className={`${
-              activeType === 'income' 
-                ? 'bg-gradient-to-r from-green-600 to-green-700' 
-                : 'bg-gradient-to-r from-red-600 to-red-700'
-            } text-white rounded-t-lg`}>
-              <CardTitle className="flex items-center gap-2">
-                {activeType === 'income' ? (
-                  <TrendingUp className="w-5 h-5" />
-                ) : (
-                  <TrendingDown className="w-5 h-5" />
-                )}
-                {editingId ? `Edit ${activeType}` : `Add ${activeType}`}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              {renderFormContent()}
-            </CardContent>
-          </Card>
-        )}
+      {/* Input Form - Always render */}
+      {renderFormContent()}
 
-        {/* Records List - Only show when NOT in dialog mode */}
-        {!hideRecordsList ? (
+      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+
+      {/* Records List - Always show */}
+      <div className="space-y-3">
         <Card className={`${
           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-slate-200'
         } shadow-lg`}>
