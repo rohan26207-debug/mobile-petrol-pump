@@ -101,8 +101,13 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
       const cashInHand = fuelSalesNoMPP - creditAmountNoMPP - totalExpensesNoMPP + otherIncomeNoMPP - settlementNoMPP;
       const mppCash = fuelSalesMPP - creditAmountMPP - totalExpensesMPP + otherIncomeMPP - settlementMPP;
       
-      // Total Cash = Cash in Hand + MPP Cash
-      const cashAmount = cashInHand + mppCash;
+      // Home Cash = Settlements with "home" in description (both MPP and non-MPP)
+      const homeCash = daySettlements
+        .filter(s => s.description && s.description.toLowerCase().includes('home'))
+        .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      // Total Cash = Cash in Hand + MPP Cash + Home Cash
+      const cashAmount = cashInHand + mppCash + homeCash;
 
       // Calculate Card amount (Settlement + Customer receipts with mode='Card')
       const settlementCard = daySettlements
