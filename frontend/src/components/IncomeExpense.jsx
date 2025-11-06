@@ -501,10 +501,13 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       {/* Input Form - Always render */}
       {renderFormContent()}
 
-      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+      {/* Records List - Only show when NOT editing a specific record */}
+      {!editingRecord && (
+        <>
+          <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
 
-      {/* Records List - Always show */}
-      <div className="space-y-3">
+          {/* Records List */}
+          <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>
             {activeType === 'income' ? 'Income' : 'Expense'} Records
