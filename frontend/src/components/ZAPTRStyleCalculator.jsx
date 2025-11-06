@@ -535,8 +535,8 @@ const ZAPTRStyleCalculator = () => {
       setCreditData(prev => [...prev, newCredit]);
       
       // Auto-create payment for MPP if this is MPP-tagged credit to another customer
-      if ((newCredit.mpp === true || newCredit.mpp === 'true') && !newCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
-        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+      if ((newCredit.mpp === true || newCredit.mpp === 'true') && !newCredit.customerName?.toLowerCase().includes('manager petrol pump')) {
+        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('manager petrol pump'));
         
         if (mppCustomer) {
           // Calculate ONLY fuel amount (excluding income and expenses)
