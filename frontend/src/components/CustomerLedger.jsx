@@ -196,9 +196,10 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const mppSettlementAmount = mppSettlementsWithTag.reduce((sum, s) => sum + (s.amount || 0), 0);
     console.log('Total MPP Settlement Amount:', mppSettlementAmount);
     
-    // Calculate MPP Cash using FULL formula
-    // Formula: MPP Fuel Sales - MPP Credit Sales + MPP Income - MPP Expenses - MPP Settlements
-    const totalMPPCash = mppFuelSales - mppCreditAmount + mppTotalIncome - mppTotalExpenses - mppSettlementAmount;
+    // Calculate MPP Cash using FULL formula (matches Today Summary calculation)
+    // Formula: MPP Fuel Sales - MPP Credit Total (fuel + income + expenses) - MPP Expenses + MPP Income - MPP Settlements
+    // Note: Credit amount already includes income/expenses from credits, separate income/expenses are direct entries
+    const totalMPPCash = mppFuelSales - mppCreditAmount - mppTotalExpenses + mppTotalIncome - mppSettlementAmount;
     
     // Debug logging
     console.log('=== Customer Ledger MPP Cash Calculation (FULL FORMULA) ===');
