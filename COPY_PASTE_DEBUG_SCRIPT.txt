@@ -1,0 +1,299 @@
+═══════════════════════════════════════════════════════════════
+FIREBASE SYNC DEBUG SCRIPT - COPY & PASTE IN BROWSER CONSOLE
+═══════════════════════════════════════════════════════════════
+
+Open https://managerpetrolpump.vercel.app/
+Press F12 to open Console
+Copy and paste each section below, one at a time
+
+
+═══════════════════════════════════════════════════════════════
+STEP 1: CHECK AUTHENTICATION
+═══════════════════════════════════════════════════════════════
+
+Copy this and paste in Console:
+
+const { auth } = require('./services/firebase');
+const user = auth.currentUser;
+console.log('═══ AUTHENTICATION STATUS ═══');
+console.log('✅ Authenticated:', !!user);
+console.log('📧 Email:', user?.email);
+console.log('🆔 User ID:', user?.uid);
+console.log('═══════════════════════════════');
+
+
+═══════════════════════════════════════════════════════════════
+STEP 2: CHECK LOCAL DATA
+═══════════════════════════════════════════════════════════════
+
+Copy this and paste in Console:
+
+const localCustomers = JSON.parse(localStorage.getItem('customers') || '[]');
+const localCredits = JSON.parse(localStorage.getItem('creditData') || '[]');
+const localPayments = JSON.parse(localStorage.getItem('payments') || '[]');
+
+console.log('═══ LOCAL STORAGE DATA ═══');
+console.log('📊 Customers:', localCustomers.length);
+console.log('💳 Credit Sales:', localCredits.length);
+console.log('💰 Payments:', localPayments.length);
+
+if (localCustomers.length > 0) {
+  console.log('👥 Customer Names:', localCustomers.map(c => c.name).join(', '));
+}
+console.log('═══════════════════════════════');
+
+
+═══════════════════════════════════════════════════════════════
+STEP 3: CHECK FIREBASE DATA
+═══════════════════════════════════════════════════════════════
+
+Copy this and paste in Console:
+
+const { collection, query, where, getDocs } = require('firebase/firestore');
+const { db, auth } = require('./services/firebase');
+
+const checkFirebase = async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    console.log('❌ Not authenticated!');
+    return;
+  }
+  
+  console.log('═══ FIREBASE DATA ═══');
+  
+  // Check customers
+  const customersSnap = await getDocs(
+    query(collection(db, 'customers'), where('userId', '==', user.uid))
+  );
+  console.log('☁️ Customers in Firebase:', customersSnap.size);
+  
+  if (customersSnap.size > 0) {
+    const names = [];
+    customersSnap.forEach(doc => names.push(doc.data().name));
+    console.log('👥 Customer Names:', names.join(', '));
+  }
+  
+  // Check credits
+  const creditsSnap = await getDocs(
+    query(collection(db, 'creditSales'), where('userId', '==', user.uid))
+  );
+  console.log('☁️ Credit Sales in Firebase:', creditsSnap.size);
+  
+  // Check payments
+  const paymentsSnap = await getDocs(
+    query(collection(db, 'payments'), where('userId', '==', user.uid))
+  );
+  console.log('☁️ Payments in Firebase:', paymentsSnap.size);
+  
+  console.log('═══════════════════════════════');
+};
+
+checkFirebase();
+
+
+═══════════════════════════════════════════════════════════════
+STEP 4: FORCE PUSH TO FIREBASE (RUN ON LAPTOP 1 - HAS DATA)
+═══════════════════════════════════════════════════════════════
+
+Copy this and paste in Console on the laptop that HAS the data:
+
+const forcePushToFirebase = async () => {
+  console.log('🚀 Starting force push to Firebase...');
+  
+  const firebaseSyncService = require('./services/firebaseSync').default;
+  const { auth } = require('./services/firebase');
+  
+  if (!auth.currentUser) {
+    console.log('❌ Not authenticated!');
+    return;
+  }
+  
+  // Push customers
+  const customers = JSON.parse(localStorage.getItem('customers') || '[]');
+  console.log(`📤 Pushing ${customers.length} customers...`);
+  
+  for (const customer of customers) {
+    try {
+      await firebaseSyncService.syncCustomer(customer, 'add');
+      console.log('✅ Synced:', customer.name);
+    } catch (error) {
+      console.error('❌ Failed:', customer.name, error.message);
+    }
+  }
+  
+  // Push credit sales
+  const credits = JSON.parse(localStorage.getItem('creditData') || '[]');
+  console.log(`📤 Pushing ${credits.length} credit sales...`);
+  
+  for (const credit of credits) {
+    try {
+      await firebaseSyncService.syncCreditSale(credit, 'add');
+      console.log('✅ Synced credit sale');
+    } catch (error) {
+      console.error('❌ Failed credit sale:', error.message);
+    }
+  }
+  
+  // Push payments
+  const payments = JSON.parse(localStorage.getItem('payments') || '[]');
+  console.log(`📤 Pushing ${payments.length} payments...`);
+  
+  for (const payment of payments) {
+    try {
+      await firebaseSyncService.syncPayment(payment, 'add');
+      console.log('✅ Synced payment');
+    } catch (error) {
+      console.error('❌ Failed payment:', error.message);
+    }
+  }
+  
+  console.log('✅✅✅ FORCE PUSH COMPLETED! ✅✅✅');
+  console.log('Now check Firebase Console and run STEP 5 on Laptop 2');
+};
+
+forcePushToFirebase();
+
+
+═══════════════════════════════════════════════════════════════
+STEP 5: FORCE PULL FROM FIREBASE (RUN ON LAPTOP 2 - NO DATA)
+═══════════════════════════════════════════════════════════════
+
+Copy this and paste in Console on the laptop that NEEDS the data:
+
+const forcePullFromFirebase = async () => {
+  console.log('📥 Starting force pull from Firebase...');
+  
+  const { collection, query, where, getDocs } = require('firebase/firestore');
+  const { db, auth } = require('./services/firebase');
+  
+  const user = auth.currentUser;
+  if (!user) {
+    console.log('❌ Not authenticated!');
+    return;
+  }
+  
+  console.log('👤 Pulling data for user:', user.uid);
+  
+  // Pull customers
+  const customersSnap = await getDocs(
+    query(collection(db, 'customers'), where('userId', '==', user.uid))
+  );
+  
+  const customers = [];
+  customersSnap.forEach(doc => {
+    const data = doc.data();
+    customers.push(data);
+    console.log('📥 Got customer:', data.name);
+  });
+  
+  // Pull credit sales
+  const creditsSnap = await getDocs(
+    query(collection(db, 'creditSales'), where('userId', '==', user.uid))
+  );
+  
+  const credits = [];
+  creditsSnap.forEach(doc => {
+    credits.push(doc.data());
+  });
+  
+  // Pull payments
+  const paymentsSnap = await getDocs(
+    query(collection(db, 'payments'), where('userId', '==', user.uid))
+  );
+  
+  const payments = [];
+  paymentsSnap.forEach(doc => {
+    payments.push(doc.data());
+  });
+  
+  // Save to localStorage
+  localStorage.setItem('customers', JSON.stringify(customers));
+  localStorage.setItem('creditData', JSON.stringify(credits));
+  localStorage.setItem('payments', JSON.stringify(payments));
+  
+  console.log('✅✅✅ FORCE PULL COMPLETED! ✅✅✅');
+  console.log('📊 Pulled data:');
+  console.log('  - Customers:', customers.length);
+  console.log('  - Credits:', credits.length);
+  console.log('  - Payments:', payments.length);
+  console.log('');
+  console.log('🔄 Page will reload in 3 seconds...');
+  
+  setTimeout(() => {
+    window.location.reload();
+  }, 3000);
+};
+
+forcePullFromFirebase();
+
+
+═══════════════════════════════════════════════════════════════
+STEP 6: TEST AUTO-SYNC (AFTER MANUAL SYNC WORKS)
+═══════════════════════════════════════════════════════════════
+
+After manual push/pull works, test if auto-sync works:
+
+1. On Laptop 1: Add a NEW customer called "Auto Sync Test"
+2. On Laptop 2: Wait 5 seconds, then run this:
+
+const testAutoSync = async () => {
+  const { collection, query, where, getDocs } = require('firebase/firestore');
+  const { db, auth } = require('./services/firebase');
+  
+  const customersSnap = await getDocs(
+    query(collection(db, 'customers'), where('userId', '==', auth.currentUser.uid))
+  );
+  
+  console.log('☁️ Total customers in Firebase:', customersSnap.size);
+  
+  const names = [];
+  customersSnap.forEach(doc => names.push(doc.data().name));
+  console.log('👥 Customer Names:', names.join(', '));
+  
+  if (names.includes('Auto Sync Test')) {
+    console.log('✅✅✅ AUTO-SYNC WORKING! ✅✅✅');
+  } else {
+    console.log('❌ Auto-sync not working - customer not in Firebase yet');
+  }
+};
+
+testAutoSync();
+
+
+═══════════════════════════════════════════════════════════════
+TROUBLESHOOTING TIPS
+═══════════════════════════════════════════════════════════════
+
+If STEP 1 shows different User IDs:
+→ You're using different accounts!
+→ Logout and login with EXACT same email/password
+
+If STEP 2 shows data but STEP 3 shows 0 in Firebase:
+→ Data not pushing to Firebase
+→ Run STEP 4 to force push
+
+If STEP 3 shows data but STEP 2 shows 0:
+→ Data not pulling from Firebase
+→ Run STEP 5 to force pull
+
+If manual sync works but auto-sync doesn't:
+→ Listeners not working properly
+→ Check browser console for error messages
+→ Try clearing cache and hard reload
+
+If you see errors about permissions:
+→ Check Firebase security rules
+→ Make sure documents have 'userId' field
+
+
+═══════════════════════════════════════════════════════════════
+SHARE RESULTS
+═══════════════════════════════════════════════════════════════
+
+After running all steps, share:
+1. Output from STEP 1 (both laptops)
+2. Output from STEP 2 (both laptops)
+3. Output from STEP 3 (both laptops)
+4. Any error messages you see
+
+This will help identify exactly what's wrong!
