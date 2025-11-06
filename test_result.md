@@ -255,16 +255,24 @@ Date       Description                        Credit      Received    Outstandin
 - Line 3: Auto-payment from MPP settlement
 - Line 4: MPP Cash = Full calculation (may overlap with lines 2-3 for reconciliation)
 
-**MPP Cash Calculation:**
+**MPP Cash Calculation (Updated for Consistency):**
 ```
+Formula: MPP Fuel Sales - MPP Credit TOTAL - MPP Expenses + MPP Income - MPP Settlements
+
+Example:
 MPP Fuel Sales: ₹300,000 (all MPP-tagged sales)
-- MPP Credits: ₹200,000 (fuel to ABC)
-+ MPP Income: ₹20,000
-- MPP Expenses: ₹20,000
+- MPP Credits: ₹210,000 (TOTAL including fuel ₹200k + income ₹10k from credits)
+- MPP Expenses: ₹20,000 (direct expenses)
++ MPP Income: ₹20,000 (direct income)
 - MPP Settlements: ₹50,000
-= MPP Cash: ₹50,000
+= MPP Cash: ₹40,000
 ```
-Note: This provides full visibility and reconciliation capability
+
+**Important Notes:**
+1. **MPP Credit Amount** = Total credit amount (fuel + income + expenses from credits)
+2. **MPP Income/Expenses** = Direct income/expenses (not from credits)
+3. **Matches Today Summary** calculation exactly
+4. **Auto-payments** still show fuel amount only for detailed tracking
 
 ---
 
