@@ -423,7 +423,7 @@ Your Mobile Petrol Pump application now has:
 ### **Quick Commands:**
 ```bash
 # Test web app
-open https://petrolapp-mobile.preview.emergentagent.com
+open https://mobilepetrolpump.vercel.app/
 
 # Build Android APK
 cd /app/android && ./build-with-firebase.sh
