@@ -30,6 +30,7 @@ import localStorageService from '../services/localStorage';
 const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRecord, deleteIncomeRecord, expenseData, addExpenseRecord, updateExpenseRecord, deleteExpenseRecord, selectedDate, salesData, creditData, formResetKey, editingRecord, onRecordSaved, hideRecordsList, customers }) => {
   const [activeType, setActiveType] = useState('income');
   const [formData, setFormData] = useState({
+    date: selectedDate,
     amount: '',
     description: '',
     type: 'income',
