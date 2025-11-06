@@ -432,12 +432,17 @@ cd /app/android && ./build-with-firebase.sh
 # Look at bottom-right corner of app
 ```
 
+### **Important URLs:**
+- **Production Web App**: https://mobilepetrolpump.vercel.app/
+- **Firebase Console**: https://console.firebase.google.com/project/manager-petrol-pump-9e452
+- **Project ID**: manager-petrol-pump-9e452
+
 ---
 
 ## 🎯 Next Steps
 
 1. **Complete Firebase Console setup** (if not done)
-2. **Test web app thoroughly**
+2. **Test web app thoroughly** at https://mobilepetrolpump.vercel.app/
 3. **Build Android APK**
 4. **Install on device**
 5. **Test multi-device sync**
