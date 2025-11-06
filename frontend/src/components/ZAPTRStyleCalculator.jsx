@@ -736,6 +736,10 @@ const ZAPTRStyleCalculator = () => {
   const [showBalanceBlocks, setShowBalanceBlocks] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [savedScrollPosition, setSavedScrollPosition] = useState(0);
+  
+  // Authentication state
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
   // Check screen size for mobile detection
   useEffect(() => {
