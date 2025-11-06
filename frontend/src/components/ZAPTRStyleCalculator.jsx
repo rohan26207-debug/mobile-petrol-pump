@@ -1637,6 +1637,9 @@ window.onload = function() {
       const todayCredits = creditData.filter(credit => credit.date === selectedDate);
       const todayIncome = incomeData.filter(income => income.date === selectedDate);
       const todayExpenses = expenseData.filter(expense => expense.date === selectedDate);
+      
+      // Use the global stats which already has MPP separation
+      const currentStats = stats;
 
       // Create PDF using jsPDF
       const doc = new jsPDF();
