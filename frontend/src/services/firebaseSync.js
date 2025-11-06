@@ -316,9 +316,15 @@ class FirebaseSyncService {
   startListeners() {
     console.log('👂 Starting Firebase listeners for real-time updates...');
 
-    // Listen to customers
+    const userId = this.getUserId();
+    if (!userId) {
+      console.log('📴 User not authenticated, skipping listeners');
+      return;
+    }
+
+    // Listen to customers (only user's own data)
     const customersListener = onSnapshot(
-      collection(db, 'customers'),
+      query(collection(db, 'customers'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
