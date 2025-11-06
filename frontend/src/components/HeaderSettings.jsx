@@ -687,8 +687,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
               </TabsContent>
               
               <TabsContent value="contact" className="p-0">
-                <ScrollArea className="h-[calc(100vh-160px)] px-4 py-4">
-                <div className="space-y-4">
+                <ScrollArea className="h-[calc(100vh-200px)] px-4 py-4">
+                <div className="space-y-4 pb-6">
                   {/* Contact Information Display */}
                   <div className="text-center mb-4">
                     <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full">
