@@ -754,6 +754,7 @@ const ZAPTRStyleCalculator = () => {
     setSalesDialogOpen(false);
     setCreditDialogOpen(false);
     setSettleIncExpDialogOpen(false);
+    setSettlementDialogOpen(false);
     setIncomeExpenseDialogOpen(false);
     setEditingSaleData(null);
     setEditingCreditData(null);
