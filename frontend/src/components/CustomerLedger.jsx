@@ -47,7 +47,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const isMPPCustomer = customer.isMPP === true || customer.name.toLowerCase().includes('manager petrol pump');
 
     if (isMPPCustomer) {
-      // Special calculation for Mobile Petrol Pump customer
+      // Special calculation for Manager Petrol Pump customer
       generateMPPReport(customer);
     } else {
       // Normal customer ledger calculation
