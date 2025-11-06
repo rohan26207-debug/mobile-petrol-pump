@@ -3467,8 +3467,8 @@ window.onload = function() {
         {/* Outstanding View */}
         {parentTab === 'outstanding' && (
           <div className="mt-4">
-            {/* Mobile Block Layout for screens < 768px */}
-            <div className="block md:hidden">
+            {/* Block Layout - visible on all screens */}
+            <div className="block">
               {showBalanceBlocks ? (
                 <div key="balance-blocks" className="grid grid-cols-2 gap-3 mb-4">
                   {/* Bank Settlement Block */}
