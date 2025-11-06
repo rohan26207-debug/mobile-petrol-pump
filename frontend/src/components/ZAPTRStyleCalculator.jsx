@@ -3206,6 +3206,72 @@ window.onload = function() {
               </Tabs>
             </SheetContent>
           </Sheet>
+
+          {/* Separate Edit Settlement Dialog */}
+          <Sheet open={editingSettlementData && settlementDialogOpen} onOpenChange={setSettlementDialogOpen}>
+            <SheetContent side="bottom" className={`h-[90vh] ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+              <SheetHeader className="px-2">
+                <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+                  Edit Settlement
+                </SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
+                <Settlement 
+                  key={editingSettlementData ? editingSettlementData.id : 'edit'}
+                  isDarkMode={isDarkMode}
+                  settlementData={settlementData}
+                  addSettlementRecord={addSettlementRecord}
+                  updateSettlementRecord={updateSettlementRecord}
+                  deleteSettlementRecord={deleteSettlementRecord}
+                  selectedDate={selectedDate}
+                  formResetKey={formResetKey}
+                  editingRecord={editingSettlementData}
+                  onRecordSaved={() => {
+                    setSettlementDialogOpen(false);
+                    setEditingSettlementData(null);
+                  }}
+                  hideRecordsList={true}
+                  customers={customers}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
+
+          {/* Separate Edit Income/Expense Dialog */}
+          <Sheet open={editingIncomeExpenseData && incomeExpenseDialogOpen} onOpenChange={setIncomeExpenseDialogOpen}>
+            <SheetContent side="bottom" className={`h-[90vh] ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+              <SheetHeader className="px-2">
+                <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
+                  {editingIncomeExpenseData?.type === 'income' ? 'Edit Income' : 'Edit Expense'}
+                </SheetTitle>
+              </SheetHeader>
+              <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
+                <IncomeExpense 
+                  key={editingIncomeExpenseData ? editingIncomeExpenseData.id : 'edit'}
+                  isDarkMode={isDarkMode}
+                  incomeData={incomeData}
+                  addIncomeRecord={addIncomeRecord}
+                  updateIncomeRecord={updateIncomeRecord}
+                  deleteIncomeRecord={deleteIncomeRecord}
+                  expenseData={expenseData}
+                  addExpenseRecord={addExpenseRecord}
+                  updateExpenseRecord={updateExpenseRecord}
+                  deleteExpenseRecord={deleteExpenseRecord}
+                  selectedDate={selectedDate}
+                  salesData={salesData}
+                  creditData={creditData}
+                  formResetKey={formResetKey}
+                  editingRecord={editingIncomeExpenseData}
+                  onRecordSaved={() => {
+                    setIncomeExpenseDialogOpen(false);
+                    setEditingIncomeExpenseData(null);
+                  }}
+                  hideRecordsList={true}
+                  customers={customers}
+                />
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
 
         {/* All Records & C Sales Tabs - Below action buttons */}
