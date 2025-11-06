@@ -1219,27 +1219,47 @@ const ZAPTRStyleCalculator = () => {
         const summaryData = [];
         let rowNum = 1;
         
-        // Fuel Sales
-        summaryData.push([
-          `${rowNum}. Fuel Sales`,
-          filteredStats.fuelLitersNoMPP.toFixed(2),
-          `₹${filteredStats.fuelSalesNoMPP.toFixed(2)}`,
-          filteredStats.fuelLitersMPP.toFixed(2),
-          `₹${filteredStats.fuelSalesMPP.toFixed(2)}`
+        // Fuel Sales by Type (separate rows for each fuel type)
+        const allFuelTypes = new Set([
+          ...Object.keys(filteredStats.fuelSalesByTypeNoMPP || {}),
+          ...Object.keys(filteredStats.fuelSalesByTypeMPP || {})
         ]);
-        rowNum++;
+        
+        allFuelTypes.forEach(fuelType => {
+          const noMPPData = filteredStats.fuelSalesByTypeNoMPP[fuelType] || { liters: 0, amount: 0 };
+          const mppData = filteredStats.fuelSalesByTypeMPP[fuelType] || { liters: 0, amount: 0 };
+          
+          summaryData.push([
+            `${rowNum}. ${fuelType} Sales`,
+            noMPPData.liters.toFixed(2),
+            `₹${noMPPData.amount.toFixed(2)}`,
+            mppData.liters.toFixed(2),
+            `₹${mppData.amount.toFixed(2)}`
+          ]);
+          rowNum++;
+        });
 
         // Credit Sales
         if (pdfSettings.includeCredit) {
           summaryData.push([
             `${rowNum}. Credit Sales`,
             filteredStats.creditLitersNoMPP.toFixed(2),
-            `₹${filteredStats.creditTotalAmountNoMPP.toFixed(2)}`,
+            `₹${filteredStats.creditAmountNoMPP.toFixed(2)}`,
             filteredStats.creditLitersMPP.toFixed(2),
             `₹${filteredStats.creditAmountMPP.toFixed(2)}`
           ]);
           rowNum++;
         }
+
+        // Settlement (moved here, after credit sales)
+        summaryData.push([
+          `${rowNum}. Settlement`,
+          '-',
+          `₹${filteredStats.settlementNoMPP.toFixed(2)}`,
+          '-',
+          `₹${filteredStats.settlementMPP.toFixed(2)}`
+        ]);
+        rowNum++;
 
         // Income
         if (pdfSettings.includeIncome) {
@@ -1264,15 +1284,6 @@ const ZAPTRStyleCalculator = () => {
           ]);
           rowNum++;
         }
-
-        // Settlement
-        summaryData.push([
-          `${rowNum}. Settlement`,
-          '-',
-          `₹${filteredStats.settlementNoMPP.toFixed(2)}`,
-          '-',
-          `₹${filteredStats.settlementMPP.toFixed(2)}`
-        ]);
 
         // Cash in Hand / MPP Cash
         summaryData.push([
