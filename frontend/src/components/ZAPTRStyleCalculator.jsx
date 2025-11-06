@@ -3591,9 +3591,6 @@ window.onload = function() {
 
             {/* Content (same for both mobile and desktop) */}
             <div className="mt-4">
-
-            {/* Content (same for both mobile and desktop) */}
-            <div className="mt-4">
               {outstandingSubTab === 'bank-settlement' && (
                 <BankSettlement
                   isDarkMode={isDarkMode}
