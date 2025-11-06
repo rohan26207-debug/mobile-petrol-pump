@@ -887,7 +887,7 @@ const ZAPTRStyleCalculator = () => {
           });
           setPayments(localStorageService.getPayments());
           console.log('Updated linked MPP payment (fuel only):', linkedPayment.id);
-        } else if ((updatedCredit.mpp === true || updatedCredit.mpp === 'true') && !updatedCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
+        } else if ((updatedCredit.mpp === true || updatedCredit.mpp === 'true') && !updatedCredit.customerName?.toLowerCase().includes('manager petrol pump')) {
           // If credit was just tagged as MPP, create new auto-payment
           const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('manager petrol pump'));
           
