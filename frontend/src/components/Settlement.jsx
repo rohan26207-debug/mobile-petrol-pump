@@ -78,10 +78,12 @@ const Settlement = ({
     }
   }, [formResetKey]);
 
-  // Update date when selectedDate changes
+  // Update date when selectedDate changes (only if not editing)
   useEffect(() => {
-    setFormData(prev => ({ ...prev, date: selectedDate }));
-  }, [selectedDate]);
+    if (!editingId) {
+      setFormData(prev => ({ ...prev, date: selectedDate }));
+    }
+  }, [selectedDate, editingId]);
 
   const resetForm = () => {
     setFormData({
