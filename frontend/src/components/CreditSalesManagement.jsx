@@ -332,7 +332,7 @@ const CreditSalesManagement = ({
             fuelInfo,
             totalLiters.toFixed(2),
             credit.rate ? credit.rate.toFixed(2) : '-',
-            (credit.totalAmount || credit.amount || 0).toFixed(2)
+            calculateCreditAmount(credit).toFixed(2)
           ];
         });
 
