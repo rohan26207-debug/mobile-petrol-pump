@@ -1567,7 +1567,7 @@ const ZAPTRStyleCalculator = () => {
         ['DTP', `₹${dtpTotal.toFixed(2)}`]
       ];
       
-      const grandTotal = cashTotal + cardTotal + paytmTotal + phonepeTotal + dtpTotal;
+      const grandTotal = finalCashTotal + cardTotal + paytmTotal + phonepeTotal + dtpTotal;
       bankSettlementData.push([
         { content: 'Total', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
         { content: `₹${grandTotal.toFixed(2)}`, styles: { fontStyle: 'bold', halign: 'right' } }
