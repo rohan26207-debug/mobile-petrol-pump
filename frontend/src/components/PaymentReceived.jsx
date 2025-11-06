@@ -530,25 +530,36 @@ const PaymentReceived = ({
                   />
                 </div>
                 <div>
-                  <Label htmlFor="paymentMode" className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
-                    Mode
+                  <Label className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
+                    Settlement Type
                   </Label>
-                  <select
-                    id="paymentMode"
-                    value={paymentMode}
-                    onChange={(e) => setPaymentMode(e.target.value)}
-                    className={`mt-1 w-full h-10 px-3 rounded-md border text-sm ${
-                      isDarkMode 
-                        ? 'bg-gray-700 border-gray-600 text-white' 
-                        : 'bg-white border-gray-300 text-gray-900'
-                    }`}
+                  <Select
+                    value={settlementType}
+                    onValueChange={(value) => setSettlementType(value)}
                   >
-                    <option value="cash">Cash</option>
-                    <option value="card">Card</option>
-                    <option value="wallet">Wallet</option>
-                    <option value="bank">Bank</option>
-                    <option value="dtp">DTP</option>
-                  </select>
+                    <SelectTrigger className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}>
+                      <SelectValue placeholder="Select settlement type..." />
+                    </SelectTrigger>
+                    <SelectContent className={isDarkMode ? 'bg-gray-700 border-gray-600' : ''}>
+                      <SelectGroup>
+                        {settlementTypes.length > 0 ? (
+                          settlementTypes.map((type) => (
+                            <SelectItem 
+                              key={type.id} 
+                              value={type.name}
+                              className={isDarkMode ? 'text-white hover:bg-gray-600' : ''}
+                            >
+                              {type.name}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="no-types" disabled className={isDarkMode ? 'text-gray-400' : 'text-gray-500'}>
+                            No settlement types available. Add from Settings.
+                          </SelectItem>
+                        )}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
 
