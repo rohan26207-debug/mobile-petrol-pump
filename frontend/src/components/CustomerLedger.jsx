@@ -207,15 +207,16 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     console.log('Date Range:', fromDate, 'to', toDate);
     console.log('');
     console.log('MPP Fuel Sales (All tagged sales):', mppFuelSales);
-    console.log('MPP Credit Amount (Fuel only from tagged credits):', mppCreditAmount);
-    console.log('MPP Total Income (Tagged income):', mppTotalIncome);
-    console.log('MPP Total Expenses (Tagged expenses):', mppTotalExpenses);
+    console.log('MPP Credit Amount (TOTAL: fuel + income + expenses):', mppCreditAmount);
+    console.log('MPP Total Expenses (Tagged direct expenses):', mppTotalExpenses);
+    console.log('MPP Total Income (Tagged direct income):', mppTotalIncome);
     console.log('MPP Settlement Amount (Tagged settlements):', mppSettlementAmount);
     console.log('');
-    console.log('Formula:', mppFuelSales, '-', mppCreditAmount, '+', mppTotalIncome, '-', mppTotalExpenses, '-', mppSettlementAmount);
+    console.log('Formula:', mppFuelSales, '-', mppCreditAmount, '-', mppTotalExpenses, '+', mppTotalIncome, '-', mppSettlementAmount);
     console.log('Final MPP Cash:', totalMPPCash);
     console.log('');
-    console.log('NOTE: Auto-payments for MPP credits/settlements are ALSO shown as separate line items above');
+    console.log('NOTE: Matches Today Summary MPP Cash calculation');
+    console.log('NOTE: Auto-payments for MPP credits show fuel amount only (separate line items)');
     console.log('==========================================');
     
     if (totalMPPCash !== 0) {
