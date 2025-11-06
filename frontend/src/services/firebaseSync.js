@@ -392,9 +392,9 @@ class FirebaseSyncService {
       }
     );
 
-    // Listen to payments
+    // Listen to payments (only user's own data)
     const paymentsListener = onSnapshot(
-      collection(db, 'payments'),
+      query(collection(db, 'payments'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
