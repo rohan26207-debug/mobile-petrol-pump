@@ -762,7 +762,7 @@ class LocalStorageService {
     if (isMPP) {
       const existingMPP = customers.find(c => c.isMPP === true);
       if (existingMPP) {
-        throw new Error('A Mobile Petrol Pump customer already exists. Only one MPP customer is allowed.');
+        throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
       }
     }
     
@@ -812,7 +812,7 @@ class LocalStorageService {
     if (isMPP === true) {
       const existingMPP = customers.find(c => c.isMPP === true && c.id !== id);
       if (existingMPP) {
-        throw new Error('A Mobile Petrol Pump customer already exists. Only one MPP customer is allowed.');
+        throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
       }
     }
     
