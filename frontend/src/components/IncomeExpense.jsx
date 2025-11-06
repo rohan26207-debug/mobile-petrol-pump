@@ -101,6 +101,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
     // Don't reset form if we're editing a record
     if (!editingRecord && !editingId) {
       setFormData({
+        date: selectedDate,
         amount: '',
         description: '',
         type: 'income',
@@ -108,7 +109,14 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       });
       setActiveType('income');
     }
-  }, [formResetKey, editingRecord, editingId]);
+  }, [formResetKey, editingRecord, editingId, selectedDate]);
+  
+  // Update date when selectedDate changes (only if not editing)
+  useEffect(() => {
+    if (!editingId && !editingRecord) {
+      setFormData(prev => ({ ...prev, date: selectedDate }));
+    }
+  }, [selectedDate, editingId, editingRecord]);
 
   // Removed category arrays - simplified to just amount and description
 
