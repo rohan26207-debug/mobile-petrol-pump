@@ -783,6 +783,9 @@ const ZAPTRStyleCalculator = () => {
     setEditingCreditData(null);
     setEditingSettlementData(null);
     setEditingIncomeExpenseData(null);
+    
+    // Restore scroll position after dialog closes
+    restoreScrollPosition();
   };
 
   // Update functions
