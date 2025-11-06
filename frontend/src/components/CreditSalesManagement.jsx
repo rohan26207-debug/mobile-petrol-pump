@@ -708,7 +708,7 @@ const CreditSalesManagement = ({
                         </Badge>
                         <div className="flex items-center gap-1 text-orange-600 font-bold">
                           <IndianRupee className="w-4 h-4" />
-                          <span className="text-base sm:text-lg">{(credit.totalAmount || credit.amount || 0).toFixed(2)}</span>
+                          <span className="text-base sm:text-lg">{calculateCreditAmount(credit).toFixed(2)}</span>
                         </div>
                       </div>
                       <div className="flex items-center gap-1 flex-shrink-0">
