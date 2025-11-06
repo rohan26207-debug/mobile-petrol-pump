@@ -1733,6 +1733,16 @@ ${todayCredits.map((credit, index) =>
 <tr class="t"><td colspan="3" class="r"><b>Total:</b><td class="r"><b>${todayCredits.reduce((sum, credit) => sum + parseFloat(credit.liters), 0).toFixed(2)}</b><td class="r"><b>${todayCredits.reduce((sum, credit) => sum + parseFloat(credit.amount), 0).toFixed(2)}</b></tr>
 </table>` : ''}
 
+${settlementData.filter(s => s.date === selectedDate).length > 0 ? `
+<div class="s">SETTLEMENT RECORDS</div>
+<table>
+<tr><th width="10%">Sr.No<th width="50%">Description<th width="20%">Amount<th width="20%">MPP</tr>
+${settlementData.filter(s => s.date === selectedDate).map((settlement, index) => 
+  `<tr><td class="c">${index + 1}<td>${settlement.description || 'Settlement'}<td class="r">${settlement.amount.toFixed(2)}<td class="c">${settlement.mpp ? 'Yes' : 'No'}</tr>`
+).join('')}
+<tr class="t"><td colspan="2" class="r"><b>Total Settlements:</b><td class="r"><b>${settlementData.filter(s => s.date === selectedDate).reduce((sum, s) => sum + parseFloat(s.amount), 0).toFixed(2)}</b><td></tr>
+</table>` : ''}
+
 ${todayIncome.length > 0 ? `
 <div class="s">INCOME RECORDS</div>
 <table>
