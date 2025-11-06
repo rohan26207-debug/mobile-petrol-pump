@@ -19,7 +19,7 @@ const app = initializeApp(firebaseConfig);
 
 // Initialize Firestore with new cache settings (recommended approach)
 // Using persistentLocalCache with multiple tab support for offline functionality
-const db = getFirestore(app, {
+const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager()
   })
