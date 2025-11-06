@@ -2533,7 +2533,7 @@ window.onload = function() {
               <h1 className={`text-base sm:text-2xl font-bold ${
                 isDarkMode ? 'text-white' : 'text-slate-800'
               }`}>
-                Mobile Petrol Pump
+                Manager Petrol Pump
               </h1>
             </div>
           </div>
