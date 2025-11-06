@@ -1503,7 +1503,7 @@ const ZAPTRStyleCalculator = () => {
       const relevantSettlements = settlementData.filter(dateFilter);
       const relevantPayments = payments.filter(dateFilter);
       
-      // Cash = Cash in Hand + MPP Cash + Home Cash
+      // Cash = Cash in Hand + MPP Cash + Home Cash + Cash Mode Payments
       const cashTotal = filteredStats.cashInHand + filteredStats.mppCash;
       
       // Add Home Cash (settlements with "home" in description)
@@ -1511,7 +1511,12 @@ const ZAPTRStyleCalculator = () => {
         .filter(s => s.description && s.description.toLowerCase().includes('home'))
         .reduce((sum, s) => sum + (s.amount || 0), 0);
       
-      const finalCashTotal = cashTotal + homeCash;
+      // Add Cash Mode Payments
+      const cashModePayments = relevantPayments
+        .filter(p => p.mode && p.mode.toLowerCase() === 'cash')
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
+      
+      const finalCashTotal = cashTotal + homeCash + cashModePayments;
       
       // Card = Settlements with "card" in description + Payments with mode "card"
       const cardFromSettlements = relevantSettlements
