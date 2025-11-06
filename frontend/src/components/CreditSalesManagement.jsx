@@ -647,7 +647,7 @@ setTimeout(() => {
               <p>No credit sales in selected date range</p>
             </div>
           ) : (
-            <div className="space-y-2 max-h-[500px] overflow-y-auto">
+            <div className="space-y-2">
               {filteredCreditData.map((credit) => (
                 <div
                   key={credit.id}
@@ -655,35 +655,44 @@ setTimeout(() => {
                     isDarkMode 
                       ? 'border-gray-600 bg-gray-700' 
                       : 'border-slate-200 bg-slate-50'
-                  }`}
+                  } ${selectedCredits.has(credit.id) ? (isDarkMode ? 'ring-2 ring-blue-500' : 'ring-2 ring-blue-400') : ''}`}
                 >
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-                      <Badge className="bg-orange-100 text-orange-800 border-0 text-xs">
-                        Credit
-                      </Badge>
-                      <div className="flex items-center gap-1 text-orange-600 font-bold">
-                        <IndianRupee className="w-4 h-4" />
-                        <span className="text-base sm:text-lg">{(credit.totalAmount || credit.amount || 0).toFixed(2)}</span>
+                  <div className="flex items-center gap-2 mb-2">
+                    {/* Checkbox */}
+                    <Checkbox
+                      checked={selectedCredits.has(credit.id)}
+                      onCheckedChange={(checked) => handleSelectCredit(credit.id, checked)}
+                      className={isDarkMode ? 'border-gray-500' : ''}
+                    />
+                    
+                    <div className="flex items-center justify-between gap-2 flex-1">
+                      <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+                        <Badge className="bg-orange-100 text-orange-800 border-0 text-xs">
+                          Credit
+                        </Badge>
+                        <div className="flex items-center gap-1 text-orange-600 font-bold">
+                          <IndianRupee className="w-4 h-4" />
+                          <span className="text-base sm:text-lg">{(credit.totalAmount || credit.amount || 0).toFixed(2)}</span>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-1 flex-shrink-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onEditCredit(credit)}
-                        className="h-7 w-7 p-0"
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteClick(credit)}
-                        className="h-7 w-7 p-0"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      <div className="flex items-center gap-1 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => onEditCredit(credit)}
+                          className="h-7 w-7 p-0"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteClick(credit)}
+                          className="h-7 w-7 p-0"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </div>
                   </div>
 
