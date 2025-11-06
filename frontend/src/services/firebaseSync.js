@@ -345,6 +345,9 @@ class FirebaseSyncService {
             }
             
             localStorage.setItem('customers', JSON.stringify(customers));
+            
+            // Trigger storage event to update UI
+            window.dispatchEvent(new Event('storage'));
           } else if (change.type === 'removed') {
             console.log('📥 Customer deleted from another device:', data.name);
             const customers = localStorageService.getCustomers();
