@@ -742,14 +742,12 @@ const ZAPTRStyleCalculator = () => {
 
   const handleEditIncomeExpense = (record, type) => {
     setEditingIncomeExpenseData({ ...record, type });
-    setSettleIncExpActiveTab('incexp');
-    setSettleIncExpDialogOpen(true);
+    setIncomeExpenseDialogOpen(true);
   };
 
   const handleEditSettlement = (settlementRecord) => {
     setEditingSettlementData(settlementRecord);
-    setSettleIncExpActiveTab('settlement');
-    setSettleIncExpDialogOpen(true);
+    setSettlementDialogOpen(true);
   };
 
   const handleCloseDialogs = () => {
