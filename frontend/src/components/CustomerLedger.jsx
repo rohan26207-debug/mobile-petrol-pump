@@ -284,7 +284,7 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     
     console.log('==========================================');
 
-    // 5. All payments to Mobile Petrol Pump customer (including auto-generated ones)
+    // 5. All payments to Manager Petrol Pump customer (including auto-generated ones)
     const allMPPPayments = payments
       .filter(p => p.customerId === customerId)
       .filter(p => p.date >= fromDate && p.date <= toDate)
