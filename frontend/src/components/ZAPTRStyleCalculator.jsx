@@ -1591,6 +1591,16 @@ ${todayExpenses.map((expense, index) =>
 <tr class="t"><td colspan="2" class="r"><b>Total Expenses:</b><td class="r"><b>${todayExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0).toFixed(2)}</b></tr>
 </table>` : ''}
 
+${settlementData.filter(s => s.date === selectedDate).length > 0 ? `
+<div class="s">SETTLEMENT RECORDS</div>
+<table>
+<tr><th width="10%">Sr.No<th width="50%">Description<th width="20%">Amount<th width="20%">MPP</tr>
+${settlementData.filter(s => s.date === selectedDate).map((settlement, index) => 
+  `<tr><td class="c">${index + 1}<td>${settlement.description || 'Settlement'}<td class="r">${settlement.amount.toFixed(2)}<td class="c">${settlement.mpp ? 'Yes' : 'No'}</tr>`
+).join('')}
+<tr class="t"><td colspan="2" class="r"><b>Total Settlements:</b><td class="r"><b>${settlementData.filter(s => s.date === selectedDate).reduce((sum, s) => sum + parseFloat(s.amount), 0).toFixed(2)}</b><td></tr>
+</table>` : ''}
+
 <div style="margin-top:15px;text-align:center;font-size:10px;border-top:1px solid #000;padding-top:5px">
 Generated on: ${new Date().toLocaleString()}
 </div>
