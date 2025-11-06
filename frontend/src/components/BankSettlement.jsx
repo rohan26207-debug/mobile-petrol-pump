@@ -439,35 +439,35 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
           </div>
         </div>
 
-        {/* Summary Cards */}
+        {/* Summary Cards - Matching Today Summary styling */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
-          <div className={`p-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-orange-50 border-orange-200'}`}>
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-orange-600'}`}>Cash</div>
-            <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-orange-700'}`}>
+          <div className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-orange-50'}`}>
+            <div className={`text-xs sm:text-base font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-800'}`}>Cash</div>
+            <div className={`text-xs sm:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               ₹{totals.cashAmount.toFixed(2)}
             </div>
           </div>
-          <div className={`p-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-blue-50 border-blue-200'}`}>
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-blue-600'}`}>Card</div>
-            <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-blue-700'}`}>
+          <div className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-blue-50'}`}>
+            <div className={`text-xs sm:text-base font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-800'}`}>Card</div>
+            <div className={`text-xs sm:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               ₹{totals.cardAmount.toFixed(2)}
             </div>
           </div>
-          <div className={`p-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-purple-50 border-purple-200'}`}>
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-purple-600'}`}>Paytm</div>
-            <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-purple-700'}`}>
+          <div className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-purple-50'}`}>
+            <div className={`text-xs sm:text-base font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-800'}`}>Paytm</div>
+            <div className={`text-xs sm:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               ₹{totals.paytmAmount.toFixed(2)}
             </div>
           </div>
-          <div className={`p-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-indigo-50 border-indigo-200'}`}>
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-indigo-600'}`}>PhonePe</div>
-            <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-indigo-700'}`}>
+          <div className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-indigo-50'}`}>
+            <div className={`text-xs sm:text-base font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-800'}`}>PhonePe</div>
+            <div className={`text-xs sm:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               ₹{totals.phonepeAmount.toFixed(2)}
             </div>
           </div>
-          <div className={`p-2 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-green-50 border-green-200'}`}>
-            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-green-600'}`}>DTP</div>
-            <div className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-green-700'}`}>
+          <div className={`py-1.5 px-2 sm:py-2 sm:px-3 rounded-lg ${isDarkMode ? 'bg-gray-700' : 'bg-green-50'}`}>
+            <div className={`text-xs sm:text-base font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-800'}`}>DTP</div>
+            <div className={`text-xs sm:text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
               ₹{totals.dtpAmount.toFixed(2)}
             </div>
           </div>
