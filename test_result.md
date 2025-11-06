@@ -240,13 +240,31 @@ The MPP Cash calculation had TWO major issues:
 - Shows in "MPP Cash" calculation
 - MPP Outstanding: Further reduced
 
-**Expected Customer Ledger for Mobile Petrol Pump:**
+**Expected Customer Ledger for Mobile Petrol Pump (Option B):**
 ```
 Date       Description                        Credit      Received    Outstanding
 01-Nov     Credit Sale - Diesel 3000L        ₹300,000    -           ₹300,000
 02-Nov     MPP Credit Sale to ABC            -           ₹200,000    ₹100,000
-02-Nov     MPP Cash                          -           ₹100,000    ₹0
+02-Nov     MPP Settlement - Bank             -           ₹50,000     ₹50,000
+02-Nov     MPP Cash                          -           ₹150,000    -₹100,000
 ```
+
+**Explanation:**
+- Line 1: Normal credit to MPP (fuel into tank)
+- Line 2: Auto-payment from MPP credit sale (fuel out to customer)
+- Line 3: Auto-payment from MPP settlement
+- Line 4: MPP Cash = Full calculation (may overlap with lines 2-3 for reconciliation)
+
+**MPP Cash Calculation:**
+```
+MPP Fuel Sales: ₹300,000 (all MPP-tagged sales)
+- MPP Credits: ₹200,000 (fuel to ABC)
++ MPP Income: ₹20,000
+- MPP Expenses: ₹20,000
+- MPP Settlements: ₹50,000
+= MPP Cash: ₹50,000
+```
+Note: This provides full visibility and reconciliation capability
 
 ---
 
