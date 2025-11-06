@@ -1034,6 +1034,26 @@ const ZAPTRStyleCalculator = () => {
     const salesNoMPP = sales.filter(s => !s.mpp && s.mpp !== true && s.mpp !== 'true');
     const salesMPP = sales.filter(s => s.mpp === true || s.mpp === 'true');
     
+    // Calculate fuel sales by type (separated by MPP)
+    const fuelSalesByTypeNoMPP = {};
+    const fuelSalesByTypeMPP = {};
+    
+    salesNoMPP.forEach(sale => {
+      if (!fuelSalesByTypeNoMPP[sale.fuelType]) {
+        fuelSalesByTypeNoMPP[sale.fuelType] = { liters: 0, amount: 0 };
+      }
+      fuelSalesByTypeNoMPP[sale.fuelType].liters += sale.liters;
+      fuelSalesByTypeNoMPP[sale.fuelType].amount += sale.amount;
+    });
+    
+    salesMPP.forEach(sale => {
+      if (!fuelSalesByTypeMPP[sale.fuelType]) {
+        fuelSalesByTypeMPP[sale.fuelType] = { liters: 0, amount: 0 };
+      }
+      fuelSalesByTypeMPP[sale.fuelType].liters += sale.liters;
+      fuelSalesByTypeMPP[sale.fuelType].amount += sale.amount;
+    });
+    
     const fuelSalesNoMPP = salesNoMPP.reduce((sum, s) => sum + s.amount, 0);
     const fuelLitersNoMPP = salesNoMPP.reduce((sum, s) => sum + s.liters, 0);
     const fuelSalesMPP = salesMPP.reduce((sum, s) => sum + s.amount, 0);
