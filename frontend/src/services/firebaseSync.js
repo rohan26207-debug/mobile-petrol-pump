@@ -353,6 +353,9 @@ class FirebaseSyncService {
             const customers = localStorageService.getCustomers();
             const filtered = customers.filter(c => c.id !== data.id);
             localStorage.setItem('customers', JSON.stringify(filtered));
+            
+            // Trigger storage event to update UI
+            window.dispatchEvent(new Event('storage'));
           }
         });
       },
