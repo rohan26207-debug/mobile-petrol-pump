@@ -3592,7 +3592,9 @@ window.onload = function() {
             {/* Content (same for both mobile and desktop) */}
             <div className="mt-4">
 
-              <TabsContent value="bank-settlement">
+            {/* Content (same for both mobile and desktop) */}
+            <div className="mt-4">
+              {outstandingSubTab === 'bank-settlement' && (
                 <BankSettlement
                   isDarkMode={isDarkMode}
                   settlementData={settlementData}
@@ -3603,9 +3605,9 @@ window.onload = function() {
                   expenseData={expenseData}
                   selectedDate={selectedDate}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="outstanding-settings">
+              {outstandingSubTab === 'outstanding-settings' && (
                 <OutstandingPDFReport
                   customers={customers}
                   creditData={creditData}
@@ -3613,9 +3615,9 @@ window.onload = function() {
                   isDarkMode={isDarkMode}
                   selectedDate={selectedDate}
                 />
-              </TabsContent>
+              )}
 
-              <TabsContent value="report">
+              {outstandingSubTab === 'report' && (
                 <CustomerLedger
                   customers={customers}
                   creditData={creditData}
@@ -3627,8 +3629,8 @@ window.onload = function() {
                   isDarkMode={isDarkMode}
                   selectedDate={selectedDate}
                 />
-              </TabsContent>
-            </Tabs>
+              )}
+            </div>
           </div>
         )}
 
