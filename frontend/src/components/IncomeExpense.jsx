@@ -329,6 +329,17 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
   // Render form content
   const renderFormContent = () => (
     <div className="space-y-4">
+      {/* Date Field */}
+      <div className="space-y-1">
+        <Label className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>Date</Label>
+        <Input
+          type="date"
+          value={formData.date}
+          onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+          className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
+        />
+      </div>
+
       {/* Toggle Buttons */}
       <div className="grid grid-cols-2 gap-2">
         <Button
