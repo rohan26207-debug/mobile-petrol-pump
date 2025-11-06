@@ -8,7 +8,7 @@ import android.webkit.WebViewClient;
 import androidx.appcompat.app.AppCompatActivity;
 
 /**
- * Manager Petrol Pump - Simple Android App
+ * M.Petrol Pump - Simple Android App
  * Pure WebView wrapper - No cloud sync
  */
 public class MainActivity extends AppCompatActivity {
