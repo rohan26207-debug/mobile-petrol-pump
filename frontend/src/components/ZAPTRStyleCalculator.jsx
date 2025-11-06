@@ -3488,15 +3488,16 @@ window.onload = function() {
             {/* Mobile Block Layout for screens < 768px */}
             <div className="block md:hidden">
               {showBalanceBlocks ? (
-                <div className="grid grid-cols-2 gap-3 mb-4">
+                <div key="balance-blocks" className="grid grid-cols-2 gap-3 mb-4">
                   {/* Bank Settlement Block */}
                   <div 
                     onClick={() => handleBalanceBlockClick('bank-settlement')}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 transform ${
                       isDarkMode
-                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
-                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
                     }`}
+                    style={{ willChange: 'transform' }}
                   >
                     <div className="flex flex-col items-center text-center space-y-2">
                       <Wallet className={`w-8 h-8 ${
@@ -3513,11 +3514,12 @@ window.onload = function() {
                   {/* Outstanding Block */}
                   <div 
                     onClick={() => handleBalanceBlockClick('outstanding-settings')}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 transform ${
                       isDarkMode
-                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
-                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
                     }`}
+                    style={{ willChange: 'transform' }}
                   >
                     <div className="flex flex-col items-center text-center space-y-2">
                       <FileText className={`w-8 h-8 ${
@@ -3534,11 +3536,12 @@ window.onload = function() {
                   {/* Customer Ledger Block */}
                   <div 
                     onClick={() => handleBalanceBlockClick('report')}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 transform ${
                       isDarkMode
-                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500'
-                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400'
+                        ? 'bg-gray-800 border-gray-600 hover:bg-gray-700 hover:border-gray-500 hover:scale-105'
+                        : 'bg-white border-slate-300 hover:bg-slate-50 hover:border-slate-400 hover:scale-105'
                     }`}
+                    style={{ willChange: 'transform' }}
                   >
                     <div className="flex flex-col items-center text-center space-y-2">
                       <Users className={`w-8 h-8 ${
@@ -3571,7 +3574,7 @@ window.onload = function() {
                   </div>
                 </div>
               ) : (
-                <div className="mb-4">
+                <div key="balance-content" className="mb-4">
                   {/* No helper text - just empty space */}
                 </div>
               )}
