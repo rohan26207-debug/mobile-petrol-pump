@@ -65,6 +65,10 @@ const PaymentReceived = ({
   const customerDropdownRef = useRef(null);
   const editCustomerDropdownRef = useRef(null);
   const filterCustomerDropdownRef = useRef(null);
+  
+  // Checkbox selection state
+  const [selectedPayments, setSelectedPayments] = useState(new Set());
+  const [selectAll, setSelectAll] = useState(false);
 
   // Load settlement types on mount
   useEffect(() => {
