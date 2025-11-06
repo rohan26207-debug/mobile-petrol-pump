@@ -573,10 +573,10 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
         </div>
 
         {/* Info Note */}
-        <div className={`text-xs p-3 rounded-lg ${
-          isDarkMode ? 'bg-gray-700 text-gray-400' : 'bg-blue-50 text-blue-700'
+        <div className={`text-xs sm:text-sm p-2 sm:p-3 rounded-lg ${
+          isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-blue-50 text-slate-700'
         }`}>
-          <strong>Note:</strong> Amounts include settlements and customer receipts for each payment mode.
+          <strong className={isDarkMode ? 'text-white' : 'text-slate-800'}>Note:</strong> Amounts include settlements and customer receipts for each payment mode.
           This report helps verify digital payment settlements with bank deposits.
         </div>
       </CardContent>
