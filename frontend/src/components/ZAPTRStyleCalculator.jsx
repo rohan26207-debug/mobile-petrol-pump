@@ -1763,15 +1763,50 @@ ${todayExpenses.map((expense, index) =>
 <tr class="t"><td colspan="2" class="r"><b>Total Expenses:</b><td class="r"><b>${todayExpenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0).toFixed(2)}</b></tr>
 </table>` : ''}
 
-${settlementData.filter(s => s.date === selectedDate).length > 0 ? `
-<div class="s">SETTLEMENT RECORDS</div>
+<div class="s">BANK SETTLEMENT REPORT</div>
 <table>
-<tr><th width="10%">Sr.No<th width="50%">Description<th width="20%">Amount<th width="20%">MPP</tr>
-${settlementData.filter(s => s.date === selectedDate).map((settlement, index) => 
-  `<tr><td class="c">${index + 1}<td>${settlement.description || 'Settlement'}<td class="r">${settlement.amount.toFixed(2)}<td class="c">${settlement.mpp ? 'Yes' : 'No'}</tr>`
-).join('')}
-<tr class="t"><td colspan="2" class="r"><b>Total Settlements:</b><td class="r"><b>${settlementData.filter(s => s.date === selectedDate).reduce((sum, s) => sum + parseFloat(s.amount), 0).toFixed(2)}</b><td></tr>
-</table>` : ''}
+<tr><th width="60%">Payment Mode<th width="40%">Amount</tr>
+${(() => {
+  const todaySettlements = settlementData.filter(s => s.date === selectedDate);
+  const todayPayments = payments.filter(p => p.date === selectedDate);
+  let cash = 0, card = 0, paytm = 0, phonepe = 0, dtp = 0;
+  
+  todaySettlements.forEach(s => {
+    const amt = s.amount || 0;
+    switch(s.mode?.toLowerCase()) {
+      case 'cash': cash += amt; break;
+      case 'card': card += amt; break;
+      case 'paytm': paytm += amt; break;
+      case 'phonepe': phonepe += amt; break;
+      case 'dtp': dtp += amt; break;
+      default: cash += amt;
+    }
+  });
+  
+  todayPayments.forEach(p => {
+    const amt = p.amount || 0;
+    switch(p.mode?.toLowerCase()) {
+      case 'cash': cash += amt; break;
+      case 'card': card += amt; break;
+      case 'paytm': paytm += amt; break;
+      case 'phonepe': phonepe += amt; break;
+      case 'wallet': phonepe += amt; break;
+      default: cash += amt;
+    }
+  });
+  
+  const total = cash + card + paytm + phonepe + dtp;
+  
+  return `
+    <tr><td>Cash<td class="r">₹${cash.toFixed(2)}</tr>
+    <tr><td>Card<td class="r">₹${card.toFixed(2)}</tr>
+    <tr><td>Paytm<td class="r">₹${paytm.toFixed(2)}</tr>
+    <tr><td>PhonePe<td class="r">₹${phonepe.toFixed(2)}</tr>
+    <tr><td>DTP<td class="r">₹${dtp.toFixed(2)}</tr>
+    <tr class="t"><td><b>Total</b><td class="r"><b>₹${total.toFixed(2)}</b></tr>
+  `;
+})()}
+</table>
 
 <div style="margin-top:15px;text-align:center;font-size:10px;border-top:1px solid #000;padding-top:5px">
 Generated on: ${new Date().toLocaleString()}
