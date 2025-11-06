@@ -2207,16 +2207,21 @@ window.onload = function() {
       const cashFromSummary = currentStats.cashInHand + currentStats.mppCash;
       
       // Add Home Cash (settlements with "home" in description)
-      const homeCash = todaySettlements
+      const homeCashFromSettlements = todaySettlements
         .filter(s => s.description && s.description.toLowerCase().includes('home'))
         .reduce((sum, s) => sum + (s.amount || 0), 0);
+      
+      // Add Home Cash from Receipts (mode = 'home')
+      const homeCashFromReceipts = todayPayments
+        .filter(p => p.mode && p.mode.toLowerCase().includes('home'))
+        .reduce((sum, p) => sum + (p.amount || 0), 0);
       
       // Add Cash Mode Payments  
       const cashModePayments = todayPayments
         .filter(p => p.mode && p.mode.toLowerCase() === 'cash')
         .reduce((sum, p) => sum + (p.amount || 0), 0);
       
-      const cashTotal = cashFromSummary + homeCash + cashModePayments;
+      const cashTotal = cashFromSummary + homeCashFromSettlements + homeCashFromReceipts + cashModePayments;
       
       // Card = Settlements with "card" in description + Payments with mode "card"
       const cardFromSettlements = todaySettlements
