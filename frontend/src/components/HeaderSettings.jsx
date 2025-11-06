@@ -73,6 +73,33 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     setSettlementTypes(localStorageService.getSettlementTypes());
   }, []);
 
+  // Logout handler
+  const handleLogout = async () => {
+    try {
+      const { signOut } = require('firebase/auth');
+      const { auth } = require('../services/firebase');
+      
+      const confirmLogout = window.confirm('Are you sure you want to logout?');
+      
+      if (confirmLogout) {
+        await signOut(auth);
+        console.log('✅ User logged out successfully');
+        // Firebase will automatically redirect to login screen
+        toast({
+          title: "Logged Out",
+          description: "You have been logged out successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('❌ Logout error:', error);
+      toast({
+        title: "Logout Failed",
+        description: "Failed to logout. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Category management functions
   const handleAddIncomeCategory = (name) => {
     const newCategory = localStorageService.addIncomeCategory(name);
