@@ -123,7 +123,7 @@ const PaymentReceived = ({
           customerName: customer.name,
           amount: parseFloat(editAmount),
           date: editPaymentDate,
-          mode: editPaymentMode // Include mode in update
+          mode: editSettlementType // Changed to settlementType
         });
         setEditDialogOpen(false);
         setEditingPayment(null);
@@ -131,7 +131,7 @@ const PaymentReceived = ({
         setEditCustomerSearch('');
         setEditAmount('');
         setEditPaymentDate('');
-        setEditPaymentMode('cash');
+        setEditSettlementType('');
       }
     }
   };
