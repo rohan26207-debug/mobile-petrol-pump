@@ -1672,27 +1672,92 @@ window.onload = function() {
       doc.setTextColor(0, 0, 0); // Reset to black
       yPos += 15;
 
-      // Summary Section
+      // Summary Section with 5-column layout
       doc.setFontSize(14);
       doc.text('SUMMARY', 14, yPos);
       yPos += 5;
 
       const summaryData = [];
-      Object.entries(stats.fuelSalesByType).forEach(([fuelType, data]) => {
-        summaryData.push([`${fuelType} Sales`, `${data.liters.toFixed(2)}L`, `${data.amount.toFixed(2)}`]);
-      });
-      summaryData.push(['Credit Sales', `${stats.creditLiters.toFixed(2)}L`, `${stats.creditAmount.toFixed(2)}`]);
-      summaryData.push(['Income', '-', `${stats.otherIncome.toFixed(2)}`]);
-      summaryData.push(['Expenses', '-', `${stats.totalExpenses.toFixed(2)}`]);
-      summaryData.push(['Cash in Hand', `${stats.totalLiters.toFixed(2)}L`, `${stats.cashInHand.toFixed(2)}`]);
+      let rowNum = 1;
+      
+      // Fuel Sales
+      summaryData.push([
+        `${rowNum}. Fuel Sales`,
+        stats.fuelLitersNoMPP.toFixed(2),
+        `₹${stats.fuelSalesNoMPP.toFixed(2)}`,
+        stats.fuelLitersMPP.toFixed(2),
+        `₹${stats.fuelSalesMPP.toFixed(2)}`
+      ]);
+      rowNum++;
+
+      // Credit Sales
+      summaryData.push([
+        `${rowNum}. Credit Sales`,
+        stats.creditLitersNoMPP.toFixed(2),
+        `₹${stats.creditTotalAmountNoMPP.toFixed(2)}`,
+        stats.creditLitersMPP.toFixed(2),
+        `₹${stats.creditAmountMPP.toFixed(2)}`
+      ]);
+      rowNum++;
+
+      // Income
+      summaryData.push([
+        `${rowNum}. Income`,
+        '-',
+        `₹${stats.otherIncomeNoMPP.toFixed(2)}`,
+        '-',
+        `₹${stats.otherIncomeMPP.toFixed(2)}`
+      ]);
+      rowNum++;
+
+      // Expenses
+      summaryData.push([
+        `${rowNum}. Expenses`,
+        '-',
+        `₹${stats.totalExpensesNoMPP.toFixed(2)}`,
+        '-',
+        `₹${stats.totalExpensesMPP.toFixed(2)}`
+      ]);
+      rowNum++;
+
+      // Settlement
+      summaryData.push([
+        `${rowNum}. Settlement`,
+        '-',
+        `₹${stats.settlementNoMPP.toFixed(2)}`,
+        '-',
+        `₹${stats.settlementMPP.toFixed(2)}`
+      ]);
+
+      // Cash in Hand / MPP Cash
+      summaryData.push([
+        { content: 'Cash in Hand / MPP Cash', styles: { fontStyle: 'bold', fillColor: [240, 240, 240] } },
+        '-',
+        { content: `₹${stats.cashInHand.toFixed(2)}`, styles: { fontStyle: 'bold' } },
+        '-',
+        { content: `₹${stats.mppCash.toFixed(2)}`, styles: { fontStyle: 'bold' } }
+      ]);
 
       doc.autoTable({
         startY: yPos,
-        head: [['Category', 'Litres', 'Amount']],
+        head: [[
+          'Category',
+          { content: 'Non-MPP\nLitres', styles: { halign: 'center' } },
+          { content: 'Non-MPP\nAmount', styles: { halign: 'center' } },
+          { content: 'MPP\nLitres', styles: { halign: 'center' } },
+          { content: 'MPP\nAmount', styles: { halign: 'center' } }
+        ]],
         body: summaryData,
         theme: 'grid',
-        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
-        styles: { fontSize: 10 }
+        styles: { fontSize: 7, cellPadding: 1.5 },
+        headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0], fontStyle: 'bold', fontSize: 7 },
+        columnStyles: {
+          0: { cellWidth: 45 },
+          1: { halign: 'right', cellWidth: 22 },
+          2: { halign: 'right', cellWidth: 30 },
+          3: { halign: 'right', cellWidth: 22 },
+          4: { halign: 'right', cellWidth: 30 }
+        }
       });
 
       yPos = doc.lastAutoTable.finalY + 10;
