@@ -75,15 +75,18 @@ const Settlement = ({
         mpp: editingRecord.mpp || false
       });
       setEditingId(editingRecord.id);
+    } else {
+      // Reset when editingRecord is null (adding new record)
+      setEditingId(null);
     }
   }, [editingRecord]);
 
-  // Reset form when formResetKey changes
+  // Reset form when formResetKey changes (but not during editing)
   useEffect(() => {
-    if (formResetKey) {
+    if (formResetKey && !editingRecord && !editingId) {
       resetForm();
     }
-  }, [formResetKey]);
+  }, [formResetKey, editingRecord, editingId]);
 
   // Update date when selectedDate changes (only if not editing)
   useEffect(() => {
