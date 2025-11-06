@@ -187,6 +187,17 @@ const Settlement = ({
             {editingId ? 'Edit Settlement' : 'Add Settlement'}
           </h3>
           
+          {/* Date Field */}
+          <div className="space-y-1">
+            <Label className="text-sm font-medium">Date</Label>
+            <Input
+              type="date"
+              value={formData.date}
+              onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+              className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
+            />
+          </div>
+
           {/* Main Entry Row */}
           <div className={`p-0.5 rounded-lg border ${isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-slate-50 border-slate-200'}`}>
             <div className={`grid ${isMPPVisible ? 'grid-cols-[1fr,1fr,auto]' : 'grid-cols-2'} gap-2 items-end p-2`}>
