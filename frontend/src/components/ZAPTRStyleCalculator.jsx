@@ -1592,7 +1592,7 @@ STOCK: ${fuelSettings ? Object.keys(fuelSettings).map(fuelType => {
 <table>
 <tr><th>Category<th>Non-MPP<br>Litres<th>Non-MPP<br>Amount<th>MPP<br>Litres<th>MPP<br>Amount</tr>
 <tr><td>1. Fuel Sales<td class="r">${stats.fuelLitersNoMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesNoMPP.toFixed(2)}<td class="r">${stats.fuelLitersMPP.toFixed(2)}<td class="r">₹${stats.fuelSalesMPP.toFixed(2)}</tr>
-<tr><td>2. Credit Sales<td class="r">${stats.creditLitersNoMPP.toFixed(2)}<td class="r">₹${stats.creditTotalAmountNoMPP.toFixed(2)}<td class="r">${stats.creditLitersMPP.toFixed(2)}<td class="r">₹${stats.creditAmountMPP.toFixed(2)}</tr>
+<tr><td>2. Credit Sales<td class="r">${stats.creditLitersNoMPP.toFixed(2)}<td class="r">₹${stats.creditAmountNoMPP.toFixed(2)}<td class="r">${stats.creditLitersMPP.toFixed(2)}<td class="r">₹${stats.creditAmountMPP.toFixed(2)}</tr>
 <tr><td>3. Income<td class="r">-<td class="r">₹${stats.otherIncomeNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.otherIncomeMPP.toFixed(2)}</tr>
 <tr><td>4. Expenses<td class="r">-<td class="r">₹${stats.totalExpensesNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.totalExpensesMPP.toFixed(2)}</tr>
 <tr><td>5. Settlement<td class="r">-<td class="r">₹${stats.settlementNoMPP.toFixed(2)}<td class="r">-<td class="r">₹${stats.settlementMPP.toFixed(2)}</tr>
