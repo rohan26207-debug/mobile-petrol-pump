@@ -1,7 +1,23 @@
 /**
  * Local Storage Service for Offline M.Pump Calc
  * Handles all data persistence in browser localStorage
+ * Now with Firebase sync for multi-device support
  */
+
+// Import Firebase sync service
+let firebaseSyncService = null;
+
+// Lazy load Firebase sync to avoid circular dependency
+const getFirebaseSync = () => {
+  if (!firebaseSyncService) {
+    try {
+      firebaseSyncService = require('./firebaseSync').default;
+    } catch (error) {
+      console.log('Firebase sync not available:', error.message);
+    }
+  }
+  return firebaseSyncService;
+};
 
 class LocalStorageService {
   constructor() {
