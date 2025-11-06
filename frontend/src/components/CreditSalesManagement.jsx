@@ -338,80 +338,80 @@ const CreditSalesManagement = ({
   };
 
   const generateHTMLForWeb = () => {
-    // HTML generation for web browsers
-    const htmlContent = `
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Credit Sales Report</title>
-<style>
-body{font-family:Arial,sans-serif;margin:20px;padding:0;line-height:1.4}
-h1{font-size:24px;margin:10px 0;text-align:center;color:#333}
-p{font-size:14px;margin:5px 0;text-align:center;color:#666}
-table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px}
-th{background:#f0f0f0;border:1px solid #333;padding:8px;text-align:left;font-weight:bold}
-td{border:1px solid #333;padding:6px}
-.r{text-align:right}
-.total-row{font-weight:bold;background:#f8f8f8}
-.print-btn{background:#007bff;color:white;border:none;padding:10px 20px;font-size:16px;cursor:pointer;border-radius:5px;margin:10px auto;display:block;box-shadow:0 2px 4px rgba(0,0,0,0.2)}
-.print-btn:hover{background:#0056b3}
-.no-print{display:block}
-@media print{body{margin:8mm}.no-print{display:none}}
-</style>
-</head>
-<body>
-<h1>Credit Sales Report</h1>
-<p>From: ${new Date(fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })} To: ${new Date(toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
-<table>
-<thead>
-<tr>
-<th>Date</th>
-<th>Customer Name</th>
-<th>Fuel Type</th>
-<th class="r">Liters</th>
-<th class="r">Rate (₹)</th>
-<th class="r">Amount (₹)</th>
-</tr>
-</thead>
-<tbody>
-${filteredCreditData.map(credit => {
-  const fuelInfo = credit.fuelEntries && credit.fuelEntries.length > 0
-    ? credit.fuelEntries.map(f => `${f.fuelType}: ${f.liters}L @ ₹${f.rate}`).join('<br>')
-    : `${credit.fuelType || 'N/A'}`;
-  
-  const totalLiters = credit.fuelEntries && credit.fuelEntries.length > 0
-    ? credit.fuelEntries.reduce((sum, f) => sum + parseFloat(f.liters || 0), 0)
-    : credit.liters || 0;
+    try {
+      // Build table rows
+      const tableRows = filteredCreditData.map(credit => {
+        const fuelInfo = credit.fuelEntries && credit.fuelEntries.length > 0
+          ? credit.fuelEntries.map(f => f.fuelType + ': ' + f.liters + 'L @ ₹' + f.rate).join('<br>')
+          : (credit.fuelType || 'N/A');
+        
+        const totalLiters = credit.fuelEntries && credit.fuelEntries.length > 0
+          ? credit.fuelEntries.reduce((sum, f) => sum + parseFloat(f.liters || 0), 0)
+          : credit.liters || 0;
 
-  return `<tr>
-<td>${new Date(credit.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
-<td>${credit.customerName}</td>
-<td>${fuelInfo}</td>
-<td class="r">${totalLiters.toFixed(2)}</td>
-<td class="r">${credit.rate ? credit.rate.toFixed(2) : '-'}</td>
-<td class="r">${(credit.totalAmount || credit.amount || 0).toFixed(2)}</td>
-</tr>`;
-}).join('')}
-<tr class="total-row">
-<td colspan="5" class="r">Total:</td>
-<td class="r">₹${totalAmount.toFixed(2)}</td>
-</tr>
-</tbody>
-</table>
-<p style="margin-top:20px;font-size:11px">Generated on: ${new Date().toLocaleString('en-IN')}</p>
-<div class="no-print" style="text-align:center;margin:20px 0">
-<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>
-</div>
-<script>
-// Auto print on load (with delay for content loading)
-setTimeout(function() {
-    window.print();
-}, 500);
-</script>
-</body>
-</html>`;
+        return '<tr>' +
+          '<td>' + new Date(credit.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) + '</td>' +
+          '<td>' + credit.customerName + '</td>' +
+          '<td>' + fuelInfo + '</td>' +
+          '<td class="r">' + totalLiters.toFixed(2) + '</td>' +
+          '<td class="r">' + (credit.rate ? credit.rate.toFixed(2) : '-') + '</td>' +
+          '<td class="r">' + (credit.totalAmount || credit.amount || 0).toFixed(2) + '</td>' +
+          '</tr>';
+      }).join('');
+
+      // HTML generation for web browsers
+      const htmlContent = '<!DOCTYPE html>' +
+        '<html>' +
+        '<head>' +
+        '<meta charset="UTF-8">' +
+        '<meta name="viewport" content="width=device-width,initial-scale=1.0">' +
+        '<title>Credit Sales Report</title>' +
+        '<style>' +
+        'body{font-family:Arial,sans-serif;margin:20px;padding:0;line-height:1.4}' +
+        'h1{font-size:24px;margin:10px 0;text-align:center;color:#333}' +
+        'p{font-size:14px;margin:5px 0;text-align:center;color:#666}' +
+        'table{width:100%;border-collapse:collapse;margin:15px 0;font-size:13px}' +
+        'th{background:#f0f0f0;border:1px solid #333;padding:8px;text-align:left;font-weight:bold}' +
+        'td{border:1px solid #333;padding:6px}' +
+        '.r{text-align:right}' +
+        '.total-row{font-weight:bold;background:#f8f8f8}' +
+        '.print-btn{background:#007bff;color:white;border:none;padding:10px 20px;font-size:16px;cursor:pointer;border-radius:5px;margin:10px auto;display:block;box-shadow:0 2px 4px rgba(0,0,0,0.2)}' +
+        '.print-btn:hover{background:#0056b3}' +
+        '.no-print{display:block}' +
+        '@media print{body{margin:8mm}.no-print{display:none}}' +
+        '</style>' +
+        '</head>' +
+        '<body>' +
+        '<h1>Credit Sales Report</h1>' +
+        '<p>From: ' + new Date(fromDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) + ' To: ' + new Date(toDate).toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' }) + '</p>' +
+        '<table>' +
+        '<thead>' +
+        '<tr>' +
+        '<th>Date</th>' +
+        '<th>Customer Name</th>' +
+        '<th>Fuel Type</th>' +
+        '<th class="r">Liters</th>' +
+        '<th class="r">Rate (₹)</th>' +
+        '<th class="r">Amount (₹)</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>' +
+        tableRows +
+        '<tr class="total-row">' +
+        '<td colspan="5" class="r">Total:</td>' +
+        '<td class="r">₹' + totalAmount.toFixed(2) + '</td>' +
+        '</tr>' +
+        '</tbody>' +
+        '</table>' +
+        '<p style="margin-top:20px;font-size:11px">Generated on: ' + new Date().toLocaleString('en-IN') + '</p>' +
+        '<div class="no-print" style="text-align:center;margin:20px 0">' +
+        '<button class="print-btn" onclick="window.print()">🖨️ Print / Save as PDF</button>' +
+        '</div>' +
+        '<script>' +
+        'setTimeout(function() { window.print(); }, 500);' +
+        '</script>' +
+        '</body>' +
+        '</html>';
 
       // Open in new window for printing/PDF generation
       const printWindow = window.open('', '_blank', 'width=800,height=600');
