@@ -3596,41 +3596,46 @@ window.onload = function() {
 
             {/* Content (same for both mobile and desktop) */}
             <div className="mt-4">
-              {outstandingSubTab === 'bank-settlement' && (
-                <BankSettlement
-                  isDarkMode={isDarkMode}
-                  settlementData={settlementData}
-                  payments={payments}
-                  creditData={creditData}
-                  salesData={salesData}
-                  incomeData={incomeData}
-                  expenseData={expenseData}
-                  selectedDate={selectedDate}
-                />
-              )}
+              {/* Only show content on desktop OR when blocks are hidden on mobile */}
+              {(window.innerWidth >= 768 || !showBalanceBlocks) && (
+                <>
+                  {outstandingSubTab === 'bank-settlement' && (
+                    <BankSettlement
+                      isDarkMode={isDarkMode}
+                      settlementData={settlementData}
+                      payments={payments}
+                      creditData={creditData}
+                      salesData={salesData}
+                      incomeData={incomeData}
+                      expenseData={expenseData}
+                      selectedDate={selectedDate}
+                    />
+                  )}
 
-              {outstandingSubTab === 'outstanding-settings' && (
-                <OutstandingPDFReport
-                  customers={customers}
-                  creditData={creditData}
-                  payments={payments}
-                  isDarkMode={isDarkMode}
-                  selectedDate={selectedDate}
-                />
-              )}
+                  {outstandingSubTab === 'outstanding-settings' && (
+                    <OutstandingPDFReport
+                      customers={customers}
+                      creditData={creditData}
+                      payments={payments}
+                      isDarkMode={isDarkMode}
+                      selectedDate={selectedDate}
+                    />
+                  )}
 
-              {outstandingSubTab === 'report' && (
-                <CustomerLedger
-                  customers={customers}
-                  creditData={creditData}
-                  payments={payments}
-                  salesData={salesData}
-                  settlementData={settlementData}
-                  incomeData={incomeData}
-                  expenseData={expenseData}
-                  isDarkMode={isDarkMode}
-                  selectedDate={selectedDate}
-                />
+                  {outstandingSubTab === 'report' && (
+                    <CustomerLedger
+                      customers={customers}
+                      creditData={creditData}
+                      payments={payments}
+                      salesData={salesData}
+                      settlementData={settlementData}
+                      incomeData={incomeData}
+                      expenseData={expenseData}
+                      isDarkMode={isDarkMode}
+                      selectedDate={selectedDate}
+                    />
+                  )}
+                </>
               )}
             </div>
           </div>
