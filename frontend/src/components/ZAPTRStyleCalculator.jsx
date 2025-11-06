@@ -747,12 +747,21 @@ const ZAPTRStyleCalculator = () => {
     const { onAuthStateChanged } = require('firebase/auth');
     const { auth } = require('../services/firebase');
     
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setIsAuthenticated(!!user);
       setAuthLoading(false);
       
       if (user) {
         console.log('✅ User authenticated:', user.email || user.uid);
+        
+        // Initialize Firebase sync when user is authenticated
+        try {
+          const firebaseSyncService = require('../services/firebaseSync').default;
+          await firebaseSyncService.initialize();
+          console.log('✅ Firebase sync initialized');
+        } catch (error) {
+          console.error('❌ Failed to initialize Firebase sync:', error);
+        }
       } else {
         console.log('🔒 User not authenticated');
       }
