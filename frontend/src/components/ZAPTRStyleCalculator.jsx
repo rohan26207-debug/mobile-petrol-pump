@@ -730,8 +730,26 @@ const ZAPTRStyleCalculator = () => {
   };
 
   // Edit dialog handlers
-  // Scroll position preservation for All Records
-  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
+  // Balance tab navigation state (for mobile blocks)
+  const [showBalanceBlocks, setShowBalanceBlocks] = useState(true);
+
+  // Handle Balance tab click - toggle between blocks and content
+  const handleBalanceTabClick = () => {
+    if (parentTab === 'outstanding' && !showBalanceBlocks) {
+      // If we're already in Balance tab and showing content, go back to blocks
+      setShowBalanceBlocks(true);
+    } else {
+      // Normal tab switch to Balance
+      setParentTab('outstanding');
+      setShowBalanceBlocks(true);
+    }
+  };
+
+  // Handle block click - show content and hide blocks
+  const handleBalanceBlockClick = (blockType) => {
+    setOutstandingSubTab(blockType);
+    setShowBalanceBlocks(false);
+  };
 
   // Save scroll position before opening dialogs
   const saveScrollPosition = () => {
