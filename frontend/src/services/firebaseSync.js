@@ -164,8 +164,12 @@ class FirebaseSyncService {
     if (!this.syncEnabled) return;
 
     try {
+      const userId = this.getUserId();
+      if (!userId) return;
+
       const settlementData = {
         ...settlement,
+        userId,
         deviceId: this.deviceId,
         syncedAt: serverTimestamp(),
         operation
