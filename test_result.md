@@ -286,4 +286,69 @@ MPP Fuel Sales: ₹200,000
 
 ---
 
-*Last Updated: November 5, 2025*
+## Test Session: Bank Settlement Cash Calculation Fix
+**Date**: November 6, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Bank Settlement Cash Calculation
+
+### Issue Reported
+User reported that the "Cash" amount in Bank Settlement tab and PDF reports doesn't include cash mode payments, while other payment modes (Card, Paytm, PhonePe, DTP) correctly include both settlements and receipts.
+
+### Root Cause
+The cash calculation in three PDF generation functions (`generateDirectPDF`, `generatePDFForAndroid`, and HTML PDF) was incomplete:
+- **Old formula**: `Cash = Cash in Hand + MPP Cash + Home Cash`
+- **Missing**: Cash mode payment/receipt entries
+
+### Solution Implemented
+Updated the cash calculation formula in all four locations to include cash mode payments:
+- **New formula**: `Cash = Cash in Hand + MPP Cash + Home Cash + Cash Mode Payments`
+
+### Files Modified
+1. **ZAPTRStyleCalculator.jsx** (3 locations):
+   - HTML PDF generation (line ~1793-1808)
+   - `generatePDFForAndroid` function (line ~1507-1521)
+   - `generateDirectPDF` function (line ~2197-2213)
+   
+2. **BankSettlement.jsx**:
+   - Fixed dependency array to include `incomeData` and `expenseData` (line 171)
+   - Cash calculation was already correct (line 115)
+
+### Implementation Details
+All three PDF functions now calculate cash as:
+```javascript
+// Cash = Cash in Hand + MPP Cash + Home Cash + Cash Mode Payments
+const cashFromSummary = stats.cashInHand + stats.mppCash;
+
+// Add Home Cash (settlements with "home" in description)
+const homeCash = relevantSettlements
+  .filter(s => s.description && s.description.toLowerCase().includes('home'))
+  .reduce((sum, s) => sum + (s.amount || 0), 0);
+
+// Add Cash Mode Payments
+const cashModePayments = relevantPayments
+  .filter(p => p.mode && p.mode.toLowerCase() === 'cash')
+  .reduce((sum, p) => sum + (p.amount || 0), 0);
+
+const cash = cashFromSummary + homeCash + cashModePayments;
+```
+
+### Testing Status
+⏳ **PENDING USER VERIFICATION**
+
+### Expected Behavior After Fix
+**Bank Settlement Tab & PDF Reports:**
+- Cash amount now includes:
+  1. Cash in Hand (from Today Summary)
+  2. MPP Cash (from Today Summary)
+  3. Home Cash (settlements with 'home' in description)
+  4. All cash mode payments/receipts from customers
+
+**Consistency:**
+- All payment modes (Cash, Card, Paytm, PhonePe, DTP) now follow the same logic:
+  - Filter relevant settlements by description
+  - Add all payments/receipts by mode
+  - Sum both for the total amount
+
+---
+
+*Last Updated: November 6, 2025*
