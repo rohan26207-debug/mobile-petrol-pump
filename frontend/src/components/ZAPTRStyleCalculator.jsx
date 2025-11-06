@@ -1895,6 +1895,38 @@ window.onload = function() {
         yPos = doc.lastAutoTable.finalY + 10;
       }
 
+      // Add new page if needed
+      if (yPos > 250) {
+        doc.addPage();
+        yPos = 20;
+      }
+
+      // Settlement Records
+      const todaySettlements = settlementData.filter(s => s.date === selectedDate);
+      if (todaySettlements.length > 0 && yPos < 250) {
+        doc.setFontSize(14);
+        doc.text('SETTLEMENT RECORDS', 14, yPos);
+        yPos += 5;
+
+        const settlementTableData = todaySettlements.map((settlement, index) => [
+          index + 1,
+          settlement.description || 'Settlement',
+          settlement.amount.toFixed(2),
+          settlement.mpp ? 'Yes' : 'No'
+        ]);
+
+        doc.autoTable({
+          startY: yPos,
+          head: [['#', 'Description', 'Amount', 'MPP']],
+          body: settlementTableData,
+          theme: 'grid',
+          headStyles: { fillColor: [240, 240, 240], textColor: [0, 0, 0] },
+          styles: { fontSize: 9 }
+        });
+
+        yPos = doc.lastAutoTable.finalY + 10;
+      }
+
       // Get PDF as Base64
       const pdfBase64 = doc.output('dataurlstring').split(',')[1];
       const fileName = `Report_${selectedDate}.pdf`;
