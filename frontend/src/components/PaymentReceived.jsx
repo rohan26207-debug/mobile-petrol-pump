@@ -62,6 +62,11 @@ const PaymentReceived = ({
   const editCustomerDropdownRef = useRef(null);
   const filterCustomerDropdownRef = useRef(null);
 
+  // Load settlement types on mount
+  useEffect(() => {
+    setSettlementTypes(localStorageService.getSettlementTypes());
+  }, []);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
