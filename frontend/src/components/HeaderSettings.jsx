@@ -659,7 +659,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
-              <TabsContent value="contact" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+              <TabsContent value="contact" className="p-4" style={{ height: 'calc(100vh - 60px - 48px - 48px)', overflowY: 'auto', overflowX: 'hidden' }}>
                 <div className="space-y-4">
                   {/* Contact Information Display */}
                   <div className="text-center mb-4">
