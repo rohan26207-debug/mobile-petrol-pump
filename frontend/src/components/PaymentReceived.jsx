@@ -27,9 +27,10 @@ const PaymentReceived = ({
   const [customerId, setCustomerId] = useState('');
   const [amount, setAmount] = useState('');
   const [paymentDate, setPaymentDate] = useState(selectedDate);
-  const [paymentMode, setPaymentMode] = useState('cash'); // New: payment mode
+  const [settlementType, setSettlementType] = useState(''); // Changed from paymentMode to settlementType
   const [customerSearch, setCustomerSearch] = useState('');
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const [settlementTypes, setSettlementTypes] = useState([]); // New: load settlement types
   
   // Date range filter state
   const [fromDate, setFromDate] = useState(selectedDate);
