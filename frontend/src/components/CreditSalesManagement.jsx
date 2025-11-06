@@ -71,8 +71,8 @@ const CreditSalesManagement = ({
     return matchesCustomer && matchesDateRange;
   });
 
-  // Calculate total - handle undefined/null values and backward compatibility
-  const totalAmount = filteredCreditData.reduce((sum, credit) => {
+  // Helper function to calculate credit amount including fuel, income, and expense
+  const calculateCreditAmount = (credit) => {
     // Calculate fuel total
     let fuelTotal = 0;
     if (credit.fuelEntries && credit.fuelEntries.length > 0) {
@@ -104,8 +104,12 @@ const CreditSalesManagement = ({
     const creditTotal = fuelTotal + incomeTotal - expenseTotal;
     
     // Fallback to stored amount if calculation fails
-    const amount = creditTotal || credit.totalAmount || credit.amount || 0;
-    return sum + amount;
+    return creditTotal || credit.totalAmount || credit.amount || 0;
+  };
+
+  // Calculate total - handle undefined/null values and backward compatibility
+  const totalAmount = filteredCreditData.reduce((sum, credit) => {
+    return sum + calculateCreditAmount(credit);
   }, 0);
 
   // Format date for display
