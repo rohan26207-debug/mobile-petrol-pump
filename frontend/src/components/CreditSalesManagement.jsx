@@ -390,7 +390,7 @@ const CreditSalesManagement = ({
           '<td>' + fuelInfo + '</td>' +
           '<td class="r">' + totalLiters.toFixed(2) + '</td>' +
           '<td class="r">' + (credit.rate ? credit.rate.toFixed(2) : '-') + '</td>' +
-          '<td class="r">' + (credit.totalAmount || credit.amount || 0).toFixed(2) + '</td>' +
+          '<td class="r">' + calculateCreditAmount(credit).toFixed(2) + '</td>' +
           '</tr>';
       }).join('');
 
