@@ -256,24 +256,33 @@ Date       Description                        Credit      Received    Outstandin
 - Each day's MPP Cash is calculated independently
 - No accumulation across days
 
-**MPP Cash Calculation (Updated for Consistency):**
+**MPP Cash Calculation (Day-wise):**
 ```
-Formula: MPP Fuel Sales - MPP Credit TOTAL - MPP Expenses + MPP Income - MPP Settlements
+Formula (per day): MPP Fuel Sales - MPP Credit TOTAL - MPP Expenses + MPP Income - MPP Settlements
 
-Example:
-MPP Fuel Sales: ₹300,000 (all MPP-tagged sales)
-- MPP Credits: ₹210,000 (TOTAL including fuel ₹200k + income ₹10k from credits)
-- MPP Expenses: ₹20,000 (direct expenses)
-+ MPP Income: ₹20,000 (direct income)
-- MPP Settlements: ₹50,000
-= MPP Cash: ₹40,000
+Example Day 1:
+MPP Fuel Sales: ₹100,000
+- MPP Credits: ₹30,000
+- MPP Expenses: ₹10,000
++ MPP Income: ₹5,000
+- MPP Settlements: ₹15,000
+= Day 1 MPP Cash: ₹50,000
+
+Example Day 2:
+MPP Fuel Sales: ₹200,000
+- MPP Credits: ₹180,000
+- MPP Expenses: ₹10,000
++ MPP Income: ₹15,000
+- MPP Settlements: ₹35,000
+= Day 2 MPP Cash: -₹10,000
 ```
 
 **Important Notes:**
-1. **MPP Credit Amount** = Total credit amount (fuel + income + expenses from credits)
-2. **MPP Income/Expenses** = Direct income/expenses (not from credits)
-3. **Matches Today Summary** calculation exactly
-4. **Auto-payments** still show fuel amount only for detailed tracking
+1. **Day-wise Calculation**: Each day's MPP Cash is calculated separately
+2. **No Accumulation**: Day 2 MPP Cash does NOT include Day 1 amounts
+3. **MPP Credit Amount** = Total credit amount (fuel + income + expenses from credits)
+4. **MPP Income/Expenses** = Direct income/expenses (not from credits)
+5. **Auto-payments** still show fuel amount only for detailed tracking
 
 ---
 
