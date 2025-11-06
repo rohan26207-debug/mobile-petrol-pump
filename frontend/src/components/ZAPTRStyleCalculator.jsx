@@ -730,23 +730,45 @@ const ZAPTRStyleCalculator = () => {
   };
 
   // Edit dialog handlers
+  // Scroll position preservation for All Records
+  const [savedScrollPosition, setSavedScrollPosition] = useState(0);
+
+  // Save scroll position before opening dialogs
+  const saveScrollPosition = () => {
+    setSavedScrollPosition(window.pageYOffset || document.documentElement.scrollTop);
+  };
+
+  // Restore scroll position after dialog closes
+  const restoreScrollPosition = () => {
+    setTimeout(() => {
+      window.scrollTo({
+        top: savedScrollPosition,
+        behavior: 'smooth'
+      });
+    }, 100);
+  };
+
   const handleEditSale = (saleRecord) => {
+    saveScrollPosition();
     setEditingSaleData(saleRecord);
     setSalesDialogOpen(true);
   };
 
   const handleEditCredit = (creditRecord) => {
+    saveScrollPosition();
     setEditingCreditData(creditRecord);
     setCreditDialogOpen(true);
   };
 
   const handleEditIncomeExpense = (record, type) => {
+    saveScrollPosition();
     setEditingIncomeExpenseData({ ...record, type });
     setIncomeExpenseDialogOpen(true);
   };
 
   const handleEditSettlement = (settlementRecord) => {
     console.log('handleEditSettlement called with:', settlementRecord);
+    saveScrollPosition();
     setEditingSettlementData(settlementRecord);
     setSettlementDialogOpen(true);
   };
