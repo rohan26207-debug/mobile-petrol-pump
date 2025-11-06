@@ -1,4 +1,4 @@
-# Mobile Petrol Pump Calculator
+# Manager Petrol Pump Calculator
 
 A full-featured petrol pump management application for tracking sales, credit, income, and expenses.
 
@@ -132,7 +132,7 @@ REACT_APP_BACKEND_URL=http://localhost:8001
 ## Project Structure
 
 ```
-mobile-petrol-pump/
+manager-petrol-pump/
 ├── android/                    # Android app
 │   ├── app/
 │   │   ├── src/main/
@@ -187,7 +187,7 @@ jarsigner -verbose -sigalg SHA256withRSA \
   your-alias
 
 # 5. Zipalign
-zipalign -v 4 app-release-unsigned.apk mobile-petrol-pump.apk
+zipalign -v 4 app-release-unsigned.apk manager-petrol-pump.apk
 ```
 
 ## Android App Details
