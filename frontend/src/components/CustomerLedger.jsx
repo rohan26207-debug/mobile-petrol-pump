@@ -43,8 +43,8 @@ const CustomerLedger = ({ customers, creditData, payments, salesData, settlement
     const customer = customers.find(c => c.id === customerId);
     if (!customer) return;
 
-    // Check if this is Mobile Petrol Pump customer
-    const isMPPCustomer = customer.isMPP === true || customer.name.toLowerCase().includes('mobile petrol pump');
+    // Check if this is Manager Petrol Pump customer
+    const isMPPCustomer = customer.isMPP === true || customer.name.toLowerCase().includes('manager petrol pump');
 
     if (isMPPCustomer) {
       // Special calculation for Mobile Petrol Pump customer
