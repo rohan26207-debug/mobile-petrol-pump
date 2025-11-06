@@ -60,7 +60,14 @@ const Settlement = ({
 
   // Pre-fill form when editingRecord is provided
   useEffect(() => {
+    console.log('Settlement useEffect - editingRecord:', editingRecord);
     if (editingRecord) {
+      console.log('Settlement - setting form data:', {
+        date: editingRecord.date,
+        amount: editingRecord.amount,
+        description: editingRecord.description,
+        mpp: editingRecord.mpp
+      });
       setFormData({
         date: editingRecord.date,
         amount: editingRecord.amount.toString(),
