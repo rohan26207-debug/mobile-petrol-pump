@@ -252,6 +252,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
 
   const resetForm = () => {
     setFormData({
+      date: selectedDate,
       amount: '',
       description: '',
       type: activeType,
