@@ -209,7 +209,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const newIncome = addIncomeRecord({
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate,
+        date: formData.date,
         mpp: formData.mpp || false
       });
       
@@ -218,7 +218,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         localStorageService.addIncomeDescHistory(formData.description);
         setIncomeDescHistory(localStorageService.getIncomeDescHistory());
         
-        setFormData({ description: '', amount: '', mpp: false });
+        // Keep the date, only clear description and amount
+        setFormData(prev => ({ ...prev, description: '', amount: '' }));
         toast({
           title: "Success",
           description: `Income added. Add more ${activeType}.`,
@@ -229,7 +230,7 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
       const newExpense = addExpenseRecord({
         description: formData.description,
         amount: parseFloat(formData.amount),
-        date: selectedDate,
+        date: formData.date,
         mpp: formData.mpp || false
       });
       
@@ -238,7 +239,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
         localStorageService.addExpenseDescHistory(formData.description);
         setExpenseDescHistory(localStorageService.getExpenseDescHistory());
         
-        setFormData({ description: '', amount: '', mpp: false });
+        // Keep the date, only clear description and amount
+        setFormData(prev => ({ ...prev, description: '', amount: '' }));
         toast({
           title: "Success",
           description: `Expense added. Add more ${activeType}.`,
