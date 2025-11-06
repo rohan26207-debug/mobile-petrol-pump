@@ -36,41 +36,31 @@ enableIndexedDbPersistence(db)
 // Initialize Auth
 const auth = getAuth(app);
 
-// Anonymous sign-in for offline-first usage
+// Email/password authentication (no auto-login)
 let authInitialized = false;
 
 const initializeAuth = () => {
   if (authInitialized) return Promise.resolve();
   
-  return new Promise((resolve, reject) => {
-    // Check if already signed in
+  return new Promise((resolve) => {
+    // Check if user is already signed in
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       unsubscribe();
       
       if (user) {
-        console.log('✅ User already signed in:', user.uid);
+        console.log('✅ User authenticated:', user.email || user.uid);
         authInitialized = true;
         resolve(user);
       } else {
-        // Sign in anonymously
-        signInAnonymously(auth)
-          .then((userCredential) => {
-            console.log('✅ Anonymous sign-in successful:', userCredential.user.uid);
-            authInitialized = true;
-            resolve(userCredential.user);
-          })
-          .catch((error) => {
-            console.error('❌ Anonymous sign-in failed:', error);
-            // Continue even if auth fails - offline mode will still work
-            authInitialized = true;
-            resolve(null);
-          });
+        console.log('🔒 User not authenticated - login required');
+        authInitialized = true;
+        resolve(null);
       }
     });
   });
 };
 
-// Auto-initialize auth
+// Initialize auth (doesn't auto-login)
 initializeAuth();
 
 // Get device ID for tracking which device made changes
