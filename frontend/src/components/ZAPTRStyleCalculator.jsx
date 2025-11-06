@@ -618,7 +618,7 @@ const ZAPTRStyleCalculator = () => {
       
       // Auto-create payment for MPP if this is MPP-tagged settlement
       if (newSettlement.mpp === true || newSettlement.mpp === 'true') {
-        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+        const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('manager petrol pump'));
         
         if (mppCustomer) {
           const autoPayment = {
@@ -889,7 +889,7 @@ const ZAPTRStyleCalculator = () => {
           console.log('Updated linked MPP payment (fuel only):', linkedPayment.id);
         } else if ((updatedCredit.mpp === true || updatedCredit.mpp === 'true') && !updatedCredit.customerName?.toLowerCase().includes('mobile petrol pump')) {
           // If credit was just tagged as MPP, create new auto-payment
-          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('manager petrol pump'));
           
           if (mppCustomer) {
             // Calculate ONLY fuel amount (excluding income and expenses)
@@ -973,7 +973,7 @@ const ZAPTRStyleCalculator = () => {
           console.log('Updated linked MPP payment for settlement:', linkedPayment.id);
         } else if (updatedSettlement.mpp === true || updatedSettlement.mpp === 'true') {
           // If settlement was just tagged as MPP, create new auto-payment
-          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('mobile petrol pump'));
+          const mppCustomer = customers.find(c => c.isMPP === true || c.name.toLowerCase().includes('manager petrol pump'));
           
           if (mppCustomer) {
             const autoPayment = {
