@@ -742,6 +742,25 @@ const ZAPTRStyleCalculator = () => {
   const [authLoading, setAuthLoading] = useState(true);
 
   // Check screen size for mobile detection
+  // Check authentication status
+  useEffect(() => {
+    const { onAuthStateChanged } = require('firebase/auth');
+    const { auth } = require('../services/firebase');
+    
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setIsAuthenticated(!!user);
+      setAuthLoading(false);
+      
+      if (user) {
+        console.log('✅ User authenticated:', user.email || user.uid);
+      } else {
+        console.log('🔒 User not authenticated');
+      }
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const checkScreenSize = () => {
       setIsMobile(window.innerWidth < 768);
