@@ -479,24 +479,24 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
           isDarkMode ? 'border-gray-600' : 'border-slate-200'
         }`}>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-xs sm:text-sm">
               <thead className={`${
                 isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-slate-100 text-slate-700'
               }`}>
                 <tr>
-                  <th className="px-3 py-2 text-left font-semibold">Sr. No</th>
-                  <th className="px-3 py-2 text-left font-semibold">Date</th>
-                  <th className="px-3 py-2 text-right font-semibold">Cash (₹)</th>
-                  <th className="px-3 py-2 text-right font-semibold">Card (₹)</th>
-                  <th className="px-3 py-2 text-right font-semibold">Paytm (₹)</th>
-                  <th className="px-3 py-2 text-right font-semibold">PhonePe (₹)</th>
-                  <th className="px-3 py-2 text-right font-semibold">DTP (₹)</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left font-semibold">Sr. No</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-left font-semibold">Date</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-semibold">Cash (₹)</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-semibold">Card (₹)</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-semibold">Paytm (₹)</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-semibold">PhonePe (₹)</th>
+                  <th className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-semibold">DTP (₹)</th>
                 </tr>
               </thead>
               <tbody className={isDarkMode ? 'text-gray-300' : 'text-slate-700'}>
                 {bankSettlementData.length === 0 ? (
                   <tr>
-                    <td colSpan="7" className={`px-3 py-8 text-center ${
+                    <td colSpan="7" className={`px-2 sm:px-3 py-6 sm:py-8 text-center text-xs sm:text-sm ${
                       isDarkMode ? 'text-gray-400' : 'text-slate-500'
                     }`}>
                       No data available for selected date range
@@ -507,27 +507,27 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
                     <tr key={row.date} className={`border-t ${
                       isDarkMode ? 'border-gray-700 hover:bg-gray-700/50' : 'border-slate-200 hover:bg-slate-50'
                     }`}>
-                      <td className="px-3 py-2">{row.srNo}</td>
-                      <td className="px-3 py-2 font-medium">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2">{row.srNo}</td>
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 font-medium">
                         {new Date(row.date).toLocaleDateString('en-IN', { 
                           day: '2-digit', 
                           month: 'short', 
                           year: 'numeric' 
                         })}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono">
                         {row.cashAmount > 0 ? row.cashAmount.toFixed(2) : '-'}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono">
                         {row.cardAmount > 0 ? row.cardAmount.toFixed(2) : '-'}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono">
                         {row.paytmAmount > 0 ? row.paytmAmount.toFixed(2) : '-'}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono">
                         {row.phonepeAmount > 0 ? row.phonepeAmount.toFixed(2) : '-'}
                       </td>
-                      <td className="px-3 py-2 text-right font-mono">
+                      <td className="px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono">
                         {row.dtpAmount > 0 ? row.dtpAmount.toFixed(2) : '-'}
                       </td>
                     </tr>
@@ -539,28 +539,28 @@ const BankSettlement = ({ isDarkMode, settlementData, payments, creditData, sale
                   isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-300 bg-slate-50'
                 }`}>
                   <tr className="font-bold">
-                    <td colSpan="2" className="px-3 py-2">Total</td>
-                    <td className={`px-3 py-2 text-right font-mono ${
+                    <td colSpan="2" className="px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm">Total</td>
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono ${
                       isDarkMode ? 'text-orange-400' : 'text-orange-600'
                     }`}>
                       {totals.cashAmount.toFixed(2)}
                     </td>
-                    <td className={`px-3 py-2 text-right font-mono ${
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono ${
                       isDarkMode ? 'text-blue-400' : 'text-blue-600'
                     }`}>
                       {totals.cardAmount.toFixed(2)}
                     </td>
-                    <td className={`px-3 py-2 text-right font-mono ${
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono ${
                       isDarkMode ? 'text-purple-400' : 'text-purple-600'
                     }`}>
                       {totals.paytmAmount.toFixed(2)}
                     </td>
-                    <td className={`px-3 py-2 text-right font-mono ${
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono ${
                       isDarkMode ? 'text-indigo-400' : 'text-indigo-600'
                     }`}>
                       {totals.phonepeAmount.toFixed(2)}
                     </td>
-                    <td className={`px-3 py-2 text-right font-mono ${
+                    <td className={`px-2 sm:px-3 py-1.5 sm:py-2 text-right font-mono ${
                       isDarkMode ? 'text-green-400' : 'text-green-600'
                     }`}>
                       {totals.dtpAmount.toFixed(2)}
