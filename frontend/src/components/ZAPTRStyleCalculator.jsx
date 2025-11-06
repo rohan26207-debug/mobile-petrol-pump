@@ -732,6 +732,19 @@ const ZAPTRStyleCalculator = () => {
   // Edit dialog handlers
   // Balance tab navigation state (for mobile blocks)
   const [showBalanceBlocks, setShowBalanceBlocks] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check screen size for mobile detection
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   // Handle Balance tab click - toggle between blocks and content
   const handleBalanceTabClick = () => {
