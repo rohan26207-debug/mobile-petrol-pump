@@ -659,7 +659,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 />
               </TabsContent>
               
-              <TabsContent value="contact" className="p-4" style={{ height: 'calc(100vh - 60px - 48px - 48px)', overflowY: 'auto', overflowX: 'hidden' }}>
+              <TabsContent value="contact" className="p-0">
+                <ScrollArea className="h-[calc(100vh-160px)] px-4 py-4">
                 <div className="space-y-4">
                   {/* Contact Information Display */}
                   <div className="text-center mb-4">
