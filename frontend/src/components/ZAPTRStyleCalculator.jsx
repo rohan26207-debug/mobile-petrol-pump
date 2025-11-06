@@ -1899,15 +1899,22 @@ window.onload = function() {
       const summaryData = [];
       let rowNum = 1;
       
-      // Fuel Sales
-      summaryData.push([
-        `${rowNum}. Fuel Sales`,
-        currentStats.fuelLitersNoMPP.toFixed(2),
-        `₹${currentStats.fuelSalesNoMPP.toFixed(2)}`,
-        currentStats.fuelLitersMPP.toFixed(2),
-        `₹${currentStats.fuelSalesMPP.toFixed(2)}`
-      ]);
-      rowNum++;
+      // Fuel Sales by Type (separate rows)
+      Object.entries(currentStats.fuelSalesByType).forEach(([fuelType, data]) => {
+        // Calculate MPP data for this fuel type
+        const mppSales = todaySales.filter(s => s.fuelType === fuelType && (s.mpp === true || s.mpp === 'true'));
+        const mppLiters = mppSales.reduce((sum, s) => sum + s.liters, 0);
+        const mppAmount = mppSales.reduce((sum, s) => sum + s.amount, 0);
+        
+        summaryData.push([
+          `${rowNum}. ${fuelType} Sales`,
+          data.liters.toFixed(2),
+          `₹${data.amount.toFixed(2)}`,
+          mppLiters.toFixed(2),
+          `₹${mppAmount.toFixed(2)}`
+        ]);
+        rowNum++;
+      });
 
       // Credit Sales
       summaryData.push([
@@ -1916,6 +1923,16 @@ window.onload = function() {
         `₹${currentStats.creditAmountNoMPP.toFixed(2)}`,
         currentStats.creditLitersMPP.toFixed(2),
         `₹${currentStats.creditAmountMPP.toFixed(2)}`
+      ]);
+      rowNum++;
+
+      // Settlement (moved here, after credit sales)
+      summaryData.push([
+        `${rowNum}. Settlement`,
+        '-',
+        `₹${currentStats.settlementNoMPP.toFixed(2)}`,
+        '-',
+        `₹${currentStats.settlementMPP.toFixed(2)}`
       ]);
       rowNum++;
 
@@ -1938,15 +1955,6 @@ window.onload = function() {
         `₹${currentStats.totalExpensesMPP.toFixed(2)}`
       ]);
       rowNum++;
-
-      // Settlement
-      summaryData.push([
-        `${rowNum}. Settlement`,
-        '-',
-        `₹${currentStats.settlementNoMPP.toFixed(2)}`,
-        '-',
-        `₹${currentStats.settlementMPP.toFixed(2)}`
-      ]);
 
       // Cash in Hand / MPP Cash
       summaryData.push([
