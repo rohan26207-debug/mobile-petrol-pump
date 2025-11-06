@@ -3140,39 +3140,6 @@ window.onload = function() {
               </div>
             </CardContent>
           </Card>
-          
-          <Sheet open={creditDialogOpen} onOpenChange={setCreditDialogOpen}>
-            <SheetContent 
-              side="bottom" 
-              className={`h-[90vh] w-screen max-w-none left-0 right-0 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}
-              style={{ width: '100vw', maxWidth: '100vw' }}
-            >
-              <SheetHeader className="px-2">
-                <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
-                  {editingCreditData ? 'Edit Credit Record' : 'Add Credit Record'}
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
-                <CreditSales 
-                  isDarkMode={isDarkMode}
-                  creditData={creditData}
-                  addCreditRecord={addCreditRecord}
-                  updateCreditRecord={updateCreditRecord}
-                  deleteCreditRecord={deleteCreditRecord}
-                  fuelSettings={fuelSettings}
-                  selectedDate={selectedDate}
-                  salesData={salesData}
-                  incomeData={incomeData}
-                  expenseData={expenseData}
-                  formResetKey={formResetKey}
-                  editingRecord={editingCreditData}
-                  onRecordSaved={handleCloseDialogs}
-                  hideRecordsList={true}
-                  customers={customers}
-                />
-              </div>
-            </SheetContent>
-          </Sheet>
 
           <Card 
             className={`${
