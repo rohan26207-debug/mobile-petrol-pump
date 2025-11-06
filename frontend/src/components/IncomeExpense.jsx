@@ -589,6 +589,8 @@ const IncomeExpense = ({ isDarkMode, incomeData, addIncomeRecord, updateIncomeRe
           </ScrollArea>
         )}
       </div>
+        </>
+      )}
     </div>
   );
 };
