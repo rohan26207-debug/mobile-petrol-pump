@@ -59,9 +59,7 @@ class FirebaseSyncService {
     if (!this.syncEnabled) return;
 
     try {
-      // Get current user ID
-      const { auth } = require('./firebase');
-      const userId = auth.currentUser?.uid;
+      const userId = this.getUserId();
       
       if (!userId) {
         console.log('📴 User not authenticated, skipping sync');
