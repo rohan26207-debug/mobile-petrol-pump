@@ -641,6 +641,54 @@ class FirebaseSyncService {
     console.log('================================');
     return status;
   }
+
+  // Manual pull from Firebase - for testing
+  async manualPullFromFirebase() {
+    console.log('🔄 Manually pulling data from Firebase...');
+    
+    const userId = this.getUserId();
+    if (!userId) {
+      console.error('❌ Cannot pull: User not authenticated');
+      return;
+    }
+
+    try {
+      // Pull customers
+      const customersSnap = await getDocs(query(collection(db, 'customers'), where('userId', '==', userId)));
+      console.log(`📥 Found ${customersSnap.size} customers in Firebase`);
+      
+      const customers = [];
+      customersSnap.forEach(doc => {
+        customers.push(doc.data());
+      });
+      
+      if (customers.length > 0) {
+        localStorage.setItem('customers', JSON.stringify(customers));
+        console.log('✅ Customers updated in localStorage');
+        window.dispatchEvent(new Event('localStorageChange'));
+      }
+
+      // Pull credit sales
+      const creditsSnap = await getDocs(query(collection(db, 'creditSales'), where('userId', '==', userId)));
+      console.log(`📥 Found ${creditsSnap.size} credit sales in Firebase`);
+      
+      const credits = [];
+      creditsSnap.forEach(doc => {
+        credits.push(doc.data());
+      });
+      
+      if (credits.length > 0) {
+        localStorage.setItem('creditData', JSON.stringify(credits));
+        console.log('✅ Credit sales updated in localStorage');
+        window.dispatchEvent(new Event('localStorageChange'));
+      }
+
+      console.log('✅ Manual pull completed successfully');
+      
+    } catch (error) {
+      console.error('❌ Manual pull failed:', error);
+    }
+  }
 }
 
 // Export singleton instance
