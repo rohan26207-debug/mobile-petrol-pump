@@ -9,7 +9,7 @@
 let firebaseSyncService = null;
 
 // Active namespace prefix: e.g., "mpp:<uid>:"
-let ACTIVE_NAMESPACE = null;
+let ACTIVE_NAMESPACE = 'mpp:guest:';
 
 // Helper to build namespaced key
 const nsKey = (baseKey) => (ACTIVE_NAMESPACE ? `${ACTIVE_NAMESPACE}${baseKey}` : baseKey);
