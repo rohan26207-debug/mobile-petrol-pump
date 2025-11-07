@@ -454,6 +454,13 @@ class LocalStorageService {
     if (expenseIndex !== -1) {
       expenses[expenseIndex] = { ...expenses[expenseIndex], ...updatedData };
       this.setExpenseData(expenses);
+      
+      // Sync to Firebase
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncIncomeExpense(expenses[expenseIndex], 'update');
+      }
+      
       return expenses[expenseIndex];
     }
     return null;
