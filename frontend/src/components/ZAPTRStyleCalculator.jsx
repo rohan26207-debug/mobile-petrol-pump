@@ -3246,6 +3246,9 @@ window.onload = function() {
                     <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
                       {editingSettlementData ? 'Edit Settlement' : 'Add Settlement'}
                     </SheetTitle>
+                    <SheetDescription className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                      {editingSettlementData ? 'Update settlement record' : 'Record daily settlement transaction'}
+                    </SheetDescription>
                   </SheetHeader>
                   <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
                     <Settlement 
