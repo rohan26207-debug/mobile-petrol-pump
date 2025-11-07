@@ -3066,6 +3066,23 @@ Rerun comprehensive backend API smoke tests against production URL to verify all
 - **Authorization**: Bearer token
 - **Status**: 200 OK
 - **Response Fields**: ✅ id, username, full_name, created_at
+
+## Test Session: Multi-Device Realtime Sync with Provided Credentials
+Date: November 7, 2025  
+Tester: AI Testing Agent  
+Credentials: Email = TEST123@GMAIL.COM, Password = 123456  
+Objective: Verify data added in one tab syncs in the other tab in real-time.
+
+Test Plan
+1. Tab A: Sign In with provided credentials
+2. Tab B: Sign In with the same credentials
+3. Tab A: Add Settlement (today, type: cash or first available, amount: 321)
+4. Tab B: Verify new record appears automatically without page reload
+5. Tab A: Edit that settlement to amount 345 from All Records
+6. Tab B: Verify automatic update to 345
+
+Status: Pending execution
+
 - **Result**: PASS
 
 #### 3. Protected CRUD Operations ✅
