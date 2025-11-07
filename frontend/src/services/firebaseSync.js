@@ -940,9 +940,11 @@ firebaseSyncService.initialize().catch(err => {
 if (typeof window !== 'undefined') {
   window.diagnoseFirebaseSync = () => firebaseSyncService.diagnoseSync();
   window.manualPullFirebase = () => firebaseSyncService.manualPullFromFirebase();
+  window.syncAllToFirebase = () => firebaseSyncService.syncAllLocalData();
   console.log('💡 Debug commands:');
   console.log('  - window.diagnoseFirebaseSync() → Check sync status');
   console.log('  - window.manualPullFirebase() → Manually pull data from Firebase');
+  console.log('  - window.syncAllToFirebase() → Push all local data to Firebase');
 }
 
 export default firebaseSyncService;
