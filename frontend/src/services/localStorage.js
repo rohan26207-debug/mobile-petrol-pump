@@ -405,8 +405,18 @@ class LocalStorageService {
 
   deleteExpenseRecord(id) {
     const expenses = this.getExpenseData();
+    const recordToDelete = expenses.find(expense => expense.id === id);
     const updatedExpenses = expenses.filter(expense => expense.id !== id);
     this.setExpenseData(updatedExpenses);
+    
+    // Sync to Firebase
+    if (recordToDelete) {
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncIncomeExpense(recordToDelete, 'delete');
+      }
+    }
+    
     return true;
   }
 
