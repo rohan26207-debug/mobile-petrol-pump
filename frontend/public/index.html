@@ -20,11 +20,7 @@
     -->
         <title>Manager Petrol Pump - Petrol Pump Calculator</title>
         
-        <!-- App scripts will be added here if needed -->
-        
-        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
-        
-        <!-- Filter Firestore WebChannel noise -->
+        <!-- Filter Firestore WebChannel noise - MUST BE BEFORE emergent-main.js -->
         <script>
             (function() {
                 // Suppress Firestore WebChannel "terminate" error logs
@@ -51,8 +47,22 @@
                     }
                     originalConsoleWarn.apply(console, args);
                 };
+                
+                // Also filter console.log to catch POST logs
+                const originalConsoleLog = console.log;
+                console.log = function(...args) {
+                    const logString = args.join(' ');
+                    if (logString.includes('Firestore/Write/channel') && logString.includes('TYPE=terminate')) {
+                        return;
+                    }
+                    originalConsoleLog.apply(console, args);
+                };
             })();
         </script>
+        
+        <!-- App scripts will be added here if needed -->
+        
+        <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
         
         <!--
         These two scripts have been added for the testing, please do not edit or remove them
