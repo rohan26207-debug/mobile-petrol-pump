@@ -2530,10 +2530,8 @@ window.onload = function() {
     );
   }
 
-  // Show login screen if not authenticated
-  if (!isAuthenticated) {
-    return <LoginScreen isDarkMode={isDarkMode} />;
-  }
+  // Anonymous mode: always proceed (auth may be anonymous)
+  // No login screen in anonymous mode
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${
