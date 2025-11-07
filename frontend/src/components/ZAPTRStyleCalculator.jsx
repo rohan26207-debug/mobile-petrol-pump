@@ -509,7 +509,10 @@ const ZAPTRStyleCalculator = () => {
     };
   };
 
-  const stats = getTodayStats();
+  // Recalculate stats when data or sync changes
+  const stats = React.useMemo(() => {
+    return getTodayStats();
+  }, [salesData, creditData, incomeData, expenseData, settlementData, selectedDate, syncCounter]);
 
   // Data handling functions (offline localStorage)
   const addSaleRecord = (saleData) => {
