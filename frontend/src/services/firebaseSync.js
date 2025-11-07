@@ -335,9 +335,12 @@ class FirebaseSyncService {
 
     const userId = this.getUserId();
     if (!userId) {
-      console.log('📴 User not authenticated, skipping listeners');
+      console.log('❌ User not authenticated, cannot start listeners');
+      console.log('⚠️ This means cross-device sync will NOT work!');
       return;
     }
+
+    console.log('✅ User authenticated, starting listeners for user:', userId);
 
     // Listen to customers (only user's own data)
     const customersListener = onSnapshot(
