@@ -58,9 +58,9 @@ class FirebaseSyncService {
 
   setupAuthWatcher() {
     try {
-      const { auth, onAuthStateChanged } = require('firebase/auth');
-      const authInstance = require('./firebase').auth;
-      onAuthStateChanged(authInstance, (user) => {
+      // Listen to Firebase auth state changes (ESM import)
+      const { onAuthStateChanged } = await import('firebase/auth');
+      onAuthStateChanged(auth, (user) => {
         const newUid = user?.uid || null;
         if (newUid === this.currentUserId) return; // No change
         console.log('🔐 Auth state changed. Restarting listeners and switching storage namespace...', { from: this.currentUserId, to: newUid });
