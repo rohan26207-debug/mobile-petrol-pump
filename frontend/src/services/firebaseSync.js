@@ -348,10 +348,11 @@ class FirebaseSyncService {
     console.log('✅ User authenticated, starting listeners for user:', userId);
 
     // Listen to customers (only user's own data)
+    console.log('🎯 Setting up customer listener for userId:', userId);
     const customersListener = onSnapshot(
       query(collection(db, 'customers'), where('userId', '==', userId)),
       (snapshot) => {
-        console.log('🔔 Customer snapshot received, changes:', snapshot.docChanges().length);
+        console.log('🔔 Customer snapshot received! Total docs:', snapshot.size, 'Changes:', snapshot.docChanges().length);
         
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
