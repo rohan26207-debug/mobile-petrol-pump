@@ -398,6 +398,7 @@ class FirebaseSyncService {
         });
       },
       (error) => {
+        console.error('❌ CUSTOMER LISTENER ERROR:', error);
         console.log('📴 Listener error (will retry when online):', error.message);
       }
     );
