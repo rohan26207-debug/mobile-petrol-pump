@@ -549,6 +549,9 @@ class LocalStorageService {
       customers: this.getCustomers(),
       payments: this.getPayments(),
       settlements: this.getSettlements(),
+      settlementTypes: this.getSettlementTypes(), // ADDED: Settlement types
+      incomeCategories: this.getIncomeCategories(), // ADDED: Income categories
+      expenseCategories: this.getExpenseCategories(), // ADDED: Expense categories
       stockData: stockData,
       contactInfo: contactInfo ? JSON.parse(contactInfo) : null,
       notes: notes || '',
@@ -560,7 +563,7 @@ class LocalStorageService {
         theme: theme || 'light'
       },
       exportDate: new Date().toISOString(),
-      version: '2.0'
+      version: '2.1' // Updated version
     };
   }
 
