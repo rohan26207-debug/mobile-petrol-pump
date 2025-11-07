@@ -209,6 +209,13 @@ class LocalStorageService {
     
     income.push(newIncome);
     this.setIncomeData(income);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncIncomeExpense(newIncome, 'add');
+    }
+    
     return newIncome;
   }
 
