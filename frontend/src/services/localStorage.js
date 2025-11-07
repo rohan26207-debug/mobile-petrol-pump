@@ -1085,7 +1085,15 @@ class LocalStorageService {
   }
 
   setSettlementTypes(types) {
-    return this.setItem(this.keys.settlementTypes, types);
+    const result = this.setItem(this.keys.settlementTypes, types);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncSettlementTypes(types);
+    }
+    
+    return result;
   }
 
   addSettlementType(name) {
