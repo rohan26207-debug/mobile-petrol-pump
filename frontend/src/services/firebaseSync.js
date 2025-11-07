@@ -629,4 +629,10 @@ firebaseSyncService.initialize().catch(err => {
   console.log('📴 Firebase sync will work when online:', err.message);
 });
 
+// Expose diagnostic globally for debugging
+if (typeof window !== 'undefined') {
+  window.diagnoseFire baseSync = () => firebaseSyncService.diagnoseSync();
+  console.log('💡 Debug tip: Run window.diagnoseFirebaseSync() in console to check sync status');
+}
+
 export default firebaseSyncService;
