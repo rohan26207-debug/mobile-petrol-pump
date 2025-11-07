@@ -728,10 +728,121 @@ class FirebaseSyncService {
       }
     );
 
-    this.listeners.push(customersListener, creditSalesListener, paymentsListener, settlementsListener, salesListener, incomeExpensesListener);
+    // Listen to fuel settings
+    console.log('🎯 Setting up fuel settings listener for userId:', userId);
+    const fuelSettingsListener = onSnapshot(
+      doc(db, 'fuelSettings', userId),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          
+          console.log('📦 Fuel settings change from device:', data.deviceId, 'this device:', this.deviceId);
+          
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring fuel settings from same device');
+            return;
+          }
+
+          console.log('📥 Fuel settings update from another device');
+          localStorage.setItem('mpump_fuel_settings', JSON.stringify(data.settings));
+          window.dispatchEvent(new Event('localStorageChange'));
+        }
+      },
+      (error) => {
+        console.log('📴 Fuel settings listener error:', error.message);
+      }
+    );
+
+    // Listen to settlement types
+    console.log('🎯 Setting up settlement types listener for userId:', userId);
+    const settlementTypesListener = onSnapshot(
+      doc(db, 'settlementTypes', userId),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          
+          console.log('📦 Settlement types change from device:', data.deviceId);
+          
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring settlement types from same device');
+            return;
+          }
+
+          console.log('📥 Settlement types update from another device');
+          localStorage.setItem('mpump_settlement_types', JSON.stringify(data.types));
+          window.dispatchEvent(new Event('localStorageChange'));
+        }
+      },
+      (error) => {
+        console.log('📴 Settlement types listener error:', error.message);
+      }
+    );
+
+    // Listen to income categories
+    console.log('🎯 Setting up income categories listener for userId:', userId);
+    const incomeCategoriesListener = onSnapshot(
+      doc(db, 'incomeCategories', userId),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          
+          console.log('📦 Income categories change from device:', data.deviceId);
+          
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring income categories from same device');
+            return;
+          }
+
+          console.log('📥 Income categories update from another device');
+          localStorage.setItem('mpump_income_categories', JSON.stringify(data.categories));
+          window.dispatchEvent(new Event('localStorageChange'));
+        }
+      },
+      (error) => {
+        console.log('📴 Income categories listener error:', error.message);
+      }
+    );
+
+    // Listen to expense categories
+    console.log('🎯 Setting up expense categories listener for userId:', userId);
+    const expenseCategoriesListener = onSnapshot(
+      doc(db, 'expenseCategories', userId),
+      (snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          
+          console.log('📦 Expense categories change from device:', data.deviceId);
+          
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring expense categories from same device');
+            return;
+          }
+
+          console.log('📥 Expense categories update from another device');
+          localStorage.setItem('mpump_expense_categories', JSON.stringify(data.categories));
+          window.dispatchEvent(new Event('localStorageChange'));
+        }
+      },
+      (error) => {
+        console.log('📴 Expense categories listener error:', error.message);
+      }
+    );
+
+    this.listeners.push(
+      customersListener, 
+      creditSalesListener, 
+      paymentsListener, 
+      settlementsListener, 
+      salesListener, 
+      incomeExpensesListener,
+      fuelSettingsListener,
+      settlementTypesListener,
+      incomeCategoriesListener,
+      expenseCategoriesListener
+    );
     
     console.log(`✅ Successfully started ${this.listeners.length} Firebase listeners`);
-    console.log('🎯 Listening for: customers, creditSales, payments, settlements, sales, incomeExpenses');
+    console.log('🎯 Listening for: customers, creditSales, payments, settlements, sales, incomeExpenses, fuelSettings, settlementTypes, incomeCategories, expenseCategories');
   }
 
   // Stop all listeners
