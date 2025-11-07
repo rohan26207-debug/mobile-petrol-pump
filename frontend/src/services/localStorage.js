@@ -244,7 +244,15 @@ class LocalStorageService {
   }
 
   setFuelSettings(settings) {
-    return this.setItem(this.keys.fuelSettings, settings);
+    const result = this.setItem(this.keys.fuelSettings, settings);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncFuelSettings(settings);
+    }
+    
+    return result;
   }
 
   updateFuelRate(fuelType, rate, date = null) {
