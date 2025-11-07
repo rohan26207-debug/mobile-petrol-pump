@@ -436,7 +436,126 @@ class FirebaseSyncService {
       }
     );
 
-    this.listeners.push(customersListener, creditSalesListener, paymentsListener);
+    // Listen to settlements
+    const settlementsListener = onSnapshot(
+      query(collection(db, 'settlements'), where('userId', '==', userId)),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          const data = change.doc.data();
+          
+          if (data.deviceId === this.deviceId) return;
+
+          if (change.type === 'added' || change.type === 'modified') {
+            console.log('📥 Settlement update from another device');
+            const settlements = localStorageService.getSettlements();
+            const existingIndex = settlements.findIndex(s => s.id === data.id);
+            
+            if (existingIndex >= 0) {
+              settlements[existingIndex] = data;
+            } else {
+              settlements.push(data);
+            }
+            
+            localStorage.setItem('settlements', JSON.stringify(settlements));
+            window.dispatchEvent(new Event('localStorageChange'));
+          } else if (change.type === 'removed') {
+            console.log('📥 Settlement deleted from another device');
+            const settlements = localStorageService.getSettlements();
+            const filtered = settlements.filter(s => s.id !== data.id);
+            localStorage.setItem('settlements', JSON.stringify(filtered));
+            window.dispatchEvent(new Event('localStorageChange'));
+          }
+        });
+      },
+      (error) => {
+        console.log('📴 Listener error:', error.message);
+      }
+    );
+
+    // Listen to sales
+    const salesListener = onSnapshot(
+      query(collection(db, 'sales'), where('userId', '==', userId)),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          const data = change.doc.data();
+          
+          if (data.deviceId === this.deviceId) return;
+
+          if (change.type === 'added' || change.type === 'modified') {
+            console.log('📥 Sale update from another device');
+            const sales = localStorageService.getSalesData();
+            const existingIndex = sales.findIndex(s => s.id === data.id);
+            
+            if (existingIndex >= 0) {
+              sales[existingIndex] = data;
+            } else {
+              sales.push(data);
+            }
+            
+            localStorage.setItem('salesData', JSON.stringify(sales));
+            window.dispatchEvent(new Event('localStorageChange'));
+          } else if (change.type === 'removed') {
+            console.log('📥 Sale deleted from another device');
+            const sales = localStorageService.getSalesData();
+            const filtered = sales.filter(s => s.id !== data.id);
+            localStorage.setItem('salesData', JSON.stringify(filtered));
+            window.dispatchEvent(new Event('localStorageChange'));
+          }
+        });
+      },
+      (error) => {
+        console.log('📴 Listener error:', error.message);
+      }
+    );
+
+    // Listen to income/expenses
+    const incomeExpensesListener = onSnapshot(
+      query(collection(db, 'incomeExpenses'), where('userId', '==', userId)),
+      (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          const data = change.doc.data();
+          
+          if (data.deviceId === this.deviceId) return;
+
+          if (change.type === 'added' || change.type === 'modified') {
+            console.log('📥 Income/Expense update from another device');
+            const records = localStorageService.getIncomeExpenseData();
+            const existingIndex = records.findIndex(r => r.id === data.id);
+            
+            if (existingIndex >= 0) {
+              records[existingIndex] = data;
+            } else {
+              records.push(data);
+            }
+            
+            // Split into income and expense arrays
+            const income = records.filter(r => r.type === 'income');
+            const expense = records.filter(r => r.type === 'expense');
+            
+            localStorage.setItem('incomeData', JSON.stringify(income));
+            localStorage.setItem('expenseData', JSON.stringify(expense));
+            window.dispatchEvent(new Event('localStorageChange'));
+          } else if (change.type === 'removed') {
+            console.log('📥 Income/Expense deleted from another device');
+            const records = localStorageService.getIncomeExpenseData();
+            const filtered = records.filter(r => r.id !== data.id);
+            
+            // Split into income and expense arrays
+            const income = filtered.filter(r => r.type === 'income');
+            const expense = filtered.filter(r => r.type === 'expense');
+            
+            localStorage.setItem('incomeData', JSON.stringify(income));
+            localStorage.setItem('expenseData', JSON.stringify(expense));
+            window.dispatchEvent(new Event('localStorageChange'));
+          }
+        });
+      },
+      (error) => {
+        console.log('📴 Listener error:', error.message);
+      }
+    );
+
+    this.listeners.push(customersListener, creditSalesListener, paymentsListener, settlementsListener, salesListener, incomeExpensesListener);
   }
 
   // Stop all listeners
