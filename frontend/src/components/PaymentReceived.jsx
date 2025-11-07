@@ -976,6 +976,9 @@ const PaymentReceived = ({
             <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
               Edit Receipt
             </SheetTitle>
+            <SheetDescription className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+              Update payment receipt details
+            </SheetDescription>
           </SheetHeader>
           
           <div className="mt-6 space-y-4 px-2">
