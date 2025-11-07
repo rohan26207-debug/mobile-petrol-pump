@@ -3165,6 +3165,9 @@ window.onload = function() {
                 <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
                   {editingSaleData ? 'Edit Sale Record' : 'Add Sale Record'}
                 </SheetTitle>
+                <SheetDescription className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                  {editingSaleData ? 'Update fuel sale details' : 'Record new fuel sale transaction'}
+                </SheetDescription>
               </SheetHeader>
               <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)]">
                 <SalesTracker 
