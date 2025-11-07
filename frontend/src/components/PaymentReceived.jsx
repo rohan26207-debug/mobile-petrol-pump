@@ -798,6 +798,9 @@ const PaymentReceived = ({
             <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
               Record Receipt
             </SheetTitle>
+            <SheetDescription className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+              Record payment received from customer
+            </SheetDescription>
           </SheetHeader>
           
           <div className="mt-4 overflow-y-auto h-[calc(90vh-80px)] px-2">
