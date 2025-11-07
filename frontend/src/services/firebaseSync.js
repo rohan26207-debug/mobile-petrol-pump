@@ -404,13 +404,21 @@ class FirebaseSyncService {
     );
 
     // Listen to credit sales (only user's own data)
+    console.log('🎯 Setting up credit sales listener for userId:', userId);
     const creditSalesListener = onSnapshot(
       query(collection(db, 'creditSales'), where('userId', '==', userId)),
       (snapshot) => {
+        console.log('🔔 Credit sales snapshot received! Total docs:', snapshot.size, 'Changes:', snapshot.docChanges().length);
+        
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
           
-          if (data.deviceId === this.deviceId) return;
+          console.log(`📦 Credit sale change: ${change.type}, from device: ${data.deviceId}, this device: ${this.deviceId}`);
+          
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring credit sale from same device');
+            return;
+          }
 
           if (change.type === 'added' || change.type === 'modified') {
             console.log('📥 Credit sale update from another device');
