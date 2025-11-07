@@ -168,6 +168,19 @@ const ZAPTRStyleCalculator = () => {
     if (savedNotes) {
       setNotes(savedNotes);
     }
+
+    // Listen for Firebase sync updates from other devices
+    const handleStorageChange = () => {
+      console.log('🔄 Data synced from another device - reloading...');
+      loadData();
+    };
+
+    window.addEventListener('localStorageChange', handleStorageChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener('localStorageChange', handleStorageChange);
+    };
   }, []);
 
   // Reload data when date changes (to reflect any new data)
