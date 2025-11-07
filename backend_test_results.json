@@ -1,0 +1,108 @@
+{
+  "timestamp": "2025-11-07T20:52:50.428301",
+  "base_url": "https://petropump-sync.preview.emergentagent.com/api",
+  "cors_header": "Not present",
+  "total_tests": 14,
+  "passed": 14,
+  "failed": 0,
+  "results": [
+    {
+      "test": "Health Check",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Status: 200, CORS: Not present",
+      "response": "{\n  \"message\": \"Hello World\"\n}"
+    },
+    {
+      "test": "Auth - Register",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "User created: test_user_1762548769290, user_id: 0b866624-6bda-4207-b9f7-6b327336f8d5",
+      "response": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYjg2NjYyNC02YmRhLTQyMDctYjlmNy02YjMyNzMzNmY4ZDUiLCJ1c2VybmFtZSI6InRlc3RfdXNlcl8xNzYyNTQ4NzY5MjkwIiwiZXhwIjoxNzY1MTQwNzY5LCJpYXQiOjE3NjI1NDg3Njl9.IZyg0KmSnDS-jzaGzFYPTkGbTxIgfLq9NB70TeG9-Fo\",\n  \"token_type\": \"bearer\",\n  \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n  \"username\": \"test_user_1762548769290\"\n}"
+    },
+    {
+      "test": "Auth - Login",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Login successful, token received",
+      "response": "{\n  \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIwYjg2NjYyNC02YmRhLTQyMDctYjlmNy02YjMyNzMzNmY4ZDUiLCJ1c2VybmFtZSI6InRlc3RfdXNlcl8xNzYyNTQ4NzY5MjkwIiwiZXhwIjoxNzY1MTQwNzY5LCJpYXQiOjE3NjI1NDg3Njl9.IZyg0KmSnDS-jzaGzFYPTkGbTxIgfLq9NB70TeG9-Fo\",\n  \"token_type\": \"bearer\",\n  \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n  \"username\": \"test_user_1762548769290\"\n}"
+    },
+    {
+      "test": "Auth - /auth/me",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "User info retrieved: test_user_1762548769290",
+      "response": "{\n  \"id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n  \"username\": \"test_user_1762548769290\",\n  \"full_name\": \"Test User\",\n  \"created_at\": \"2025-11-07T20:52:49.574000\"\n}"
+    },
+    {
+      "test": "Fuel Sales - Create",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Created fuel sale with id: b4ec3e69-1ba9-4c43-bae7-7534e3347c15",
+      "response": "{\n  \"message\": \"Fuel sale created\",\n  \"id\": \"b4ec3e69-1ba9-4c43-bae7-7534e3347c15\"\n}"
+    },
+    {
+      "test": "Fuel Sales - Get",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Retrieved 1 sales, found created record, no _id field",
+      "response": "[\n  {\n    \"id\": \"b4ec3e69-1ba9-4c43-bae7-7534e3347c15\",\n    \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n    \"date\": \"2025-11-07\",\n    \"fuel_type\": \"diesel\",\n    \"nozzle_id\": \"N1\",\n    \"opening_reading\": 1000.0,\n    \"closing_reading\": 1100.0,\n    \"liters\": 100.0,\n    \"rate\": 95.5,\n    \"amount\": 9550.0,\n    \"created_at\": \"2025-11-07T20:52:49.926000\"\n  }\n]"
+    },
+    {
+      "test": "Credit Sales - Create",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Created credit sale with id: 13445c40-47d1-4ceb-97ad-8c33505f1d4e",
+      "response": "{\n  \"message\": \"Credit sale created\",\n  \"id\": \"13445c40-47d1-4ceb-97ad-8c33505f1d4e\"\n}"
+    },
+    {
+      "test": "Credit Sales - Get",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Retrieved 1 sales, found created record, no _id field",
+      "response": "[\n  {\n    \"id\": \"13445c40-47d1-4ceb-97ad-8c33505f1d4e\",\n    \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n    \"date\": \"2025-11-07\",\n    \"customer_name\": \"Test Customer\",\n    \"amount\": 1234.5,\n    \"description\": \"backend test\",\n    \"created_at\": \"2025-11-07T20:52:50.055000\"\n  }\n]"
+    },
+    {
+      "test": "Income/Expenses - Create",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Created income record with id: 25990c2b-ee96-4c19-b177-64640576894f",
+      "response": "{\n  \"message\": \"Income/expense record created\",\n  \"id\": \"25990c2b-ee96-4c19-b177-64640576894f\"\n}"
+    },
+    {
+      "test": "Income/Expenses - Get",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Retrieved 1 records, found created record, no _id field",
+      "response": "[\n  {\n    \"id\": \"25990c2b-ee96-4c19-b177-64640576894f\",\n    \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n    \"date\": \"2025-11-07\",\n    \"type\": \"income\",\n    \"category\": \"test\",\n    \"amount\": 500.0,\n    \"description\": \"income smoke\",\n    \"created_at\": \"2025-11-07T20:52:50.150000\"\n  }\n]"
+    },
+    {
+      "test": "Fuel Rates - Create",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Created fuel rate with id: 24348937-f77e-4b11-8da1-3264ff823a5d",
+      "response": "{\n  \"message\": \"Fuel rate created\",\n  \"id\": \"24348937-f77e-4b11-8da1-3264ff823a5d\"\n}"
+    },
+    {
+      "test": "Fuel Rates - Get",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Retrieved 1 rates, found created record, no _id field",
+      "response": "[\n  {\n    \"id\": \"24348937-f77e-4b11-8da1-3264ff823a5d\",\n    \"user_id\": \"0b866624-6bda-4207-b9f7-6b327336f8d5\",\n    \"date\": \"2025-11-07\",\n    \"fuel_type\": \"diesel\",\n    \"rate\": 96.0,\n    \"created_at\": \"2025-11-07T20:52:50.235000\"\n  }\n]"
+    },
+    {
+      "test": "Sync - Upload",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Upload successful: Data synced successfully",
+      "response": "{\n  \"success\": true,\n  \"message\": \"Data synced successfully\",\n  \"data\": null,\n  \"last_sync\": \"2025-11-07T20:52:50.347154Z\"\n}"
+    },
+    {
+      "test": "Sync - Download",
+      "status": "\u2705 PASS",
+      "passed": true,
+      "details": "Download successful, has data: True",
+      "response": "{\n  \"success\": true,\n  \"message\": \"Data retrieved successfully\",\n  \"data\": {\n    \"customers\": [],\n    \"credit_records\": [],\n    \"payments\": [],\n    \"sales\": [],\n    \"income_records\": [],\n    \"expense_records\": [],\n    \"fuel_settings\": {},\n    \"stock_records\": [],\n    \"notes\": [],\n    \"contact_info\": {},\n    \"app_preferences\": {},\n    \"last_sync_timestamp\": \"2025-11-07T20:52:50.336000\"\n  },\n  \"last_sync\": \"2025-11-07T20:52:50.336000\"\n}"
+    }
+  ]
+}
