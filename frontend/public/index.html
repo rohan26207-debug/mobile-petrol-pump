@@ -23,6 +23,37 @@
         <!-- App scripts will be added here if needed -->
         
         <script src="https://assets.emergent.sh/scripts/emergent-main.js"></script>
+        
+        <!-- Filter Firestore WebChannel noise -->
+        <script>
+            (function() {
+                const originalFetch = window.fetch;
+                window.fetch = function(...args) {
+                    const [url] = args;
+                    
+                    return originalFetch.apply(this, args).then(response => {
+                        // Ignore Firestore WebChannel "terminate" 400 errors
+                        if (!response.ok) {
+                            const urlString = typeof url === 'string' ? url : url.url;
+                            if (urlString && urlString.includes("Firestore/Write/channel") && urlString.includes("TYPE=terminate")) {
+                                // Silently ignore these expected Firestore internal errors
+                                return response;
+                            }
+                        }
+                        return response;
+                    }).catch(error => {
+                        // Check if it's a Firestore terminate error
+                        const urlString = typeof url === 'string' ? url : url.url;
+                        if (urlString && urlString.includes("Firestore/Write/channel") && urlString.includes("TYPE=terminate")) {
+                            // Silently ignore
+                            return Promise.resolve(new Response(null, { status: 400 }));
+                        }
+                        throw error;
+                    });
+                };
+            })();
+        </script>
+        
         <!--
         These two scripts have been added for the testing, please do not edit or remove them
         -->
