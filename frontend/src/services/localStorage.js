@@ -578,6 +578,12 @@ class LocalStorageService {
       if (data.fuelSettings) this.setFuelSettings(data.fuelSettings);
       if (data.customers) this.setCustomers(data.customers);
       if (data.payments) this.setPayments(data.payments);
+      if (data.settlements) this.setSettlements(data.settlements);
+      
+      // Import settings/configuration data (ADDED)
+      if (data.settlementTypes) this.setSettlementTypes(data.settlementTypes);
+      if (data.incomeCategories) this.setIncomeCategories(data.incomeCategories);
+      if (data.expenseCategories) this.setExpenseCategories(data.expenseCategories);
       
       // Import stock data
       if (data.stockData) {
