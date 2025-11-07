@@ -110,6 +110,25 @@ Planned Tests
 
 Status: ❌ **CRITICAL AUTHENTICATION ISSUES FOUND**
 
+
+## Test Session: Multi-Device Realtime Sync (Cross-Tab)
+Date: November 7, 2025  
+Tester: AI Development Agent  
+Objective: Verify that data added in one device/tab syncs to the other device/tab in near real-time without manual refresh.
+
+Planned Steps
+1. Sign Up a new user (email: mpp.sync+<epoch>@example.com, password: TestPass123!) or Sign In if already exists.
+2. Open a second browser tab and log in with the same user.
+3. In Tab A: Open Settlement dialog, add a record for today (Amount: 321, Type: cash), save & close.
+4. In Tab B: Observe automatic UI update in the Settlement list for today; verify presence of the new record and console message "📥 Data synced from another device - reloading...".
+5. Edit the same settlement in Tab A (change 321 → 345) from All Records and verify Tab B updates automatically.
+
+Success Criteria
+- New/updated settlement appears in Tab B within a few seconds without manual reload.
+- No duplicate listeners or stale UI; components re-render correctly (syncCounter keying).
+
+Status: Pending execution
+
 ### Test Results Summary
 
 **Test Environment**: https://petropump-sync.preview.emergentagent.com  
