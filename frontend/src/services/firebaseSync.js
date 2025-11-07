@@ -631,7 +631,7 @@ firebaseSyncService.initialize().catch(err => {
 
 // Expose diagnostic globally for debugging
 if (typeof window !== 'undefined') {
-  window.diagnoseFire baseSync = () => firebaseSyncService.diagnoseSync();
+  window.diagnoseFirebaseSync = () => firebaseSyncService.diagnoseSync();
   console.log('💡 Debug tip: Run window.diagnoseFirebaseSync() in console to check sync status');
 }
 
