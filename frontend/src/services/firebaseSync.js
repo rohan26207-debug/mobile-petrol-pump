@@ -462,6 +462,12 @@ class FirebaseSyncService {
 
   // Listen for changes from other devices
   startListeners() {
+    // Prevent duplicate listeners
+    if (this.listeners.length > 0) {
+      console.log('⚠️ Listeners already running, skipping duplicate initialization');
+      return;
+    }
+
     console.log('👂 Starting Firebase listeners for real-time updates...');
 
     const userId = this.getUserId();
