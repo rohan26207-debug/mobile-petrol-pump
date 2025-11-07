@@ -3273,6 +3273,9 @@ window.onload = function() {
                     <SheetTitle className={isDarkMode ? 'text-white' : 'text-slate-800'}>
                       {editingIncomeExpenseData ? 'Edit Income/Expense' : 'Add Income/Expense'}
                     </SheetTitle>
+                    <SheetDescription className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+                      {editingIncomeExpenseData ? 'Update income or expense record' : 'Record income or expense transaction'}
+                    </SheetDescription>
                   </SheetHeader>
                   <div className="mt-4 overflow-y-auto h-[calc(90vh-150px)] px-2">
                 <IncomeExpense 
