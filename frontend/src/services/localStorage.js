@@ -985,7 +985,15 @@ class LocalStorageService {
   }
 
   setExpenseCategories(categories) {
-    return this.setItem(this.keys.expenseCategories, categories);
+    const result = this.setItem(this.keys.expenseCategories, categories);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncExpenseCategories(categories);
+    }
+    
+    return result;
   }
 
   addExpenseCategory(name) {
