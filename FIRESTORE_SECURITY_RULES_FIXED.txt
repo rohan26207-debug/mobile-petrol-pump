@@ -71,6 +71,26 @@ service cloud.firestore {
       allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
     }
     
+    // Fuel Settings - user-specific (document ID = userId)
+    match /fuelSettings/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Settlement Types - user-specific (document ID = userId)
+    match /settlementTypes/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Income Categories - user-specific (document ID = userId)
+    match /incomeCategories/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // Expense Categories - user-specific (document ID = userId)
+    match /expenseCategories/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;
