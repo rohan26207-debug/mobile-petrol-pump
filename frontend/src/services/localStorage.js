@@ -1074,6 +1074,13 @@ class LocalStorageService {
         timestamp: new Date().toISOString()
       };
       this.setSettlements(settlements);
+      
+      // Sync to Firebase
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncSettlement(settlements[index], 'update');
+      }
+      
       return settlements[index];
     }
     return null;
