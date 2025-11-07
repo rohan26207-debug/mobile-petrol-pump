@@ -351,11 +351,23 @@ class FirebaseSyncService {
     const customersListener = onSnapshot(
       query(collection(db, 'customers'), where('userId', '==', userId)),
       (snapshot) => {
+        console.log('🔔 Customer snapshot received, changes:', snapshot.docChanges().length);
+        
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
           
+          console.log(`📦 Customer change detected: ${change.type}`, {
+            name: data.name,
+            fromDevice: data.deviceId,
+            thisDevice: this.deviceId,
+            willIgnore: data.deviceId === this.deviceId
+          });
+          
           // Ignore changes from this device
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId) {
+            console.log('⏭️ Ignoring change from same device');
+            return;
+          }
 
           if (change.type === 'added' || change.type === 'modified') {
             console.log('📥 Customer update from another device:', data.name);
