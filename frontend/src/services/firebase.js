@@ -33,20 +33,30 @@ const auth = getAuth(app);
 // Email/password authentication (no auto-login)
 let authInitialized = false;
 
-const initializeAuth = () => {
+const initializeAuth = async () => {
   if (authInitialized) return Promise.resolve();
-  
+
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+  } catch (e) {
+    console.log('Auth persistence setup warning:', e?.message || e);
+  }
+
   return new Promise((resolve) => {
-    // Check if user is already signed in
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       unsubscribe();
-      
-      if (user) {
+      try {
+        if (!user) {
+          // Anonymous mode: sign in silently
+          const cred = await signInAnonymously(auth);
+          user = cred.user;
+          console.log('🕶️ Anonymous user signed in:', user.uid);
+        }
         console.log('✅ User authenticated:', user.email || user.uid);
         authInitialized = true;
         resolve(user);
-      } else {
-        console.log('🔒 User not authenticated - login required');
+      } catch (err) {
+        console.error('Anonymous sign-in failed:', err);
         authInitialized = true;
         resolve(null);
       }
