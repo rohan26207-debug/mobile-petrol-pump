@@ -84,6 +84,7 @@ const ZAPTRStyleCalculator = () => {
   const [editingSettlementData, setEditingSettlementData] = useState(null);
   const [editingIncomeExpenseData, setEditingIncomeExpenseData] = useState(null);
   const [stockDataVersion, setStockDataVersion] = useState(0); // For triggering stock summary re-render
+  const [syncCounter, setSyncCounter] = useState(0); // For triggering re-render on Firebase sync
   
   // Notes Dialog State
   const [notesOpen, setNotesOpen] = useState(false);
