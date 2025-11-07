@@ -85,6 +85,30 @@ The date-filtered QR code backup feature is functioning correctly:
 
 ---
 
+## Test Session: Backend API Smoke Test
+Date: November 7, 2025
+Tester: AI Development Agent
+Scope: FastAPI backend JWT auth, protected CRUD routes, and sync endpoints
+
+Planned Checks
+1. Health check: GET /api/ returns JSON {message: "Hello World"}
+2. Auth:
+   - POST /api/auth/register (unique username) -> 201 + token
+   - POST /api/auth/login -> 200 + token
+   - GET /api/auth/me with Bearer token -> 200 user info
+3. Protected resources with token:
+   - POST /api/fuel-sales (sample record) -> 200 + id
+   - GET /api/fuel-sales?date=YYYY-MM-DD -> includes created record, no _id
+   - Repeat for credit-sales, income-expenses, fuel-rates (create + fetch)
+4. Sync endpoints:
+   - POST /api/sync/upload with minimal SyncData -> success true
+   - GET /api/sync/download -> returns data + last_sync
+5. Serialization: Ensure no Mongo _id leaks in responses
+6. CORS header presence
+
+Status: Pending execution
+
+
 ## Testing Agent Communication Protocol
 When invoking testing sub-agents (`deep_testing_backend_v2` or `auto_frontend_testing_agent`):
 
