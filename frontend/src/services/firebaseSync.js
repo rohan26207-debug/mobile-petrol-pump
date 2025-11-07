@@ -73,15 +73,20 @@ class FirebaseSyncService {
   // ==================== CUSTOMERS ====================
 
   async syncCustomer(customer, operation = 'add') {
-    if (!this.syncEnabled) return;
+    if (!this.syncEnabled) {
+      console.log('📴 Sync disabled, skipping customer sync');
+      return;
+    }
 
     try {
       const userId = this.getUserId();
       
       if (!userId) {
-        console.log('📴 User not authenticated, skipping sync');
+        console.log('📴 User not authenticated, skipping customer sync');
         return;
       }
+
+      console.log(`🔄 Syncing customer "${customer.name}" to Firebase (${operation})...`);
 
       const customerData = {
         ...customer,
