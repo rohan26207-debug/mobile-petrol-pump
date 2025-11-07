@@ -421,13 +421,13 @@ class FirebaseSyncService {
             }
             
             localStorage.setItem('payments', JSON.stringify(payments));
-            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('localStorageChange'));
           } else if (change.type === 'removed') {
             console.log('📥 Payment deleted from another device');
             const payments = localStorageService.getPayments();
             const filtered = payments.filter(p => p.id !== data.id);
             localStorage.setItem('payments', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('localStorageChange'));
           }
         });
       },
