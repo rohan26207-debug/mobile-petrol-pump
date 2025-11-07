@@ -94,6 +94,22 @@ Base URL: https://petropump-sync.preview.emergentagent.com/api
 ### Test Results: ✅ ALL TESTS PASSED (14/14)
 
 #### 1. Health Check ✅
+
+## Test Session: Frontend Automated UI Test Plan
+Date: November 7, 2025  
+Tester: AI Development Agent  
+Scope: Firebase Auth login flow, realtime cross-tab sync via Firestore listeners, and Settlement/Inc./Exp. edit dialogs behavior
+
+Planned Tests
+1. Auth: Use Sign Up to create a temporary test user (email: mpp.test+<epoch>@example.com, password: TestPass123!) and Sign In successfully
+2. Dashboard load: Verify ZAPTRStyleCalculator renders main controls (Settlement, Inc./Exp., All Records)
+3. Realtime Sync: Open a second tab logged in with the same user. In Tab A, add a Settlement record for today. Verify in Tab B the settlement list updates automatically (look for new row text and/or console log "📥 Data synced from another device - reloading...")
+4. Edit Settlement: From All Records, click edit on the created settlement. Verify a simple edit dialog opens (no tabs) with pre-filled data and "Update Settlement" button. Update amount and save.
+5. Edit Income/Expense: Add a small Income, then from All Records click edit; verify the simple edit dialog (no tabs) with correct title and update behavior.
+6. Visual checks: Ensure Logout button visible in HeaderSettings; ensure forms show Date fields as implemented.
+
+Status: Pending execution
+
 - **Endpoint**: GET /api/
 - **Status**: 200 OK
 - **Response**: `{"message": "Hello World"}`
