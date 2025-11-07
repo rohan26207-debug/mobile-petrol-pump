@@ -1051,6 +1051,13 @@ class LocalStorageService {
     };
     settlements.push(newSettlement);
     this.setSettlements(settlements);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncSettlement(newSettlement, 'add');
+    }
+    
     return newSettlement;
   }
 
