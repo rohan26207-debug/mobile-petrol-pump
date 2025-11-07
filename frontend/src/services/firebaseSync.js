@@ -702,7 +702,10 @@ firebaseSyncService.initialize().catch(err => {
 // Expose diagnostic globally for debugging
 if (typeof window !== 'undefined') {
   window.diagnoseFirebaseSync = () => firebaseSyncService.diagnoseSync();
-  console.log('💡 Debug tip: Run window.diagnoseFirebaseSync() in console to check sync status');
+  window.manualPullFirebase = () => firebaseSyncService.manualPullFromFirebase();
+  console.log('💡 Debug commands:');
+  console.log('  - window.diagnoseFirebaseSync() → Check sync status');
+  console.log('  - window.manualPullFirebase() → Manually pull data from Firebase');
 }
 
 export default firebaseSyncService;
