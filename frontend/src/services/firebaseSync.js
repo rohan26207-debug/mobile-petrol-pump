@@ -346,16 +346,16 @@ class FirebaseSyncService {
             
             localStorage.setItem('customers', JSON.stringify(customers));
             
-            // Trigger storage event to update UI
-            window.dispatchEvent(new Event('storage'));
+            // Trigger custom event to update UI
+            window.dispatchEvent(new Event('localStorageChange'));
           } else if (change.type === 'removed') {
             console.log('📥 Customer deleted from another device:', data.name);
             const customers = localStorageService.getCustomers();
             const filtered = customers.filter(c => c.id !== data.id);
             localStorage.setItem('customers', JSON.stringify(filtered));
             
-            // Trigger storage event to update UI
-            window.dispatchEvent(new Event('storage'));
+            // Trigger custom event to update UI
+            window.dispatchEvent(new Event('localStorageChange'));
           }
         });
       },
