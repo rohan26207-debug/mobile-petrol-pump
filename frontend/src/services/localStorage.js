@@ -1088,8 +1088,16 @@ class LocalStorageService {
 
   deleteSettlement(id) {
     const settlements = this.getSettlements();
+    const settlementToDelete = settlements.find(s => s.id === id);
     const updated = settlements.filter(s => s.id !== id);
     this.setSettlements(updated);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync && settlementToDelete) {
+      firebaseSync.syncSettlement(settlementToDelete, 'delete');
+    }
+    
     return true;
   }
 
