@@ -177,6 +177,7 @@ const ZAPTRStyleCalculator = () => {
       // Force reload by updating state with fresh data
       setTimeout(() => {
         loadData();
+        setSyncCounter(prev => prev + 1); // Increment to force re-render
         console.log('✅ UI refreshed with synced data');
       }, 100); // Small delay to ensure localStorage is updated
     };
