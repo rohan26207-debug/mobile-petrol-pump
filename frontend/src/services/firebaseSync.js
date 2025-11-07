@@ -39,12 +39,29 @@ class FirebaseSyncService {
       console.log('✅ Firebase sync service initialized');
       this.initialized = true;
       
+      // Wait for auth to be ready before starting listeners
+      await this.waitForAuth();
+      
       // Start listening for changes from other devices
       this.startListeners();
     } catch (error) {
       console.error('❌ Firebase sync initialization failed:', error);
       // Continue without sync - offline mode will still work
     }
+  }
+
+  // Wait for authentication to be ready
+  async waitForAuth(maxAttempts = 10) {
+    for (let i = 0; i < maxAttempts; i++) {
+      const userId = this.getUserId();
+      if (userId) {
+        console.log('✅ Auth ready, user ID:', userId);
+        return userId;
+      }
+      console.log(`⏳ Waiting for auth... attempt ${i + 1}/${maxAttempts}`);
+      await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+    }
+    throw new Error('Authentication timeout - user not logged in');
   }
 
   // Enable/Disable sync
