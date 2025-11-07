@@ -934,7 +934,15 @@ class LocalStorageService {
   }
 
   setIncomeCategories(categories) {
-    return this.setItem(this.keys.incomeCategories, categories);
+    const result = this.setItem(this.keys.incomeCategories, categories);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncIncomeCategories(categories);
+    }
+    
+    return result;
   }
 
   addIncomeCategory(name) {
