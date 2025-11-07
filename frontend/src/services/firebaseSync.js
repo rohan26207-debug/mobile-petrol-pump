@@ -581,6 +581,9 @@ class FirebaseSyncService {
     );
 
     this.listeners.push(customersListener, creditSalesListener, paymentsListener, settlementsListener, salesListener, incomeExpensesListener);
+    
+    console.log(`✅ Successfully started ${this.listeners.length} Firebase listeners`);
+    console.log('🎯 Listening for: customers, creditSales, payments, settlements, sales, incomeExpenses');
   }
 
   // Stop all listeners
