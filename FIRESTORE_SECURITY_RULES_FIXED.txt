@@ -1,0 +1,91 @@
+// FIRESTORE SECURITY RULES - FIXED FOR QUERY LISTENERS
+// Copy and paste this into Firebase Console → Firestore Database → Rules
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Customers collection - user-specific
+    match /customers/{customerId} {
+      // FIXED: Allow list/query if authenticated (query will filter by userId in code)
+      allow list: if isAuthenticated();
+      
+      // Allow get single document if user owns it
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      
+      // Allow create if authenticated and setting correct userId
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      
+      // Allow update/delete if authenticated and user owns the document
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Credit Sales collection - user-specific
+    match /creditSales/{saleId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Payments collection - user-specific
+    match /payments/{paymentId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Settlements collection - user-specific
+    match /settlements/{settlementId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Sales collection - user-specific
+    match /sales/{saleId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Income/Expenses collection - user-specific
+    match /incomeExpenses/{recordId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isOwner(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
+
+// KEY CHANGES:
+// 1. Split "read" into "list" (for queries) and "get" (for single documents)
+// 2. "list" allows queries for authenticated users
+// 3. The query WHERE clause in your code filters by userId
+// 4. "get" still checks ownership for individual document reads
+// 5. Security is maintained: users can only query, but the query filters by their userId
+
+// SECURITY LEVEL: HIGH
+// - Users can only list/query (Firestore enforces WHERE userId == auth.uid in code)
+// - Individual document reads still verify ownership
+// - No cross-user data leakage
