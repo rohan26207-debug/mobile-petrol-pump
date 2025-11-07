@@ -2,12 +2,48 @@
  * Local Storage Service for Offline M.Pump Calc
  * Handles all data persistence in browser localStorage
  * Now with Firebase sync for multi-device support
+ * Adds per-user namespacing so different users never see each other's data
  */
 
-// Import Firebase sync service
+// Import Firebase sync service (lazy below to avoid cycles)
 let firebaseSyncService = null;
 
-// Lazy load Firebase sync to avoid circular dependency
+// Active namespace prefix: e.g., "mpp:<uid>:"
+let ACTIVE_NAMESPACE = null;
+
+// Helper to build namespaced key
+const nsKey = (baseKey) => (ACTIVE_NAMESPACE ? `${ACTIVE_NAMESPACE}${baseKey}` : baseKey);
+
+// Legacy alternate keys written by older listeners (without mpump_ prefix)
+const LEGACY_ALT_KEYS = {
+  mpump_customers: ['customers'],
+  mpump_credit_data: ['creditData'],
+  mpump_payments: ['payments'],
+  mpump_settlements: ['settlements'],
+  mpump_sales_data: ['salesData'],
+  mpump_income_data: ['incomeData'],
+  mpump_expense_data: ['expenseData'],
+  mpump_fuel_settings: [],
+  mpump_rates_by_date: [],
+  mpump_income_categories: [],
+  mpump_expense_categories: [],
+  mpump_settlement_types: [],
+  mpump_income_desc_history: [],
+  mpump_expense_desc_history: [],
+};
+
+// Other singleton keys that may exist without mpump_ prefix
+const LEGACY_MISC_KEYS = [
+  'mpump_contact_info',
+  'mpp_notes',
+  'mpump_online_url',
+  'mpump_auto_backup_settings',
+  'mpump_auto_backup_weekly_settings',
+  'appTextSize',
+  'appTheme'
+];
+
+// Detect and require lazily to avoid circular deps
 const getFirebaseSync = () => {
   if (!firebaseSyncService) {
     try {
@@ -23,25 +59,95 @@ class LocalStorageService {
   constructor() {
     this.keys = {
       salesData: 'mpump_sales_data',
-      creditData: 'mpump_credit_data', 
+      creditData: 'mpump_credit_data',
       incomeData: 'mpump_income_data',
       expenseData: 'mpump_expense_data',
       fuelSettings: 'mpump_fuel_settings',
-      rates: 'mpump_rates_by_date', // New: date-specific rates
-      customers: 'mpump_customers', // New: customer list
-      payments: 'mpump_payments', // New: payments received
-      incomeCategories: 'mpump_income_categories', // Income categories
-      expenseCategories: 'mpump_expense_categories', // Expense categories
-      settlements: 'mpump_settlements', // Settlements (bank transfers)
-      settlementTypes: 'mpump_settlement_types', // Settlement types/categories
-      incomeDescHistory: 'mpump_income_desc_history', // Income description history
-      expenseDescHistory: 'mpump_expense_desc_history' // Expense description history
+      rates: 'mpump_rates_by_date',
+      customers: 'mpump_customers',
+      payments: 'mpump_payments',
+      incomeCategories: 'mpump_income_categories',
+      expenseCategories: 'mpump_expense_categories',
+      settlements: 'mpump_settlements',
+      settlementTypes: 'mpump_settlement_types',
+      incomeDescHistory: 'mpump_income_desc_history',
+      expenseDescHistory: 'mpump_expense_desc_history'
     };
-    
-    this.initializeDefaultData();
+
+    // Do not initialize defaults until a namespace is set (guest or user)
   }
 
-  // Initialize default data if not exists
+  // ===== Namespace management =====
+  setNamespace(userId) {
+    const prevNs = ACTIVE_NAMESPACE;
+    ACTIVE_NAMESPACE = userId ? `mpp:${userId}:` : 'mpp:guest:';
+
+    // On first set for a logged-in user, run migration from legacy unscoped/alt keys
+    if (userId) {
+      this.migrateLegacyKeys({ deleteAfter: true });
+    }
+
+    // Ensure defaults exist within this namespace
+    this.initializeDefaultData();
+
+    // Announce namespace switch to UI (for any listeners interested)
+    try {
+      window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId, namespace: ACTIVE_NAMESPACE } }));
+    } catch (_) {}
+
+    return { prevNs, newNs: ACTIVE_NAMESPACE };
+  }
+
+  getNamespace() {
+    return ACTIVE_NAMESPACE;
+  }
+
+  clearNamespace() {
+    const prevNs = ACTIVE_NAMESPACE;
+    ACTIVE_NAMESPACE = 'mpp:guest:';
+    this.initializeDefaultData();
+    try {
+      window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId: null, namespace: ACTIVE_NAMESPACE } }));
+    } catch (_) {}
+    return prevNs;
+  }
+
+  // Move legacy unscoped data into the active namespace, then delete legacy keys
+  migrateLegacyKeys({ deleteAfter = true } = {}) {
+    if (!ACTIVE_NAMESPACE) return;
+
+    const migrateKey = (baseKey, altKeys = []) => {
+      const namespaced = nsKey(baseKey);
+      const nsExists = localStorage.getItem(namespaced) !== null;
+      if (nsExists) return; // Already migrated for this user
+
+      // 1) Primary legacy (unscoped) key
+      const legacyVal = localStorage.getItem(baseKey);
+      if (legacyVal !== null) {
+        localStorage.setItem(namespaced, legacyVal);
+        if (deleteAfter) localStorage.removeItem(baseKey);
+        return;
+      }
+
+      // 2) Alternate legacy keys used by older builds
+      for (const alt of altKeys) {
+        const val = localStorage.getItem(alt);
+        if (val !== null) {
+          localStorage.setItem(namespaced, val);
+          if (deleteAfter) localStorage.removeItem(alt);
+          return;
+        }
+      }
+    };
+
+    // Migrate structured data keys
+    Object.entries(LEGACY_ALT_KEYS).forEach(([baseKey, alts]) => migrateKey(baseKey, alts));
+
+    // Migrate misc single-value keys
+    LEGACY_MISC_KEYS.forEach((k) => migrateKey(k, []));
+  }
+
+  // ===== Initialization within the current namespace =====
   initializeDefaultData() {
     // Default fuel settings
     const defaultFuelSettings = {
@@ -52,7 +158,6 @@ class LocalStorageService {
     };
 
     const existingSettings = this.getFuelSettings();
-    
     if (!existingSettings) {
       this.setFuelSettings(defaultFuelSettings);
     }
@@ -65,7 +170,7 @@ class LocalStorageService {
     if (!this.getCustomers()) this.setCustomers([]);
     if (!this.getPayments()) this.setPayments([]);
     if (!this.getSettlements()) this.setSettlements([]);
-    
+
     // Initialize default income/expense categories
     if (!this.getIncomeCategories()) {
       this.setIncomeCategories([
@@ -83,7 +188,7 @@ class LocalStorageService {
         { id: '5', name: 'Other' }
       ]);
     }
-    
+
     // Initialize default settlement types
     const existingTypes = this.getItem(this.keys.settlementTypes);
     if (!existingTypes || existingTypes.length === 0) {
@@ -96,10 +201,10 @@ class LocalStorageService {
     }
   }
 
-  // Generic localStorage methods
+  // ===== Generic localStorage methods (namespaced) =====
   setItem(key, data) {
     try {
-      localStorage.setItem(key, JSON.stringify(data));
+      localStorage.setItem(nsKey(key), JSON.stringify(data));
       return true;
     } catch (error) {
       console.error('Failed to save to localStorage:', error);
@@ -109,7 +214,7 @@ class LocalStorageService {
 
   getItem(key) {
     try {
-      const data = localStorage.getItem(key);
+      const data = localStorage.getItem(nsKey(key));
       return data ? JSON.parse(data) : null;
     } catch (error) {
       console.error('Failed to read from localStorage:', error);
@@ -117,15 +222,9 @@ class LocalStorageService {
     }
   }
 
-  // Sales Data Methods
-  getSalesData() {
-    return this.getItem(this.keys.salesData) || [];
-  }
-
-  setSalesData(data) {
-    return this.setItem(this.keys.salesData, data);
-  }
-
+  // ===== Sales Data Methods =====
+  getSalesData() { return this.getItem(this.keys.salesData) || []; }
+  setSalesData(data) { return this.setItem(this.keys.salesData, data); }
   addSaleRecord(saleData) {
     const sales = this.getSalesData();
     const newSale = {
@@ -142,21 +241,14 @@ class LocalStorageService {
       mpp: saleData.mpp || false,
       timestamp: new Date().toISOString()
     };
-    
     sales.push(newSale);
     this.setSalesData(sales);
     return newSale;
   }
 
-  // Credit Data Methods
-  getCreditData() {
-    return this.getItem(this.keys.creditData) || [];
-  }
-
-  setCreditData(data) {
-    return this.setItem(this.keys.creditData, data);
-  }
-
+  // ===== Credit Data Methods =====
+  getCreditData() { return this.getItem(this.keys.creditData) || []; }
+  setCreditData(data) { return this.setItem(this.keys.creditData, data); }
   addCreditRecord(creditData) {
     const credits = this.getCreditData();
     const newCredit = {
@@ -164,13 +256,11 @@ class LocalStorageService {
       date: creditData.date,
       customerId: creditData.customerId,
       customerName: creditData.customerName,
-      // New structure with arrays
       fuelEntries: creditData.fuelEntries || [],
       incomeEntries: creditData.incomeEntries || [],
       expenseEntries: creditData.expenseEntries || [],
       amount: parseFloat(creditData.amount),
-      totalAmount: parseFloat(creditData.amount), // Add totalAmount field
-      // Legacy fields for backward compatibility
+      totalAmount: parseFloat(creditData.amount),
       vehicleNumber: creditData.vehicleNumber || 'N/A',
       fuelType: creditData.fuelType || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].fuelType : 'N/A'),
       liters: creditData.liters || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].liters : 0),
@@ -180,21 +270,14 @@ class LocalStorageService {
       mpp: creditData.mpp || false,
       timestamp: new Date().toISOString()
     };
-    
     credits.push(newCredit);
     this.setCreditData(credits);
     return newCredit;
   }
 
-  // Income Data Methods
-  getIncomeData() {
-    return this.getItem(this.keys.incomeData) || [];
-  }
-
-  setIncomeData(data) {
-    return this.setItem(this.keys.incomeData, data);
-  }
-
+  // ===== Income Methods =====
+  getIncomeData() { return this.getItem(this.keys.incomeData) || []; }
+  setIncomeData(data) { return this.setItem(this.keys.incomeData, data); }
   addIncomeRecord(incomeData) {
     const income = this.getIncomeData();
     const newIncome = {
@@ -206,28 +289,16 @@ class LocalStorageService {
       mpp: incomeData.mpp || false,
       timestamp: new Date().toISOString()
     };
-    
     income.push(newIncome);
     this.setIncomeData(income);
-    
-    // Sync to Firebase
     const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncIncomeExpense(newIncome, 'add');
-    }
-    
+    if (firebaseSync) firebaseSync.syncIncomeExpense(newIncome, 'add');
     return newIncome;
   }
 
-  // Expense Data Methods
-  getExpenseData() {
-    return this.getItem(this.keys.expenseData) || [];
-  }
-
-  setExpenseData(data) {
-    return this.setItem(this.keys.expenseData, data);
-  }
-
+  // ===== Expense Methods =====
+  getExpenseData() { return this.getItem(this.keys.expenseData) || []; }
+  setExpenseData(data) { return this.setItem(this.keys.expenseData, data); }
   addExpenseRecord(expenseData) {
     const expenses = this.getExpenseData();
     const newExpense = {
@@ -239,43 +310,24 @@ class LocalStorageService {
       mpp: expenseData.mpp || false,
       timestamp: new Date().toISOString()
     };
-    
     expenses.push(newExpense);
     this.setExpenseData(expenses);
-    
-    // Sync to Firebase
     const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncIncomeExpense(newExpense, 'add');
-    }
-    
+    if (firebaseSync) firebaseSync.syncIncomeExpense(newExpense, 'add');
     return newExpense;
   }
 
-  // Fuel Settings Methods
-  getFuelSettings() {
-    return this.getItem(this.keys.fuelSettings);
-  }
-
+  // ===== Fuel Settings =====
+  getFuelSettings() { return this.getItem(this.keys.fuelSettings); }
   setFuelSettings(settings) {
     const result = this.setItem(this.keys.fuelSettings, settings);
-    
-    // Sync to Firebase
     const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncFuelSettings(settings);
-    }
-    
+    if (firebaseSync) firebaseSync.syncFuelSettings(settings);
     return result;
   }
 
   updateFuelRate(fuelType, rate, date = null) {
-    // If date is provided, store rate for that specific date
-    if (date) {
-      return this.setRateForDate(fuelType, rate, date);
-    }
-    
-    // Legacy: Update global settings (for backward compatibility)
+    if (date) return this.setRateForDate(fuelType, rate, date);
     const settings = this.getFuelSettings() || {};
     if (settings[fuelType]) {
       settings[fuelType].price = parseFloat(rate);
@@ -285,316 +337,166 @@ class LocalStorageService {
     return false;
   }
 
-  // Date-specific rate methods
-  getAllRates() {
-    return this.getItem(this.keys.rates) || {};
-  }
-
-  setAllRates(rates) {
-    return this.setItem(this.keys.rates, rates);
-  }
-
+  // ===== Date-specific rates =====
+  getAllRates() { return this.getItem(this.keys.rates) || {}; }
+  setAllRates(rates) { return this.setItem(this.keys.rates, rates); }
   setRateForDate(fuelType, rate, date) {
     const rates = this.getAllRates();
-    
-    // Structure: { "2025-10-23": { "Petrol": 102.50, "Diesel": 89.75 }, ... }
-    if (!rates[date]) {
-      rates[date] = {};
-    }
-    
+    if (!rates[date]) rates[date] = {};
     rates[date][fuelType] = parseFloat(rate);
     return this.setAllRates(rates);
   }
-
   getRatesForDate(date) {
     const rates = this.getAllRates();
-    
-    // If rates exist for this exact date, return them
-    if (rates[date]) {
-      return rates[date];
-    }
-    
-    // Otherwise, find the most recent previous date with rates
+    if (rates[date]) return rates[date];
     const allDates = Object.keys(rates).sort().reverse();
     const previousDate = allDates.find(d => d < date);
-    
-    if (previousDate) {
-      return rates[previousDate];
-    }
-    
-    // No previous rates found, return empty
+    if (previousDate) return rates[previousDate];
     return {};
   }
-
-  // Get the last changed rate for a specific fuel type before the given date
   getLastChangedRate(fuelType, beforeDate) {
     const rates = this.getAllRates();
-    
-    // Get all dates with rates, sorted in descending order
-    const allDates = Object.keys(rates)
-      .filter(d => d < beforeDate)
-      .sort()
-      .reverse();
-    
-    // Find the most recent date that has a rate for this fuel type
+    const allDates = Object.keys(rates).filter(d => d < beforeDate).sort().reverse();
     for (const date of allDates) {
-      if (rates[date][fuelType] !== undefined) {
-        return rates[date][fuelType];
-      }
+      if (rates[date][fuelType] !== undefined) return rates[date][fuelType];
     }
-    
-    // No previous rate found
     return null;
   }
 
-  // Data filtering methods
+  // ===== Filtering =====
   getDataByDate(dataType, date) {
     let data = [];
-    
     switch (dataType) {
-      case 'sales':
-        data = this.getSalesData();
-        break;
-      case 'credit':
-        data = this.getCreditData();
-        break;
-      case 'income':
-        data = this.getIncomeData();
-        break;
-      case 'expense':
-        data = this.getExpenseData();
-        break;
+      case 'sales': data = this.getSalesData(); break;
+      case 'credit': data = this.getCreditData(); break;
+      case 'income': data = this.getIncomeData(); break;
+      case 'expense': data = this.getExpenseData(); break;
     }
-    
     if (!date) return data;
-    
     return data.filter(item => item.date === date);
   }
 
-  // Delete methods
+  // ===== Delete helpers =====
   deleteSaleRecord(id) {
     const sales = this.getSalesData();
-    const updatedSales = sales.filter(sale => sale.id !== id);
-    this.setSalesData(updatedSales);
+    const updated = sales.filter(s => s.id !== id);
+    this.setSalesData(updated);
     return true;
   }
-
   deleteCreditRecord(id) {
     const credits = this.getCreditData();
-    const updatedCredits = credits.filter(credit => credit.id !== id);
-    this.setCreditData(updatedCredits);
+    const updated = credits.filter(c => c.id !== id);
+    this.setCreditData(updated);
     return true;
   }
-
   deleteIncomeRecord(id) {
     const income = this.getIncomeData();
-    const recordToDelete = income.find(item => item.id === id);
-    const updatedIncome = income.filter(item => item.id !== id);
-    this.setIncomeData(updatedIncome);
-    
-    // Sync to Firebase
-    if (recordToDelete) {
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncIncomeExpense(recordToDelete, 'delete');
-      }
-    }
-    
+    const rec = income.find(i => i.id === id);
+    const updated = income.filter(i => i.id !== id);
+    this.setIncomeData(updated);
+    if (rec) { const fs = getFirebaseSync(); if (fs) fs.syncIncomeExpense(rec, 'delete'); }
     return true;
   }
-
   deleteExpenseRecord(id) {
     const expenses = this.getExpenseData();
-    const recordToDelete = expenses.find(expense => expense.id === id);
-    const updatedExpenses = expenses.filter(expense => expense.id !== id);
-    this.setExpenseData(updatedExpenses);
-    
-    // Sync to Firebase
-    if (recordToDelete) {
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncIncomeExpense(recordToDelete, 'delete');
-      }
-    }
-    
+    const rec = expenses.find(e => e.id === id);
+    const updated = expenses.filter(e => e.id !== id);
+    this.setExpenseData(updated);
+    if (rec) { const fs = getFirebaseSync(); if (fs) fs.syncIncomeExpense(rec, 'delete'); }
     return true;
   }
 
-  // Combined Income/Expense Data Method (for Firebase sync)
+  // ===== Combined getter =====
   getIncomeExpenseData() {
     const income = this.getIncomeData();
     const expenses = this.getExpenseData();
     return [...income, ...expenses];
   }
 
-  // Update methods
+  // ===== Update helpers =====
   updateSaleRecord(id, updatedData) {
     const sales = this.getSalesData();
-    const saleIndex = sales.findIndex(sale => sale.id === id);
-    if (saleIndex !== -1) {
-      sales[saleIndex] = { ...sales[saleIndex], ...updatedData };
+    const idx = sales.findIndex(s => s.id === id);
+    if (idx !== -1) {
+      sales[idx] = { ...sales[idx], ...updatedData };
       this.setSalesData(sales);
-      return sales[saleIndex];
+      return sales[idx];
     }
     return null;
   }
-
   updateCreditRecord(id, updatedData) {
     const credits = this.getCreditData();
-    const creditIndex = credits.findIndex(credit => credit.id === id);
-    if (creditIndex !== -1) {
-      credits[creditIndex] = { ...credits[creditIndex], ...updatedData };
+    const idx = credits.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      credits[idx] = { ...credits[idx], ...updatedData };
       this.setCreditData(credits);
-      return credits[creditIndex];
+      return credits[idx];
     }
     return null;
   }
-
   updateIncomeRecord(id, updatedData) {
     const income = this.getIncomeData();
-    const incomeIndex = income.findIndex(item => item.id === id);
-    if (incomeIndex !== -1) {
-      income[incomeIndex] = { ...income[incomeIndex], ...updatedData };
+    const idx = income.findIndex(i => i.id === id);
+    if (idx !== -1) {
+      income[idx] = { ...income[idx], ...updatedData };
       this.setIncomeData(income);
-      
-      // Sync to Firebase
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncIncomeExpense(income[incomeIndex], 'update');
-      }
-      
-      return income[incomeIndex];
+      const fs = getFirebaseSync();
+      if (fs) fs.syncIncomeExpense(income[idx], 'update');
+      return income[idx];
     }
     return null;
   }
-
   updateExpenseRecord(id, updatedData) {
     const expenses = this.getExpenseData();
-    const expenseIndex = expenses.findIndex(expense => expense.id === id);
-    if (expenseIndex !== -1) {
-      expenses[expenseIndex] = { ...expenses[expenseIndex], ...updatedData };
+    const idx = expenses.findIndex(e => e.id === id);
+    if (idx !== -1) {
+      expenses[idx] = { ...expenses[idx], ...updatedData };
       this.setExpenseData(expenses);
-      
-      // Sync to Firebase
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncIncomeExpense(expenses[expenseIndex], 'update');
-      }
-      
-      return expenses[expenseIndex];
+      const fs = getFirebaseSync();
+      if (fs) fs.syncIncomeExpense(expenses[idx], 'update');
+      return expenses[idx];
     }
     return null;
   }
 
-  // Export all data (for backup)
+  // ===== Backup/Export =====
   exportDataByDate(selectedDate) {
-    // Filter data by selected date and minimize field names for compression
     const sales = this.getSalesData().filter(s => s.date === selectedDate).map(s => ({
-      i: s.id,
-      d: s.date,
-      n: s.nozzle,
-      f: s.fuelType,
-      sr: s.startReading,
-      er: s.endReading,
-      l: s.liters,
-      r: s.rate,
-      a: s.amount,
-      m: s.mpp
+      i: s.id, d: s.date, n: s.nozzle, f: s.fuelType, sr: s.startReading, er: s.endReading, l: s.liters, r: s.rate, a: s.amount, m: s.mpp
     }));
-    
     const credits = this.getCreditData().filter(c => c.date === selectedDate).map(c => ({
-      i: c.id,
-      d: c.date,
-      ci: c.customerId,
-      cn: c.customerName,
-      a: c.amount,
-      m: c.mpp
+      i: c.id, d: c.date, ci: c.customerId, cn: c.customerName, a: c.amount, m: c.mpp
     }));
-    
     const income = this.getIncomeData().filter(i => i.date === selectedDate).map(i => ({
-      i: i.id,
-      d: i.date,
-      ds: i.description,
-      a: i.amount,
-      m: i.mpp
+      i: i.id, d: i.date, ds: i.description, a: i.amount, m: i.mpp
     }));
-    
     const expense = this.getExpenseData().filter(e => e.date === selectedDate).map(e => ({
-      i: e.id,
-      d: e.date,
-      ds: e.description,
-      a: e.amount,
-      m: e.mpp
+      i: e.id, d: e.date, ds: e.description, a: e.amount, m: e.mpp
     }));
-    
     const pay = this.getPayments().filter(p => p.date === selectedDate).map(p => ({
-      i: p.id,
-      d: p.date,
-      ci: p.customerId,
-      a: p.amount,
-      m: p.mode
+      i: p.id, d: p.date, ci: p.customerId, a: p.amount, m: p.mode
     }));
-    
     const settle = this.getSettlements().filter(s => s.date === selectedDate).map(s => ({
-      i: s.id,
-      d: s.date,
-      a: s.amount,
-      ds: s.description,
-      m: s.mpp
+      i: s.id, d: s.date, a: s.amount, ds: s.description, m: s.mpp
     }));
-
-    // Minimize customer and fuel data
-    const cust = this.getCustomers().map(c => ({
-      i: c.id,
-      n: c.name,
-      sb: c.startingBalance,
-      mpp: c.isMPP
-    }));
-    
+    const cust = this.getCustomers().map(c => ({ i: c.id, n: c.name, sb: c.startingBalance, mpp: c.isMPP }));
     const fuel = {};
-    const fullFuel = this.getFuelSettings();
-    Object.keys(fullFuel).forEach(key => {
-      fuel[key] = { p: fullFuel[key].price, n: fullFuel[key].nozzleCount };
-    });
-
-    return {
-      s: sales,
-      c: credits,
-      i: income,
-      e: expense,
-      p: pay,
-      st: settle,
-      f: fuel,
-      cu: cust,
-      dt: selectedDate,
-      v: '2.1'
-    };
+    const fullFuel = this.getFuelSettings() || {};
+    Object.keys(fullFuel).forEach(key => { fuel[key] = { p: fullFuel[key].price, n: fullFuel[key].nozzleCount }; });
+    return { s: sales, c: credits, i: income, e: expense, p: pay, st: settle, f: fuel, cu: cust, dt: selectedDate, v: '2.1' };
   }
 
   exportAllData() {
-    // Get all stock data for all fuel types
     const stockData = {};
     const stockKeys = Object.keys(localStorage).filter(key => key.endsWith('StockData'));
-    stockKeys.forEach(key => {
-      stockData[key] = JSON.parse(localStorage.getItem(key) || '{}');
-    });
-
-    // Get contact information
-    const contactInfo = localStorage.getItem('mpump_contact_info');
-    
-    // Get notes
-    const notes = localStorage.getItem('mpp_notes');
-    
-    // Get online URL
-    const onlineUrl = localStorage.getItem('mpump_online_url');
-    
-    // Get auto-backup settings
-    const autoBackupSettings = localStorage.getItem('mpump_auto_backup_settings');
-    const weeklyBackupSettings = localStorage.getItem('mpump_auto_backup_weekly_settings');
-    
-    // Get app preferences
-    const textSize = localStorage.getItem('appTextSize');
-    const theme = localStorage.getItem('appTheme');
+    stockKeys.forEach(key => { stockData[key] = JSON.parse(localStorage.getItem(key) || '{}'); });
+    const contactInfo = localStorage.getItem(nsKey('mpump_contact_info'));
+    const notes = localStorage.getItem(nsKey('mpp_notes'));
+    const onlineUrl = localStorage.getItem(nsKey('mpump_online_url'));
+    const autoBackupSettings = localStorage.getItem(nsKey('mpump_auto_backup_settings'));
+    const weeklyBackupSettings = localStorage.getItem(nsKey('mpump_auto_backup_weekly_settings'));
+    const textSize = localStorage.getItem(nsKey('appTextSize'));
+    const theme = localStorage.getItem(nsKey('appTheme'));
 
     return {
       salesData: this.getSalesData(),
@@ -605,28 +507,23 @@ class LocalStorageService {
       customers: this.getCustomers(),
       payments: this.getPayments(),
       settlements: this.getSettlements(),
-      settlementTypes: this.getSettlementTypes(), // ADDED: Settlement types
-      incomeCategories: this.getIncomeCategories(), // ADDED: Income categories
-      expenseCategories: this.getExpenseCategories(), // ADDED: Expense categories
-      stockData: stockData,
+      settlementTypes: this.getSettlementTypes(),
+      incomeCategories: this.getIncomeCategories(),
+      expenseCategories: this.getExpenseCategories(),
+      stockData,
       contactInfo: contactInfo ? JSON.parse(contactInfo) : null,
       notes: notes || '',
       onlineUrl: onlineUrl || '',
       autoBackupSettings: autoBackupSettings ? JSON.parse(autoBackupSettings) : null,
       weeklyBackupSettings: weeklyBackupSettings ? JSON.parse(weeklyBackupSettings) : null,
-      appPreferences: {
-        textSize: textSize || '100',
-        theme: theme || 'light'
-      },
+      appPreferences: { textSize: textSize || '100', theme: theme || 'light' },
       exportDate: new Date().toISOString(),
-      version: '2.1' // Updated version
+      version: '2.1'
     };
   }
 
-  // Import all data (for restore)
   importAllData(data) {
     try {
-      // Import main data arrays
       if (data.salesData) this.setSalesData(data.salesData);
       if (data.creditData) this.setCreditData(data.creditData);
       if (data.incomeData) this.setIncomeData(data.incomeData);
@@ -635,52 +532,19 @@ class LocalStorageService {
       if (data.customers) this.setCustomers(data.customers);
       if (data.payments) this.setPayments(data.payments);
       if (data.settlements) this.setSettlements(data.settlements);
-      
-      // Import settings/configuration data (ADDED)
       if (data.settlementTypes) this.setSettlementTypes(data.settlementTypes);
       if (data.incomeCategories) this.setIncomeCategories(data.incomeCategories);
       if (data.expenseCategories) this.setExpenseCategories(data.expenseCategories);
-      
-      // Import stock data
-      if (data.stockData) {
-        Object.keys(data.stockData).forEach(key => {
-          localStorage.setItem(key, JSON.stringify(data.stockData[key]));
-        });
-      }
-      
-      // Import contact information
-      if (data.contactInfo) {
-        localStorage.setItem('mpump_contact_info', JSON.stringify(data.contactInfo));
-      }
-      
-      // Import notes
-      if (data.notes !== undefined) {
-        localStorage.setItem('mpp_notes', data.notes);
-      }
-      
-      // Import online URL
-      if (data.onlineUrl !== undefined) {
-        localStorage.setItem('mpump_online_url', data.onlineUrl);
-      }
-      
-      // Import auto-backup settings
-      if (data.autoBackupSettings) {
-        localStorage.setItem('mpump_auto_backup_settings', JSON.stringify(data.autoBackupSettings));
-      }
-      if (data.weeklyBackupSettings) {
-        localStorage.setItem('mpump_auto_backup_weekly_settings', JSON.stringify(data.weeklyBackupSettings));
-      }
-      
-      // Import app preferences
+      if (data.stockData) { Object.keys(data.stockData).forEach(key => { localStorage.setItem(nsKey(key), JSON.stringify(data.stockData[key])); }); }
+      if (data.contactInfo) { localStorage.setItem(nsKey('mpump_contact_info'), JSON.stringify(data.contactInfo)); }
+      if (data.notes !== undefined) { localStorage.setItem(nsKey('mpp_notes'), data.notes); }
+      if (data.onlineUrl !== undefined) { localStorage.setItem(nsKey('mpump_online_url'), data.onlineUrl); }
+      if (data.autoBackupSettings) { localStorage.setItem(nsKey('mpump_auto_backup_settings'), JSON.stringify(data.autoBackupSettings)); }
+      if (data.weeklyBackupSettings) { localStorage.setItem(nsKey('mpump_auto_backup_weekly_settings'), JSON.stringify(data.weeklyBackupSettings)); }
       if (data.appPreferences) {
-        if (data.appPreferences.textSize) {
-          localStorage.setItem('appTextSize', data.appPreferences.textSize);
-        }
-        if (data.appPreferences.theme) {
-          localStorage.setItem('appTheme', data.appPreferences.theme);
-        }
+        if (data.appPreferences.textSize) localStorage.setItem(nsKey('appTextSize'), data.appPreferences.textSize);
+        if (data.appPreferences.theme) localStorage.setItem(nsKey('appTheme'), data.appPreferences.theme);
       }
-      
       return true;
     } catch (error) {
       console.error('Failed to import data:', error);
@@ -688,104 +552,36 @@ class LocalStorageService {
     }
   }
 
-  // Merge data (keeps old data in case of conflicts)
   mergeAllData(importedData) {
     try {
-      // Helper function to merge arrays, keeping old data for duplicate IDs
       const mergeArrays = (existingArray, newArray) => {
         if (!Array.isArray(existingArray)) existingArray = [];
         if (!Array.isArray(newArray)) newArray = [];
-        
-        // Create a map of existing IDs for quick lookup
         const existingIds = new Set(existingArray.map(item => item.id));
-        
-        // Add only new items (items with IDs that don't exist in old data)
         const itemsToAdd = newArray.filter(item => !existingIds.has(item.id));
-        
         return [...existingArray, ...itemsToAdd];
       };
 
-      // Merge main data arrays (old data takes priority)
-      if (importedData.salesData) {
-        const existingSales = this.getSalesData();
-        const mergedSales = mergeArrays(existingSales, importedData.salesData);
-        this.setSalesData(mergedSales);
-      }
+      if (importedData.salesData) this.setSalesData(mergeArrays(this.getSalesData(), importedData.salesData));
+      if (importedData.creditData) this.setCreditData(mergeArrays(this.getCreditData(), importedData.creditData));
+      if (importedData.incomeData) this.setIncomeData(mergeArrays(this.getIncomeData(), importedData.incomeData));
+      if (importedData.expenseData) this.setExpenseData(mergeArrays(this.getExpenseData(), importedData.expenseData));
+      if (importedData.customers) this.setCustomers(mergeArrays(this.getCustomers(), importedData.customers));
+      if (importedData.payments) this.setPayments(mergeArrays(this.getPayments(), importedData.payments));
 
-      if (importedData.creditData) {
-        const existingCredits = this.getCreditData();
-        const mergedCredits = mergeArrays(existingCredits, importedData.creditData);
-        this.setCreditData(mergedCredits);
-      }
+      if (importedData.fuelSettings && !this.getFuelSettings()) this.setFuelSettings(importedData.fuelSettings);
 
-      if (importedData.incomeData) {
-        const existingIncome = this.getIncomeData();
-        const mergedIncome = mergeArrays(existingIncome, importedData.incomeData);
-        this.setIncomeData(mergedIncome);
-      }
+      if (importedData.stockData) { Object.keys(importedData.stockData).forEach(key => { if (!localStorage.getItem(nsKey(key))) localStorage.setItem(nsKey(key), JSON.stringify(importedData.stockData[key])); }); }
 
-      if (importedData.expenseData) {
-        const existingExpenses = this.getExpenseData();
-        const mergedExpenses = mergeArrays(existingExpenses, importedData.expenseData);
-        this.setExpenseData(mergedExpenses);
-      }
+      if (importedData.contactInfo && !localStorage.getItem(nsKey('mpump_contact_info'))) localStorage.setItem(nsKey('mpump_contact_info'), JSON.stringify(importedData.contactInfo));
+      if (importedData.notes !== undefined && !localStorage.getItem(nsKey('mpp_notes'))) localStorage.setItem(nsKey('mpp_notes'), importedData.notes);
+      if (importedData.onlineUrl !== undefined && !localStorage.getItem(nsKey('mpump_online_url'))) localStorage.setItem(nsKey('mpump_online_url'), importedData.onlineUrl);
+      if (importedData.autoBackupSettings && !localStorage.getItem(nsKey('mpump_auto_backup_settings'))) localStorage.setItem(nsKey('mpump_auto_backup_settings'), JSON.stringify(importedData.autoBackupSettings));
+      if (importedData.weeklyBackupSettings && !localStorage.getItem(nsKey('mpump_auto_backup_weekly_settings'))) localStorage.setItem(nsKey('mpump_auto_backup_weekly_settings'), JSON.stringify(importedData.weeklyBackupSettings));
 
-      if (importedData.customers) {
-        const existingCustomers = this.getCustomers();
-        const mergedCustomers = mergeArrays(existingCustomers, importedData.customers);
-        this.setCustomers(mergedCustomers);
-      }
-
-      if (importedData.payments) {
-        const existingPayments = this.getPayments();
-        const mergedPayments = mergeArrays(existingPayments, importedData.payments);
-        this.setPayments(mergedPayments);
-      }
-
-      // For settings, keep existing if they exist, otherwise use imported
-      if (importedData.fuelSettings && !this.getFuelSettings()) {
-        this.setFuelSettings(importedData.fuelSettings);
-      }
-
-      // Merge stock data
-      if (importedData.stockData) {
-        Object.keys(importedData.stockData).forEach(key => {
-          // Only import if key doesn't exist
-          if (!localStorage.getItem(key)) {
-            localStorage.setItem(key, JSON.stringify(importedData.stockData[key]));
-          }
-        });
-      }
-
-      // For single-value settings, keep existing if they exist
-      if (importedData.contactInfo && !localStorage.getItem('mpump_contact_info')) {
-        localStorage.setItem('mpump_contact_info', JSON.stringify(importedData.contactInfo));
-      }
-
-      if (importedData.notes !== undefined && !localStorage.getItem('mpp_notes')) {
-        localStorage.setItem('mpp_notes', importedData.notes);
-      }
-
-      if (importedData.onlineUrl !== undefined && !localStorage.getItem('mpump_online_url')) {
-        localStorage.setItem('mpump_online_url', importedData.onlineUrl);
-      }
-
-      if (importedData.autoBackupSettings && !localStorage.getItem('mpump_auto_backup_settings')) {
-        localStorage.setItem('mpump_auto_backup_settings', JSON.stringify(importedData.autoBackupSettings));
-      }
-
-      if (importedData.weeklyBackupSettings && !localStorage.getItem('mpump_auto_backup_weekly_settings')) {
-        localStorage.setItem('mpump_auto_backup_weekly_settings', JSON.stringify(importedData.weeklyBackupSettings));
-      }
-
-      // Merge app preferences (keep existing if present)
       if (importedData.appPreferences) {
-        if (importedData.appPreferences.textSize && !localStorage.getItem('appTextSize')) {
-          localStorage.setItem('appTextSize', importedData.appPreferences.textSize);
-        }
-        if (importedData.appPreferences.theme && !localStorage.getItem('appTheme')) {
-          localStorage.setItem('appTheme', importedData.appPreferences.theme);
-        }
+        if (importedData.appPreferences.textSize && !localStorage.getItem(nsKey('appTextSize'))) localStorage.setItem(nsKey('appTextSize'), importedData.appPreferences.textSize);
+        if (importedData.appPreferences.theme && !localStorage.getItem(nsKey('appTheme'))) localStorage.setItem(nsKey('appTheme'), importedData.appPreferences.theme);
       }
 
       return true;
@@ -795,180 +591,95 @@ class LocalStorageService {
     }
   }
 
-  // Clear all data
+  // Clear all data in current namespace only
   clearAllData() {
-    Object.values(this.keys).forEach(key => {
-      localStorage.removeItem(key);
-    });
+    const prefix = ACTIVE_NAMESPACE || '';
+    const keys = Object.keys(localStorage);
+    keys.forEach((k) => { if (k.startsWith(prefix)) localStorage.removeItem(k); });
     this.initializeDefaultData();
   }
 
-  // Check storage usage
+  // Storage info (current namespace only)
   getStorageInfo() {
-    const totalSize = new Blob(Object.values(localStorage)).size;
-    const itemCount = Object.keys(localStorage).filter(key => 
-      key.startsWith('mpump_')
-    ).length;
-    
-    return {
-      totalSize,
-      itemCount,
-      maxSize: 5 * 1024 * 1024, // 5MB typical localStorage limit
-      usagePercent: (totalSize / (5 * 1024 * 1024)) * 100
-    };
-  }
-
-  // Customer Methods
-  getCustomers() {
-    return this.getItem(this.keys.customers) || [];
-  }
-
-  setCustomers(customers) {
-    return this.setItem(this.keys.customers, customers);
-  }
-
-  addCustomer(name, startingBalance = 0, isMPP = false) {
-    const customers = this.getCustomers();
-    
-    // Check if trying to add MPP customer when one already exists
-    if (isMPP) {
-      const existingMPP = customers.find(c => c.isMPP === true);
-      if (existingMPP) {
-        throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
+    const prefix = ACTIVE_NAMESPACE || '';
+    let totalSize = 0;
+    let itemCount = 0;
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith(prefix)) {
+        totalSize += (localStorage.getItem(k) || '').length;
+        if (k.includes('mpump_')) itemCount += 1;
       }
     }
-    
-    const newCustomer = {
-      id: Date.now().toString(),
-      name: name,
-      startingBalance: parseFloat(startingBalance) || 0,
-      isMPP: isMPP || false,
-      created_at: new Date().toISOString()
-    };
-    
-    customers.push(newCustomer);
-    // Sort alphabetically by name
-    customers.sort((a, b) => a.name.localeCompare(b.name));
-    this.setCustomers(customers);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncCustomer(newCustomer, 'add');
-    }
-    
-    return newCustomer;
+    return { totalSize, itemCount, maxSize: 5 * 1024 * 1024, usagePercent: (totalSize / (5 * 1024 * 1024)) * 100 };
   }
 
+  // ===== Customers =====
+  getCustomers() { return this.getItem(this.keys.customers) || []; }
+  setCustomers(customers) { return this.setItem(this.keys.customers, customers); }
+  addCustomer(name, startingBalance = 0, isMPP = false) {
+    const customers = this.getCustomers();
+    if (isMPP) {
+      const existingMPP = customers.find(c => c.isMPP === true);
+      if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
+    }
+    const newCustomer = { id: Date.now().toString(), name, startingBalance: parseFloat(startingBalance) || 0, isMPP: isMPP || false, created_at: new Date().toISOString() };
+    customers.push(newCustomer);
+    customers.sort((a, b) => a.name.localeCompare(b.name));
+    this.setCustomers(customers);
+    const fs = getFirebaseSync(); if (fs) fs.syncCustomer(newCustomer, 'add');
+    return newCustomer;
+  }
   deleteCustomer(id) {
     const customers = this.getCustomers();
     const customerToDelete = customers.find(c => c.id === id);
     const updated = customers.filter(c => c.id !== id);
     this.setCustomers(updated);
-    
-    // Sync to Firebase
-    if (customerToDelete) {
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncCustomer(customerToDelete, 'delete');
-      }
-    }
-    
+    if (customerToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncCustomer(customerToDelete, 'delete'); }
     return true;
   }
-
   updateCustomer(id, startingBalance, isMPP) {
     const customers = this.getCustomers();
-    
-    // Check if trying to set MPP flag to true when another MPP customer already exists
     if (isMPP === true) {
       const existingMPP = customers.find(c => c.isMPP === true && c.id !== id);
-      if (existingMPP) {
-        throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
-      }
+      if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
     }
-    
     const updated = customers.map(c => {
       if (c.id === id) {
-        const updatedCustomer = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
-        if (isMPP !== undefined) {
-          updatedCustomer.isMPP = isMPP;
-        }
-        return updatedCustomer;
+        const u = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
+        if (isMPP !== undefined) u.isMPP = isMPP;
+        return u;
       }
       return c;
     });
     this.setCustomers(updated);
-    
     const updatedCustomer = updated.find(c => c.id === id);
-    
-    // Sync to Firebase
-    if (updatedCustomer) {
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncCustomer(updatedCustomer, 'update');
-      }
-    }
-    
+    if (updatedCustomer) { const fs = getFirebaseSync(); if (fs) fs.syncCustomer(updatedCustomer, 'update'); }
     return updatedCustomer;
   }
-  
-  // Check if MPP checkbox should be visible (any customer has isMPP = true)
-  isMPPVisible() {
-    const customers = this.getCustomers();
-    return customers.some(c => c.isMPP === true);
-  }
 
-  // Payment Methods
-  getPayments() {
-    return this.getItem(this.keys.payments) || [];
-  }
+  // Visibility
+  isMPPVisible() { return this.getCustomers().some(c => c.isMPP === true); }
 
-  setPayments(payments) {
-    return this.setItem(this.keys.payments, payments);
-  }
-
+  // ===== Payments =====
+  getPayments() { return this.getItem(this.keys.payments) || []; }
+  setPayments(payments) { return this.setItem(this.keys.payments, payments); }
   addPayment(paymentData) {
     const payments = this.getPayments();
-    const newPayment = {
-      id: Date.now().toString(),
-      customerId: paymentData.customerId,
-      customerName: paymentData.customerName,
-      amount: parseFloat(paymentData.amount),
-      date: paymentData.date,
-      mode: paymentData.mode || 'cash', // Payment mode (cash/card/wallet/bank/auto)
-      timestamp: new Date().toISOString(),
-      // MPP auto-tracking fields
-      linkedMPPCreditId: paymentData.linkedMPPCreditId || null,
-      linkedMPPSettlementId: paymentData.linkedMPPSettlementId || null,
-      isAutoMPPTracking: paymentData.isAutoMPPTracking || false,
-      description: paymentData.description || null
-    };
-    
+    const newPayment = { id: Date.now().toString(), customerId: paymentData.customerId, customerName: paymentData.customerName, amount: parseFloat(paymentData.amount), date: paymentData.date, mode: paymentData.mode || 'cash', timestamp: new Date().toISOString(), linkedMPPCreditId: paymentData.linkedMPPCreditId || null, linkedMPPSettlementId: paymentData.linkedMPPSettlementId || null, isAutoMPPTracking: paymentData.isAutoMPPTracking || false, description: paymentData.description || null };
     payments.push(newPayment);
     this.setPayments(payments);
     return newPayment;
   }
-
   updatePayment(id, paymentData) {
     const payments = this.getPayments();
     const index = payments.findIndex(p => p.id === id);
     if (index !== -1) {
-      payments[index] = {
-        ...payments[index],
-        customerId: paymentData.customerId,
-        customerName: paymentData.customerName,
-        amount: parseFloat(paymentData.amount),
-        date: paymentData.date,
-        mode: paymentData.mode || payments[index].mode || 'cash', // Update mode if provided
-        timestamp: new Date().toISOString()
-      };
+      payments[index] = { ...payments[index], customerId: paymentData.customerId, customerName: paymentData.customerName, amount: parseFloat(paymentData.amount), date: paymentData.date, mode: paymentData.mode || payments[index].mode || 'cash', timestamp: new Date().toISOString() };
       this.setPayments(payments);
       return payments[index];
     }
     return null;
   }
-
   deletePayment(id) {
     const payments = this.getPayments();
     const updated = payments.filter(p => p.id !== id);
@@ -976,301 +687,77 @@ class LocalStorageService {
     return true;
   }
 
-  // Income Category Methods
-  getIncomeCategories() {
-    return this.getItem(this.keys.incomeCategories) || [];
-  }
+  // ===== Categories =====
+  getIncomeCategories() { return this.getItem(this.keys.incomeCategories) || []; }
+  setIncomeCategories(categories) { const result = this.setItem(this.keys.incomeCategories, categories); const fs = getFirebaseSync(); if (fs) fs.syncIncomeCategories(categories); return result; }
+  addIncomeCategory(name) { const categories = this.getIncomeCategories(); const newCategory = { id: Date.now().toString(), name }; categories.push(newCategory); categories.sort((a,b)=>a.name.localeCompare(b.name)); this.setIncomeCategories(categories); return newCategory; }
+  deleteIncomeCategory(id) { const categories = this.getIncomeCategories(); const updated = categories.filter(c => c.id !== id); this.setIncomeCategories(updated); return true; }
+  updateIncomeCategory(id, name) { const categories = this.getIncomeCategories(); const updated = categories.map(c => c.id === id ? { ...c, name } : c); updated.sort((a,b)=>a.name.localeCompare(b.name)); this.setIncomeCategories(updated); return updated.find(c => c.id === id); }
 
-  setIncomeCategories(categories) {
-    const result = this.setItem(this.keys.incomeCategories, categories);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncIncomeCategories(categories);
-    }
-    
-    return result;
-  }
+  getExpenseCategories() { return this.getItem(this.keys.expenseCategories) || []; }
+  setExpenseCategories(categories) { const result = this.setItem(this.keys.expenseCategories, categories); const fs = getFirebaseSync(); if (fs) fs.syncExpenseCategories(categories); return result; }
+  addExpenseCategory(name) { const categories = this.getExpenseCategories(); const newCategory = { id: Date.now().toString(), name }; categories.push(newCategory); categories.sort((a,b)=>a.name.localeCompare(b.name)); this.setExpenseCategories(categories); return newCategory; }
+  deleteExpenseCategory(id) { const categories = this.getExpenseCategories(); const updated = categories.filter(c => c.id !== id); this.setExpenseCategories(updated); return true; }
+  updateExpenseCategory(id, name) { const categories = this.getExpenseCategories(); const updated = categories.map(c => c.id === id ? { ...c, name } : c); updated.sort((a,b)=>a.name.localeCompare(b.name)); this.setExpenseCategories(updated); return updated.find(c => c.id === id); }
 
-  addIncomeCategory(name) {
-    const categories = this.getIncomeCategories();
-    const newCategory = {
-      id: Date.now().toString(),
-      name: name
-    };
-    categories.push(newCategory);
-    // Sort alphabetically by name
-    categories.sort((a, b) => a.name.localeCompare(b.name));
-    this.setIncomeCategories(categories);
-    return newCategory;
-  }
-
-  deleteIncomeCategory(id) {
-    const categories = this.getIncomeCategories();
-    const updated = categories.filter(c => c.id !== id);
-    this.setIncomeCategories(updated);
-    return true;
-  }
-
-  updateIncomeCategory(id, name) {
-    const categories = this.getIncomeCategories();
-    const updated = categories.map(c => {
-      if (c.id === id) {
-        return { ...c, name: name };
-      }
-      return c;
-    });
-    // Sort alphabetically by name
-    updated.sort((a, b) => a.name.localeCompare(b.name));
-    this.setIncomeCategories(updated);
-    return updated.find(c => c.id === id);
-  }
-
-  // Expense Category Methods
-  getExpenseCategories() {
-    return this.getItem(this.keys.expenseCategories) || [];
-  }
-
-  setExpenseCategories(categories) {
-    const result = this.setItem(this.keys.expenseCategories, categories);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncExpenseCategories(categories);
-    }
-    
-    return result;
-  }
-
-  addExpenseCategory(name) {
-    const categories = this.getExpenseCategories();
-    const newCategory = {
-      id: Date.now().toString(),
-      name: name
-    };
-    categories.push(newCategory);
-    // Sort alphabetically by name
-    categories.sort((a, b) => a.name.localeCompare(b.name));
-    this.setExpenseCategories(categories);
-    return newCategory;
-  }
-
-  deleteExpenseCategory(id) {
-    const categories = this.getExpenseCategories();
-    const updated = categories.filter(c => c.id !== id);
-    this.setExpenseCategories(updated);
-    return true;
-  }
-
-  updateExpenseCategory(id, name) {
-    const categories = this.getExpenseCategories();
-    const updated = categories.map(c => {
-      if (c.id === id) {
-        return { ...c, name: name };
-      }
-      return c;
-    });
-    // Sort alphabetically by name
-    updated.sort((a, b) => a.name.localeCompare(b.name));
-    this.setExpenseCategories(updated);
-    return updated.find(c => c.id === id);
-  }
-
-  // Settlement Methods
-  getSettlements() {
-    return this.getItem(this.keys.settlements) || [];
-  }
-
-  setSettlements(settlements) {
-    return this.setItem(this.keys.settlements, settlements);
-  }
-
+  // ===== Settlements =====
+  getSettlements() { return this.getItem(this.keys.settlements) || []; }
+  setSettlements(settlements) { return this.setItem(this.keys.settlements, settlements); }
   addSettlement(settlementData) {
     const settlements = this.getSettlements();
-    const newSettlement = {
-      id: Date.now().toString(),
-      date: settlementData.date,
-      amount: parseFloat(settlementData.amount),
-      description: settlementData.description || '',
-      mpp: settlementData.mpp || false,
-      timestamp: new Date().toISOString()
-    };
+    const newSettlement = { id: Date.now().toString(), date: settlementData.date, amount: parseFloat(settlementData.amount), description: settlementData.description || '', mpp: settlementData.mpp || false, timestamp: new Date().toISOString() };
     settlements.push(newSettlement);
     this.setSettlements(settlements);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncSettlement(newSettlement, 'add');
-    }
-    
+    const fs = getFirebaseSync(); if (fs) fs.syncSettlement(newSettlement, 'add');
     return newSettlement;
   }
-
   updateSettlement(id, settlementData) {
     const settlements = this.getSettlements();
     const index = settlements.findIndex(s => s.id === id);
     if (index !== -1) {
-      settlements[index] = {
-        ...settlements[index],
-        date: settlementData.date,
-        amount: parseFloat(settlementData.amount),
-        description: settlementData.description || '',
-        mpp: settlementData.mpp !== undefined ? settlementData.mpp : settlements[index].mpp,
-        timestamp: new Date().toISOString()
-      };
+      settlements[index] = { ...settlements[index], date: settlementData.date, amount: parseFloat(settlementData.amount), description: settlementData.description || '', mpp: settlementData.mpp !== undefined ? settlementData.mpp : settlements[index].mpp, timestamp: new Date().toISOString() };
       this.setSettlements(settlements);
-      
-      // Sync to Firebase
-      const firebaseSync = getFirebaseSync();
-      if (firebaseSync) {
-        firebaseSync.syncSettlement(settlements[index], 'update');
-      }
-      
+      const fs = getFirebaseSync(); if (fs) fs.syncSettlement(settlements[index], 'update');
       return settlements[index];
     }
     return null;
   }
-
   deleteSettlement(id) {
     const settlements = this.getSettlements();
-    const settlementToDelete = settlements.find(s => s.id === id);
+    const toDelete = settlements.find(s => s.id === id);
     const updated = settlements.filter(s => s.id !== id);
     this.setSettlements(updated);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync && settlementToDelete) {
-      firebaseSync.syncSettlement(settlementToDelete, 'delete');
-    }
-    
+    const fs = getFirebaseSync(); if (fs && toDelete) fs.syncSettlement(toDelete, 'delete');
     return true;
   }
 
-  // Settlement Type Methods
-  getSettlementTypes() {
-    return this.getItem(this.keys.settlementTypes) || [];
-  }
+  // ===== Settlement Types =====
+  getSettlementTypes() { return this.getItem(this.keys.settlementTypes) || []; }
+  setSettlementTypes(types) { const result = this.setItem(this.keys.settlementTypes, types); const fs = getFirebaseSync(); if (fs) fs.syncSettlementTypes(types); return result; }
+  addSettlementType(name) { const types = this.getSettlementTypes(); const newType = { id: Date.now().toString(), name }; types.push(newType); types.sort((a,b)=>a.name.localeCompare(b.name)); this.setSettlementTypes(types); return newType; }
+  deleteSettlementType(id) { const types = this.getSettlementTypes(); const updated = types.filter(t => t.id !== id); this.setSettlementTypes(updated); return true; }
+  updateSettlementType(id, name) { const types = this.getSettlementTypes(); const updated = types.map(t => t.id === id ? { ...t, name } : t); types.sort((a,b)=>a.name.localeCompare(b.name)); this.setSettlementTypes(updated); return updated.find(t => t.id === id); }
 
-  setSettlementTypes(types) {
-    const result = this.setItem(this.keys.settlementTypes, types);
-    
-    // Sync to Firebase
-    const firebaseSync = getFirebaseSync();
-    if (firebaseSync) {
-      firebaseSync.syncSettlementTypes(types);
-    }
-    
-    return result;
-  }
+  // ===== Description history =====
+  getIncomeDescHistory() { return JSON.parse(localStorage.getItem(nsKey(this.keys.incomeDescHistory)) || '[]'); }
+  addIncomeDescHistory(description) { if (!description || !description.trim()) return; const history = this.getIncomeDescHistory(); const trimmed = description.trim(); if (history.includes(trimmed)) return; history.unshift(trimmed); if (history.length > 20) history.splice(20); localStorage.setItem(nsKey(this.keys.incomeDescHistory), JSON.stringify(history)); }
+  deleteIncomeDescHistory(description) { const history = this.getIncomeDescHistory(); const updated = history.filter(item => item !== description); localStorage.setItem(nsKey(this.keys.incomeDescHistory), JSON.stringify(updated)); }
 
-  addSettlementType(name) {
-    const types = this.getSettlementTypes();
-    const newType = {
-      id: Date.now().toString(),
-      name: name
-    };
-    types.push(newType);
-    types.sort((a, b) => a.name.localeCompare(b.name));
-    this.setSettlementTypes(types);
-    return newType;
-  }
+  getExpenseDescHistory() { return JSON.parse(localStorage.getItem(nsKey(this.keys.expenseDescHistory)) || '[]'); }
+  addExpenseDescHistory(description) { if (!description || !description.trim()) return; const history = this.getExpenseDescHistory(); const trimmed = description.trim(); if (history.includes(trimmed)) return; history.unshift(trimmed); if (history.length > 20) history.splice(20); localStorage.setItem(nsKey(this.keys.expenseDescHistory), JSON.stringify(history)); }
+  deleteExpenseDescHistory(description) { const history = this.getExpenseDescHistory(); const updated = history.filter(item => item !== description); localStorage.setItem(nsKey(this.keys.expenseDescHistory), JSON.stringify(updated)); }
 
-  deleteSettlementType(id) {
-    const types = this.getSettlementTypes();
-    const updated = types.filter(t => t.id !== id);
-    this.setSettlementTypes(updated);
-    return true;
-  }
-
-  updateSettlementType(id, name) {
-    const types = this.getSettlementTypes();
-    const updated = types.map(t => {
-      if (t.id === id) {
-        return { ...t, name: name };
-      }
-      return t;
-    });
-    updated.sort((a, b) => a.name.localeCompare(b.name));
-    this.setSettlementTypes(updated);
-    return updated.find(t => t.id === id);
-  }
-
-  // Income Description History Management
-  getIncomeDescHistory() {
-    return JSON.parse(localStorage.getItem(this.keys.incomeDescHistory) || '[]');
-  }
-
-  addIncomeDescHistory(description) {
-    if (!description || !description.trim()) return;
-    
-    const history = this.getIncomeDescHistory();
-    const trimmedDesc = description.trim();
-    
-    // Check if already exists
-    if (history.includes(trimmedDesc)) return;
-    
-    // Add to beginning of array
-    history.unshift(trimmedDesc);
-    
-    // Keep only last 20 entries
-    if (history.length > 20) {
-      history.splice(20);
-    }
-    
-    localStorage.setItem(this.keys.incomeDescHistory, JSON.stringify(history));
-  }
-
-  deleteIncomeDescHistory(description) {
-    const history = this.getIncomeDescHistory();
-    const updated = history.filter(item => item !== description);
-    localStorage.setItem(this.keys.incomeDescHistory, JSON.stringify(updated));
-  }
-
-  // Expense Description History Management
-  getExpenseDescHistory() {
-    return JSON.parse(localStorage.getItem(this.keys.expenseDescHistory) || '[]');
-  }
-
-  addExpenseDescHistory(description) {
-    if (!description || !description.trim()) return;
-    
-    const history = this.getExpenseDescHistory();
-    const trimmedDesc = description.trim();
-    
-    // Check if already exists
-    if (history.includes(trimmedDesc)) return;
-    
-    // Add to beginning of array
-    history.unshift(trimmedDesc);
-    
-    // Keep only last 20 entries
-    if (history.length > 20) {
-      history.splice(20);
-    }
-    
-    localStorage.setItem(this.keys.expenseDescHistory, JSON.stringify(history));
-  }
-
-  deleteExpenseDescHistory(description) {
-    const history = this.getExpenseDescHistory();
-    const updated = history.filter(item => item !== description);
-    localStorage.setItem(this.keys.expenseDescHistory, JSON.stringify(updated));
-  }
-
-  // Pro Mode Management
-  isProModeEnabled() {
-    return localStorage.getItem('mpump_pro_mode') === 'true';
-  }
+  // Pro mode
+  isProModeEnabled() { return localStorage.getItem(nsKey('mpump_pro_mode')) === 'true'; }
 }
 
 // Export singleton instance
 export const localStorageService = new LocalStorageService();
 export default localStorageService;
 
-// Export utility functions for sync
+// Export utility + namespace helpers
+export const setStorageNamespace = (userId) => localStorageService.setNamespace(userId);
+export const clearStorageNamespace = () => localStorageService.clearNamespace();
 export const exportAllData = () => localStorageService.exportAllData();
 export const importAllData = (data) => localStorageService.importAllData(data);
 export const mergeAllData = (data) => localStorageService.mergeAllData(data);

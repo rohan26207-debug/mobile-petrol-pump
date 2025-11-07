@@ -14,7 +14,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db, getDeviceId, initializeAuth } from './firebase';
-import localStorageService from './localStorage';
+import localStorageService, { setStorageNamespace, clearStorageNamespace } from './localStorage';
 
 class FirebaseSyncService {
   constructor() {
@@ -22,6 +22,7 @@ class FirebaseSyncService {
     this.syncEnabled = true;
     this.listeners = [];
     this.initialized = false;
+    this.currentUserId = null;
   }
 
   // Get current user ID
@@ -36,20 +37,50 @@ class FirebaseSyncService {
       console.log('⚠️ Firebase sync already initialized, skipping');
       return;
     }
-    
     try {
       await initializeAuth();
       console.log('✅ Firebase sync service initialized');
       this.initialized = true;
-      
-      // Wait for auth to be ready before starting listeners
       await this.waitForAuth();
-      
-      // Start listening for changes from other devices
+      // Set namespace for this user
+      const userId = this.getUserId();
+      if (userId) {
+        setStorageNamespace(userId);
+        this.currentUserId = userId;
+      }
       this.startListeners();
+      // Also watch for auth changes to swap namespaces & listeners cleanly
+      this.setupAuthWatcher();
     } catch (error) {
       console.error('❌ Firebase sync initialization failed:', error);
-      // Continue without sync - offline mode will still work
+    }
+  }
+
+  setupAuthWatcher() {
+    try {
+      const { auth, onAuthStateChanged } = require('firebase/auth');
+      const authInstance = require('./firebase').auth;
+      onAuthStateChanged(authInstance, (user) => {
+        const newUid = user?.uid || null;
+        if (newUid === this.currentUserId) return; // No change
+        console.log('🔐 Auth state changed. Restarting listeners and switching storage namespace...', { from: this.currentUserId, to: newUid });
+        // Stop existing listeners
+        this.stopListeners();
+        if (newUid) {
+          // Switch namespace to new user and start fresh listeners
+          setStorageNamespace(newUid);
+          this.currentUserId = newUid;
+          this.startListeners();
+        } else {
+          // Logged out → switch to guest namespace and no listeners
+          clearStorageNamespace();
+          this.currentUserId = null;
+        }
+        // Notify UI
+        try { window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId: newUid }})); } catch (_) {}
+      });
+    } catch (e) {
+      console.log('Auth watcher setup skipped:', e?.message || e);
     }
   }
 
@@ -62,796 +93,363 @@ class FirebaseSyncService {
         return userId;
       }
       console.log(`⏳ Waiting for auth... attempt ${i + 1}/${maxAttempts}`);
-      await new Promise(resolve => setTimeout(resolve, 500)); // Wait 500ms
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
     throw new Error('Authentication timeout - user not logged in');
   }
 
-  // Enable/Disable sync
-  setSyncEnabled(enabled) {
-    this.syncEnabled = enabled;
-    console.log(`🔄 Firebase sync ${enabled ? 'enabled' : 'disabled'}`);
-  }
+  setSyncEnabled(enabled) { this.syncEnabled = enabled; console.log(`🔄 Firebase sync ${enabled ? 'enabled' : 'disabled'}`); }
 
   // ==================== CUSTOMERS ====================
-
   async syncCustomer(customer, operation = 'add') {
-    if (!this.syncEnabled) {
-      console.log('📴 Sync disabled, skipping customer sync');
-      return;
-    }
-
-    try {
-      const userId = this.getUserId();
-      
-      if (!userId) {
-        console.log('📴 User not authenticated, skipping customer sync');
-        return;
-      }
-
-      console.log(`🔄 Syncing customer "${customer.name}" to Firebase (${operation})...`);
-
-      const customerData = {
-        ...customer,
-        userId,  // Add user ID for security
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const customerData = { ...customer, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
         const docRef = doc(db, 'customers', customer.id);
-        await updateDoc(docRef, customerData).catch(() => {
-          // Document doesn't exist, create it
-          return addDoc(collection(db, 'customers'), { ...customerData, id: customer.id });
-        });
-        console.log('✅ Customer synced:', customer.name);
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'customers', customer.id);
-        await deleteDoc(docRef);
-        console.log('✅ Customer deleted from cloud:', customer.name);
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-      // Firebase will automatically retry when online
-    }
+        await updateDoc(docRef, customerData).catch(() => addDoc(collection(db, 'customers'), { ...customerData, id: customer.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'customers', customer.id)); }
+      console.log('✅ Customer synced:', customer.name);
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== CREDIT SALES ====================
-
   async syncCreditSale(credit, operation = 'add') {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) return;
-
-      const creditData = {
-        ...credit,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const creditData = { ...credit, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        const docRef = doc(db, 'creditSales', credit.id);
-        await updateDoc(docRef, creditData).catch(() => {
-          return addDoc(collection(db, 'creditSales'), { ...creditData, id: credit.id });
-        });
-        console.log('✅ Credit sale synced:', credit.customerName);
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'creditSales', credit.id);
-        await deleteDoc(docRef);
-        console.log('✅ Credit sale deleted from cloud:', credit.customerName);
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+        await updateDoc(doc(db, 'creditSales', credit.id), creditData).catch(() => addDoc(collection(db, 'creditSales'), { ...creditData, id: credit.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'creditSales', credit.id)); }
+      console.log('✅ Credit sale synced:', credit.customerName);
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== PAYMENTS ====================
-
   async syncPayment(payment, operation = 'add') {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) return;
-
-      const paymentData = {
-        ...payment,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const paymentData = { ...payment, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        const docRef = doc(db, 'payments', payment.id);
-        await updateDoc(docRef, paymentData).catch(() => {
-          return addDoc(collection(db, 'payments'), { ...paymentData, id: payment.id });
-        });
-        console.log('✅ Payment synced:', payment.customerName);
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'payments', payment.id);
-        await deleteDoc(docRef);
-        console.log('✅ Payment deleted from cloud:', payment.customerName);
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+        await updateDoc(doc(db, 'payments', payment.id), paymentData).catch(() => addDoc(collection(db, 'payments'), { ...paymentData, id: payment.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'payments', payment.id)); }
+      console.log('✅ Payment synced:', payment.customerName);
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== SETTLEMENTS ====================
-
   async syncSettlement(settlement, operation = 'add') {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) return;
-
-      const settlementData = {
-        ...settlement,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const settlementData = { ...settlement, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        const docRef = doc(db, 'settlements', settlement.id);
-        await updateDoc(docRef, settlementData).catch(() => {
-          return addDoc(collection(db, 'settlements'), { ...settlementData, id: settlement.id });
-        });
-        console.log('✅ Settlement synced');
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'settlements', settlement.id);
-        await deleteDoc(docRef);
-        console.log('✅ Settlement deleted from cloud');
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+        await updateDoc(doc(db, 'settlements', settlement.id), settlementData).catch(() => addDoc(collection(db, 'settlements'), { ...settlementData, id: settlement.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'settlements', settlement.id)); }
+      console.log('✅ Settlement synced');
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== SALES ====================
-
   async syncSale(sale, operation = 'add') {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) return;
-
-      const saleData = {
-        ...sale,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const saleData = { ...sale, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        const docRef = doc(db, 'sales', sale.id);
-        await updateDoc(docRef, saleData).catch(() => {
-          return addDoc(collection(db, 'sales'), { ...saleData, id: sale.id });
-        });
-        console.log('✅ Sale synced');
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'sales', sale.id);
-        await deleteDoc(docRef);
-        console.log('✅ Sale deleted from cloud');
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+        await updateDoc(doc(db, 'sales', sale.id), saleData).catch(() => addDoc(collection(db, 'sales'), { ...saleData, id: sale.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'sales', sale.id)); }
+      console.log('✅ Sale synced');
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== INCOME/EXPENSES ====================
-
   async syncIncomeExpense(record, operation = 'add') {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) return;
-
-      const recordData = {
-        ...record,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp(),
-        operation
-      };
-
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return;
+      const recordData = { ...record, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        const docRef = doc(db, 'incomeExpenses', record.id);
-        await updateDoc(docRef, recordData).catch(() => {
-          return addDoc(collection(db, 'incomeExpenses'), { ...recordData, id: record.id });
-        });
-        console.log('✅ Income/Expense synced');
-      } else if (operation === 'delete') {
-        const docRef = doc(db, 'incomeExpenses', record.id);
-        await deleteDoc(docRef);
-        console.log('✅ Income/Expense deleted from cloud');
-      }
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+        await updateDoc(doc(db, 'incomeExpenses', record.id), recordData).catch(() => addDoc(collection(db, 'incomeExpenses'), { ...recordData, id: record.id }));
+      } else if (operation === 'delete') { await deleteDoc(doc(db, 'incomeExpenses', record.id)); }
+      console.log('✅ Income/Expense synced');
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== SETTINGS SYNC ====================
-
-  // Sync fuel settings
   async syncFuelSettings(settings) {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) {
-        console.log('📴 User not authenticated, skipping fuel settings sync');
-        return;
-      }
-
-      const settingsData = {
-        settings,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp()
-      };
-
-      // Use userId as document ID to ensure one settings doc per user
-      const docRef = doc(db, 'fuelSettings', userId);
-      await updateDoc(docRef, settingsData).catch(() => {
-        return addDoc(collection(db, 'fuelSettings'), { ...settingsData, id: userId });
-      });
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping fuel settings sync');
+      const settingsData = { settings, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
+      await updateDoc(doc(db, 'fuelSettings', userId), settingsData).catch(() => addDoc(collection(db, 'fuelSettings'), { ...settingsData, id: userId }));
       console.log('✅ Fuel settings synced');
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
-
-  // Sync settlement types
   async syncSettlementTypes(types) {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) {
-        console.log('📴 User not authenticated, skipping settlement types sync');
-        return;
-      }
-
-      const typesData = {
-        types,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp()
-      };
-
-      const docRef = doc(db, 'settlementTypes', userId);
-      await updateDoc(docRef, typesData).catch(() => {
-        return addDoc(collection(db, 'settlementTypes'), { ...typesData, id: userId });
-      });
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping settlement types sync');
+      const typesData = { types, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
+      await updateDoc(doc(db, 'settlementTypes', userId), typesData).catch(() => addDoc(collection(db, 'settlementTypes'), { ...typesData, id: userId }));
       console.log('✅ Settlement types synced');
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
-
-  // Sync income categories
   async syncIncomeCategories(categories) {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) {
-        console.log('📴 User not authenticated, skipping income categories sync');
-        return;
-      }
-
-      const categoriesData = {
-        categories,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp()
-      };
-
-      const docRef = doc(db, 'incomeCategories', userId);
-      await updateDoc(docRef, categoriesData).catch(() => {
-        return addDoc(collection(db, 'incomeCategories'), { ...categoriesData, id: userId });
-      });
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping income categories sync');
+      const data = { categories, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
+      await updateDoc(doc(db, 'incomeCategories', userId), data).catch(() => addDoc(collection(db, 'incomeCategories'), { ...data, id: userId }));
       console.log('✅ Income categories synced');
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
-
-  // Sync expense categories
   async syncExpenseCategories(categories) {
-    if (!this.syncEnabled) return;
-
-    try {
-      const userId = this.getUserId();
-      if (!userId) {
-        console.log('📴 User not authenticated, skipping expense categories sync');
-        return;
-      }
-
-      const categoriesData = {
-        categories,
-        userId,
-        deviceId: this.deviceId,
-        syncedAt: serverTimestamp()
-      };
-
-      const docRef = doc(db, 'expenseCategories', userId);
-      await updateDoc(docRef, categoriesData).catch(() => {
-        return addDoc(collection(db, 'expenseCategories'), { ...categoriesData, id: userId });
-      });
+    if (!this.syncEnabled) return; try {
+      const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping expense categories sync');
+      const data = { categories, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
+      await updateDoc(doc(db, 'expenseCategories', userId), data).catch(() => addDoc(collection(db, 'expenseCategories'), { ...data, id: userId }));
       console.log('✅ Expense categories synced');
-    } catch (error) {
-      console.log('📴 Will sync when online:', error.message);
-    }
+    } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
 
   // ==================== BULK SYNC ====================
-
-  // Sync all local data to cloud (useful for initial setup or after being offline)
   async syncAllLocalData() {
     if (!this.syncEnabled) return;
-
     console.log('🔄 Starting bulk sync of local data to cloud...');
-
     try {
-      // Get all local data
       const customers = localStorageService.getCustomers();
       const creditSales = localStorageService.getCreditData();
       const payments = localStorageService.getPayments();
       const settlements = localStorageService.getSettlements();
       const sales = localStorageService.getSalesData();
       const incomeExpenses = localStorageService.getIncomeExpenseData();
-
-      // Sync customers
-      for (const customer of customers) {
-        await this.syncCustomer(customer, 'add');
-      }
-
-      // Sync credit sales
-      for (const credit of creditSales) {
-        await this.syncCreditSale(credit, 'add');
-      }
-
-      // Sync payments
-      for (const payment of payments) {
-        await this.syncPayment(payment, 'add');
-      }
-
-      // Sync settlements
-      for (const settlement of settlements) {
-        await this.syncSettlement(settlement, 'add');
-      }
-
-      // Sync sales
-      for (const sale of sales) {
-        await this.syncSale(sale, 'add');
-      }
-
-      // Sync income/expenses
-      for (const record of incomeExpenses) {
-        await this.syncIncomeExpense(record, 'add');
-      }
-
-      // Sync settings data
+      for (const customer of customers) await this.syncCustomer(customer, 'add');
+      for (const credit of creditSales) await this.syncCreditSale(credit, 'add');
+      for (const payment of payments) await this.syncPayment(payment, 'add');
+      for (const settlement of settlements) await this.syncSettlement(settlement, 'add');
+      for (const sale of sales) await this.syncSale(sale, 'add');
+      for (const record of incomeExpenses) await this.syncIncomeExpense(record, 'add');
       const fuelSettings = localStorageService.getFuelSettings();
       const settlementTypes = localStorageService.getSettlementTypes();
       const incomeCategories = localStorageService.getIncomeCategories();
       const expenseCategories = localStorageService.getExpenseCategories();
-
       if (fuelSettings) await this.syncFuelSettings(fuelSettings);
       if (settlementTypes) await this.syncSettlementTypes(settlementTypes);
       if (incomeCategories) await this.syncIncomeCategories(incomeCategories);
       if (expenseCategories) await this.syncExpenseCategories(expenseCategories);
-
       console.log('✅ Bulk sync completed successfully');
-    } catch (error) {
-      console.error('❌ Bulk sync failed:', error);
-    }
+    } catch (error) { console.error('❌ Bulk sync failed:', error); }
   }
 
   // ==================== LISTENERS ====================
-
-  // Listen for changes from other devices
   startListeners() {
-    // Prevent duplicate listeners
-    if (this.listeners.length > 0) {
-      console.log('⚠️ Listeners already running, skipping duplicate initialization');
-      return;
-    }
-
+    if (this.listeners.length > 0) { console.log('⚠️ Listeners already running, skipping duplicate initialization'); return; }
     console.log('👂 Starting Firebase listeners for real-time updates...');
-
     const userId = this.getUserId();
-    if (!userId) {
-      console.log('❌ User not authenticated, cannot start listeners');
-      console.log('⚠️ This means cross-device sync will NOT work!');
-      return;
-    }
-
+    if (!userId) { console.log('❌ User not authenticated, cannot start listeners'); return; }
     console.log('✅ User authenticated, starting listeners for user:', userId);
 
-    // Listen to customers (only user's own data)
-    console.log('🎯 Setting up customer listener for userId:', userId);
+    const uidDetailEvent = () => { try { window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId } })); } catch(_){} };
+
+    // CUSTOMERS
     const customersListener = onSnapshot(
       query(collection(db, 'customers'), where('userId', '==', userId)),
       (snapshot) => {
-        console.log('🔔 Customer snapshot received! Total docs:', snapshot.size, 'Changes:', snapshot.docChanges().length);
-        
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
-          console.log(`📦 Customer change detected: ${change.type}`, {
-            name: data.name,
-            fromDevice: data.deviceId,
-            thisDevice: this.deviceId,
-            willIgnore: data.deviceId === this.deviceId
-          });
-          
-          // Ignore changes from this device
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring change from same device');
-            return;
-          }
-
+          if (data.deviceId === this.deviceId) return;
+          const customers = localStorageService.getCustomers();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Customer update from another device:', data.name);
-            // Update localStorage with the new data
-            const customers = localStorageService.getCustomers();
-            const existingIndex = customers.findIndex(c => c.id === data.id);
-            
-            if (existingIndex >= 0) {
-              customers[existingIndex] = data;
-            } else {
-              customers.push(data);
-            }
-            
-            localStorage.setItem('customers', JSON.stringify(customers));
-            
-            // Trigger custom event to update UI
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = customers.findIndex(c => c.id === data.id);
+            if (idx >= 0) customers[idx] = data; else customers.push(data);
+            localStorageService.setCustomers(customers);
           } else if (change.type === 'removed') {
-            console.log('📥 Customer deleted from another device:', data.name);
-            const customers = localStorageService.getCustomers();
             const filtered = customers.filter(c => c.id !== data.id);
-            localStorage.setItem('customers', JSON.stringify(filtered));
-            
-            // Trigger custom event to update UI
-            window.dispatchEvent(new Event('localStorageChange'));
+            localStorageService.setCustomers(filtered);
           }
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.error('❌ CUSTOMER LISTENER ERROR:', error);
-        console.log('📴 Listener error (will retry when online):', error.message);
-      }
+      (error) => console.error('❌ CUSTOMER LISTENER ERROR:', error)
     );
 
-    // Listen to credit sales (only user's own data)
-    console.log('🎯 Setting up credit sales listener for userId:', userId);
+    // CREDIT SALES
     const creditSalesListener = onSnapshot(
       query(collection(db, 'creditSales'), where('userId', '==', userId)),
       (snapshot) => {
-        console.log('🔔 Credit sales snapshot received! Total docs:', snapshot.size, 'Changes:', snapshot.docChanges().length);
-        
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
-          console.log(`📦 Credit sale change: ${change.type}, from device: ${data.deviceId}, this device: ${this.deviceId}`);
-          
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring credit sale from same device');
-            return;
-          }
-
+          if (data.deviceId === this.deviceId) return;
+          const credits = localStorageService.getCreditData();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Credit sale update from another device');
-            const credits = localStorageService.getCreditData();
-            const existingIndex = credits.findIndex(c => c.id === data.id);
-            
-            if (existingIndex >= 0) {
-              credits[existingIndex] = data;
-            } else {
-              credits.push(data);
-            }
-            
-            localStorage.setItem('creditData', JSON.stringify(credits));
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = credits.findIndex(c => c.id === data.id);
+            if (idx >= 0) credits[idx] = data; else credits.push(data);
+            localStorageService.setCreditData(credits);
           } else if (change.type === 'removed') {
-            console.log('📥 Credit sale deleted from another device');
-            const credits = localStorageService.getCreditData();
             const filtered = credits.filter(c => c.id !== data.id);
-            localStorage.setItem('creditData', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('localStorageChange'));
+            localStorageService.setCreditData(filtered);
           }
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.log('📴 Listener error:', error.message);
-      }
+      (error) => console.log('📴 Listener error:', error.message)
     );
 
-    // Listen to payments (only user's own data)
+    // PAYMENTS
     const paymentsListener = onSnapshot(
       query(collection(db, 'payments'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
           if (data.deviceId === this.deviceId) return;
-
+          const payments = localStorageService.getPayments();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Payment update from another device');
-            const payments = localStorageService.getPayments();
-            const existingIndex = payments.findIndex(p => p.id === data.id);
-            
-            if (existingIndex >= 0) {
-              payments[existingIndex] = data;
-            } else {
-              payments.push(data);
-            }
-            
-            localStorage.setItem('payments', JSON.stringify(payments));
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = payments.findIndex(p => p.id === data.id);
+            if (idx >= 0) payments[idx] = data; else payments.push(data);
+            localStorageService.setPayments(payments);
           } else if (change.type === 'removed') {
-            console.log('📥 Payment deleted from another device');
-            const payments = localStorageService.getPayments();
             const filtered = payments.filter(p => p.id !== data.id);
-            localStorage.setItem('payments', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('localStorageChange'));
+            localStorageService.setPayments(filtered);
           }
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.log('📴 Listener error:', error.message);
-      }
+      (error) => console.log('📴 Listener error:', error.message)
     );
 
-    // Listen to settlements
+    // SETTLEMENTS
     const settlementsListener = onSnapshot(
       query(collection(db, 'settlements'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
           if (data.deviceId === this.deviceId) return;
-
+          const settlements = localStorageService.getSettlements();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Settlement update from another device');
-            const settlements = localStorageService.getSettlements();
-            const existingIndex = settlements.findIndex(s => s.id === data.id);
-            
-            if (existingIndex >= 0) {
-              settlements[existingIndex] = data;
-            } else {
-              settlements.push(data);
-            }
-            
-            localStorage.setItem('settlements', JSON.stringify(settlements));
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = settlements.findIndex(s => s.id === data.id);
+            if (idx >= 0) settlements[idx] = data; else settlements.push(data);
+            localStorageService.setSettlements(settlements);
           } else if (change.type === 'removed') {
-            console.log('📥 Settlement deleted from another device');
-            const settlements = localStorageService.getSettlements();
             const filtered = settlements.filter(s => s.id !== data.id);
-            localStorage.setItem('settlements', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('localStorageChange'));
+            localStorageService.setSettlements(filtered);
           }
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.log('📴 Listener error:', error.message);
-      }
+      (error) => console.log('📴 Listener error:', error.message)
     );
 
-    // Listen to sales
+    // SALES
     const salesListener = onSnapshot(
       query(collection(db, 'sales'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
           if (data.deviceId === this.deviceId) return;
-
+          const sales = localStorageService.getSalesData();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Sale update from another device');
-            const sales = localStorageService.getSalesData();
-            const existingIndex = sales.findIndex(s => s.id === data.id);
-            
-            if (existingIndex >= 0) {
-              sales[existingIndex] = data;
-            } else {
-              sales.push(data);
-            }
-            
-            localStorage.setItem('salesData', JSON.stringify(sales));
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = sales.findIndex(s => s.id === data.id);
+            if (idx >= 0) sales[idx] = data; else sales.push(data);
+            localStorageService.setSalesData(sales);
           } else if (change.type === 'removed') {
-            console.log('📥 Sale deleted from another device');
-            const sales = localStorageService.getSalesData();
             const filtered = sales.filter(s => s.id !== data.id);
-            localStorage.setItem('salesData', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('localStorageChange'));
+            localStorageService.setSalesData(filtered);
           }
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.log('📴 Listener error:', error.message);
-      }
+      (error) => console.log('📴 Listener error:', error.message)
     );
 
-    // Listen to income/expenses
+    // INCOME/EXPENSES
     const incomeExpensesListener = onSnapshot(
       query(collection(db, 'incomeExpenses'), where('userId', '==', userId)),
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          
           if (data.deviceId === this.deviceId) return;
-
+          const records = localStorageService.getIncomeExpenseData();
           if (change.type === 'added' || change.type === 'modified') {
-            console.log('📥 Income/Expense update from another device');
-            const records = localStorageService.getIncomeExpenseData();
-            const existingIndex = records.findIndex(r => r.id === data.id);
-            
-            if (existingIndex >= 0) {
-              records[existingIndex] = data;
-            } else {
-              records.push(data);
-            }
-            
-            // Split into income and expense arrays
-            const income = records.filter(r => r.type === 'income');
-            const expense = records.filter(r => r.type === 'expense');
-            
-            localStorage.setItem('incomeData', JSON.stringify(income));
-            localStorage.setItem('expenseData', JSON.stringify(expense));
-            window.dispatchEvent(new Event('localStorageChange'));
+            const idx = records.findIndex(r => r.id === data.id);
+            if (idx >= 0) records[idx] = data; else records.push(data);
           } else if (change.type === 'removed') {
-            console.log('📥 Income/Expense deleted from another device');
-            const records = localStorageService.getIncomeExpenseData();
             const filtered = records.filter(r => r.id !== data.id);
-            
-            // Split into income and expense arrays
-            const income = filtered.filter(r => r.type === 'income');
-            const expense = filtered.filter(r => r.type === 'expense');
-            
-            localStorage.setItem('incomeData', JSON.stringify(income));
-            localStorage.setItem('expenseData', JSON.stringify(expense));
-            window.dispatchEvent(new Event('localStorageChange'));
+            records.length = 0; filtered.forEach(v => records.push(v));
           }
+          const income = records.filter(r => r.type === 'income');
+          const expense = records.filter(r => r.type === 'expense');
+          localStorageService.setIncomeData(income);
+          localStorageService.setExpenseData(expense);
+          uidDetailEvent();
         });
       },
-      (error) => {
-        console.log('📴 Listener error:', error.message);
-      }
+      (error) => console.log('📴 Listener error:', error.message)
     );
 
-    // Listen to fuel settings
-    console.log('🎯 Setting up fuel settings listener for userId:', userId);
+    // FUEL SETTINGS
     const fuelSettingsListener = onSnapshot(
       doc(db, 'fuelSettings', userId),
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          
-          console.log('📦 Fuel settings change from device:', data.deviceId, 'this device:', this.deviceId);
-          
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring fuel settings from same device');
-            return;
-          }
-
-          console.log('📥 Fuel settings update from another device');
-          localStorage.setItem('mpump_fuel_settings', JSON.stringify(data.settings));
-          window.dispatchEvent(new Event('localStorageChange'));
+          if (data.deviceId === this.deviceId) return;
+          localStorageService.setFuelSettings(data.settings);
+          uidDetailEvent();
         }
       },
-      (error) => {
-        console.log('📴 Fuel settings listener error:', error.message);
-      }
+      (error) => console.log('📴 Fuel settings listener error:', error.message)
     );
 
-    // Listen to settlement types
-    console.log('🎯 Setting up settlement types listener for userId:', userId);
+    // SETTLEMENT TYPES
     const settlementTypesListener = onSnapshot(
       doc(db, 'settlementTypes', userId),
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          
-          console.log('📦 Settlement types change from device:', data.deviceId);
-          
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring settlement types from same device');
-            return;
-          }
-
-          console.log('📥 Settlement types update from another device');
-          localStorage.setItem('mpump_settlement_types', JSON.stringify(data.types));
-          window.dispatchEvent(new Event('localStorageChange'));
+          if (data.deviceId === this.deviceId) return;
+          localStorageService.setSettlementTypes(data.types);
+          uidDetailEvent();
         }
       },
-      (error) => {
-        console.log('📴 Settlement types listener error:', error.message);
-      }
+      (error) => console.log('📴 Settlement types listener error:', error.message)
     );
 
-    // Listen to income categories
-    console.log('🎯 Setting up income categories listener for userId:', userId);
+    // INCOME CATEGORIES
     const incomeCategoriesListener = onSnapshot(
       doc(db, 'incomeCategories', userId),
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          
-          console.log('📦 Income categories change from device:', data.deviceId);
-          
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring income categories from same device');
-            return;
-          }
-
-          console.log('📥 Income categories update from another device');
-          localStorage.setItem('mpump_income_categories', JSON.stringify(data.categories));
-          window.dispatchEvent(new Event('localStorageChange'));
+          if (data.deviceId === this.deviceId) return;
+          localStorageService.setIncomeCategories(data.categories);
+          uidDetailEvent();
         }
       },
-      (error) => {
-        console.log('📴 Income categories listener error:', error.message);
-      }
+      (error) => console.log('📴 Income categories listener error:', error.message)
     );
 
-    // Listen to expense categories
-    console.log('🎯 Setting up expense categories listener for userId:', userId);
+    // EXPENSE CATEGORIES
     const expenseCategoriesListener = onSnapshot(
       doc(db, 'expenseCategories', userId),
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          
-          console.log('📦 Expense categories change from device:', data.deviceId);
-          
-          if (data.deviceId === this.deviceId) {
-            console.log('⏭️ Ignoring expense categories from same device');
-            return;
-          }
-
-          console.log('📥 Expense categories update from another device');
-          localStorage.setItem('mpump_expense_categories', JSON.stringify(data.categories));
-          window.dispatchEvent(new Event('localStorageChange'));
+          if (data.deviceId === this.deviceId) return;
+          localStorageService.setExpenseCategories(data.categories);
+          uidDetailEvent();
         }
       },
-      (error) => {
-        console.log('📴 Expense categories listener error:', error.message);
-      }
+      (error) => console.log('📴 Expense categories listener error:', error.message)
     );
 
     this.listeners.push(
-      customersListener, 
-      creditSalesListener, 
-      paymentsListener, 
-      settlementsListener, 
-      salesListener, 
+      customersListener,
+      creditSalesListener,
+      paymentsListener,
+      settlementsListener,
+      salesListener,
       incomeExpensesListener,
       fuelSettingsListener,
       settlementTypesListener,
       incomeCategoriesListener,
       expenseCategoriesListener
     );
-    
     console.log(`✅ Successfully started ${this.listeners.length} Firebase listeners`);
-    console.log('🎯 Listening for: customers, creditSales, payments, settlements, sales, incomeExpenses, fuelSettings, settlementTypes, incomeCategories, expenseCategories');
   }
 
   // Stop all listeners
@@ -861,20 +459,11 @@ class FirebaseSyncService {
     console.log('🛑 Firebase listeners stopped');
   }
 
-  // Get sync status
+  // Diagnostics
   getSyncStatus() {
     const userId = this.getUserId();
-    return {
-      enabled: this.syncEnabled,
-      deviceId: this.deviceId,
-      initialized: this.initialized,
-      authenticated: !!userId,
-      userId: userId,
-      listenersCount: this.listeners.length
-    };
+    return { enabled: this.syncEnabled, deviceId: this.deviceId, initialized: this.initialized, authenticated: !!userId, userId, listenersCount: this.listeners.length };
   }
-
-  // Diagnostic method - call this to check sync status
   diagnoseSync() {
     const status = this.getSyncStatus();
     console.log('=== FIREBASE SYNC DIAGNOSTIC ===');
@@ -888,52 +477,22 @@ class FirebaseSyncService {
     return status;
   }
 
-  // Manual pull from Firebase - for testing
+  // Manual pull
   async manualPullFromFirebase() {
     console.log('🔄 Manually pulling data from Firebase...');
-    
-    const userId = this.getUserId();
-    if (!userId) {
-      console.error('❌ Cannot pull: User not authenticated');
-      return;
-    }
-
+    const userId = this.getUserId(); if (!userId) return console.error('❌ Cannot pull: User not authenticated');
     try {
-      // Pull customers
       const customersSnap = await getDocs(query(collection(db, 'customers'), where('userId', '==', userId)));
-      console.log(`📥 Found ${customersSnap.size} customers in Firebase`);
-      
-      const customers = [];
-      customersSnap.forEach(doc => {
-        customers.push(doc.data());
-      });
-      
-      if (customers.length > 0) {
-        localStorage.setItem('customers', JSON.stringify(customers));
-        console.log('✅ Customers updated in localStorage');
-        window.dispatchEvent(new Event('localStorageChange'));
-      }
+      const customers = []; customersSnap.forEach(docSnap => customers.push(docSnap.data()));
+      localStorageService.setCustomers(customers);
 
-      // Pull credit sales
       const creditsSnap = await getDocs(query(collection(db, 'creditSales'), where('userId', '==', userId)));
-      console.log(`📥 Found ${creditsSnap.size} credit sales in Firebase`);
-      
-      const credits = [];
-      creditsSnap.forEach(doc => {
-        credits.push(doc.data());
-      });
-      
-      if (credits.length > 0) {
-        localStorage.setItem('creditData', JSON.stringify(credits));
-        console.log('✅ Credit sales updated in localStorage');
-        window.dispatchEvent(new Event('localStorageChange'));
-      }
+      const credits = []; creditsSnap.forEach(docSnap => credits.push(docSnap.data()));
+      localStorageService.setCreditData(credits);
 
       console.log('✅ Manual pull completed successfully');
-      
-    } catch (error) {
-      console.error('❌ Manual pull failed:', error);
-    }
+      try { window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId } })); } catch(_){}
+    } catch (error) { console.error('❌ Manual pull failed:', error); }
   }
 }
 
@@ -941,9 +500,7 @@ class FirebaseSyncService {
 const firebaseSyncService = new FirebaseSyncService();
 
 // Auto-initialize
-firebaseSyncService.initialize().catch(err => {
-  console.log('📴 Firebase sync will work when online:', err.message);
-});
+firebaseSyncService.initialize().catch(err => { console.log('📴 Firebase sync will work when online:', err.message); });
 
 // Expose diagnostic globally for debugging
 if (typeof window !== 'undefined') {
