@@ -761,8 +761,8 @@ const ZAPTRStyleCalculator = () => {
   const [savedScrollPosition, setSavedScrollPosition] = useState(0);
   
   // Authentication state
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(true);
+  const [authLoading, setAuthLoading] = useState(false);
 
   // Check screen size for mobile detection
   // Check authentication status
