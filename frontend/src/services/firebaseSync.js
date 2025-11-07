@@ -32,7 +32,10 @@ class FirebaseSyncService {
 
   // Initialize Firebase sync
   async initialize() {
-    if (this.initialized) return;
+    if (this.initialized) {
+      console.log('⚠️ Firebase sync already initialized, skipping');
+      return;
+    }
     
     try {
       await initializeAuth();
