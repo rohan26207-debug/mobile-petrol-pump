@@ -441,6 +441,17 @@ class FirebaseSyncService {
         await this.syncIncomeExpense(record, 'add');
       }
 
+      // Sync settings data
+      const fuelSettings = localStorageService.getFuelSettings();
+      const settlementTypes = localStorageService.getSettlementTypes();
+      const incomeCategories = localStorageService.getIncomeCategories();
+      const expenseCategories = localStorageService.getExpenseCategories();
+
+      if (fuelSettings) await this.syncFuelSettings(fuelSettings);
+      if (settlementTypes) await this.syncSettlementTypes(settlementTypes);
+      if (incomeCategories) await this.syncIncomeCategories(incomeCategories);
+      if (expenseCategories) await this.syncExpenseCategories(expenseCategories);
+
       console.log('✅ Bulk sync completed successfully');
     } catch (error) {
       console.error('❌ Bulk sync failed:', error);
