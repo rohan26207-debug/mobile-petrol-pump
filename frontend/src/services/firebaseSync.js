@@ -13,7 +13,7 @@ import {
   serverTimestamp,
   writeBatch
 } from 'firebase/firestore';
-import { db, getDeviceId, initializeAuth } from './firebase';
+import { db, auth, getDeviceId, initializeAuth } from './firebase';
 import localStorageService, { setStorageNamespace, clearStorageNamespace } from './localStorage';
 
 class FirebaseSyncService {
