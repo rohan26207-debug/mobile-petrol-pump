@@ -92,7 +92,7 @@ private void savePdfFile(String base64Pdf, String fileName) {
 ## Testing the Fix
 
 ### In Web Browser (Already Verified ✅):
-1. Open: https://petrolsync.preview.emergentagent.com
+1. Open: https://petropump-sync.preview.emergentagent.com
 2. Click "PDF" button (top right)
 3. Configure PDF settings
 4. Click "Generate PDF"
