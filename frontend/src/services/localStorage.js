@@ -436,6 +436,13 @@ class LocalStorageService {
     if (incomeIndex !== -1) {
       income[incomeIndex] = { ...income[incomeIndex], ...updatedData };
       this.setIncomeData(income);
+      
+      // Sync to Firebase
+      const firebaseSync = getFirebaseSync();
+      if (firebaseSync) {
+        firebaseSync.syncIncomeExpense(income[incomeIndex], 'update');
+      }
+      
       return income[incomeIndex];
     }
     return null;
