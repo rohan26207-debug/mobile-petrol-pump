@@ -279,6 +279,121 @@ class FirebaseSyncService {
     }
   }
 
+  // ==================== SETTINGS SYNC ====================
+
+  // Sync fuel settings
+  async syncFuelSettings(settings) {
+    if (!this.syncEnabled) return;
+
+    try {
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('📴 User not authenticated, skipping fuel settings sync');
+        return;
+      }
+
+      const settingsData = {
+        settings,
+        userId,
+        deviceId: this.deviceId,
+        syncedAt: serverTimestamp()
+      };
+
+      // Use userId as document ID to ensure one settings doc per user
+      const docRef = doc(db, 'fuelSettings', userId);
+      await updateDoc(docRef, settingsData).catch(() => {
+        return addDoc(collection(db, 'fuelSettings'), { ...settingsData, id: userId });
+      });
+      console.log('✅ Fuel settings synced');
+    } catch (error) {
+      console.log('📴 Will sync when online:', error.message);
+    }
+  }
+
+  // Sync settlement types
+  async syncSettlementTypes(types) {
+    if (!this.syncEnabled) return;
+
+    try {
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('📴 User not authenticated, skipping settlement types sync');
+        return;
+      }
+
+      const typesData = {
+        types,
+        userId,
+        deviceId: this.deviceId,
+        syncedAt: serverTimestamp()
+      };
+
+      const docRef = doc(db, 'settlementTypes', userId);
+      await updateDoc(docRef, typesData).catch(() => {
+        return addDoc(collection(db, 'settlementTypes'), { ...typesData, id: userId });
+      });
+      console.log('✅ Settlement types synced');
+    } catch (error) {
+      console.log('📴 Will sync when online:', error.message);
+    }
+  }
+
+  // Sync income categories
+  async syncIncomeCategories(categories) {
+    if (!this.syncEnabled) return;
+
+    try {
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('📴 User not authenticated, skipping income categories sync');
+        return;
+      }
+
+      const categoriesData = {
+        categories,
+        userId,
+        deviceId: this.deviceId,
+        syncedAt: serverTimestamp()
+      };
+
+      const docRef = doc(db, 'incomeCategories', userId);
+      await updateDoc(docRef, categoriesData).catch(() => {
+        return addDoc(collection(db, 'incomeCategories'), { ...categoriesData, id: userId });
+      });
+      console.log('✅ Income categories synced');
+    } catch (error) {
+      console.log('📴 Will sync when online:', error.message);
+    }
+  }
+
+  // Sync expense categories
+  async syncExpenseCategories(categories) {
+    if (!this.syncEnabled) return;
+
+    try {
+      const userId = this.getUserId();
+      if (!userId) {
+        console.log('📴 User not authenticated, skipping expense categories sync');
+        return;
+      }
+
+      const categoriesData = {
+        categories,
+        userId,
+        deviceId: this.deviceId,
+        syncedAt: serverTimestamp()
+      };
+
+      const docRef = doc(db, 'expenseCategories', userId);
+      await updateDoc(docRef, categoriesData).catch(() => {
+        return addDoc(collection(db, 'expenseCategories'), { ...categoriesData, id: userId });
+      });
+      console.log('✅ Expense categories synced');
+    } catch (error) {
+      console.log('📴 Will sync when online:', error.message);
+    }
+  }
+
   // ==================== BULK SYNC ====================
 
   // Sync all local data to cloud (useful for initial setup or after being offline)
