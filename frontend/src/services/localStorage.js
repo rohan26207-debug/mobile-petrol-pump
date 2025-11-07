@@ -242,6 +242,13 @@ class LocalStorageService {
     
     expenses.push(newExpense);
     this.setExpenseData(expenses);
+    
+    // Sync to Firebase
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) {
+      firebaseSync.syncIncomeExpense(newExpense, 'add');
+    }
+    
     return newExpense;
   }
 
