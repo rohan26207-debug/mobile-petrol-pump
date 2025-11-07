@@ -49,7 +49,7 @@ import OutstandingPDFReport from './OutstandingPDFReport';
 import CustomerLedger from './CustomerLedger';
 import BankSettlement from './BankSettlement';
 import SyncStatus from './SyncStatus';
-import LoginScreen from './LoginScreen';
+// Anonymous mode: LoginScreen removed
 import MPPStock from './MPPStock';
 import localStorageService from '../services/localStorage';
 
