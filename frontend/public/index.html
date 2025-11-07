@@ -27,29 +27,29 @@
         <!-- Filter Firestore WebChannel noise -->
         <script>
             (function() {
-                const originalFetch = window.fetch;
-                window.fetch = function(...args) {
-                    const [url] = args;
-                    
-                    return originalFetch.apply(this, args).then(response => {
-                        // Ignore Firestore WebChannel "terminate" 400 errors
-                        if (!response.ok) {
-                            const urlString = typeof url === 'string' ? url : url.url;
-                            if (urlString && urlString.includes("Firestore/Write/channel") && urlString.includes("TYPE=terminate")) {
-                                // Silently ignore these expected Firestore internal errors
-                                return response;
-                            }
-                        }
-                        return response;
-                    }).catch(error => {
-                        // Check if it's a Firestore terminate error
-                        const urlString = typeof url === 'string' ? url : url.url;
-                        if (urlString && urlString.includes("Firestore/Write/channel") && urlString.includes("TYPE=terminate")) {
-                            // Silently ignore
-                            return Promise.resolve(new Response(null, { status: 400 }));
-                        }
-                        throw error;
-                    });
+                // Suppress Firestore WebChannel "terminate" error logs
+                const originalConsoleError = console.error;
+                console.error = function(...args) {
+                    // Check if this is a Firestore terminate error
+                    const errorString = args.join(' ');
+                    if (errorString.includes('Firestore/Write/channel') && 
+                        errorString.includes('TYPE=terminate') &&
+                        (errorString.includes('400') || errorString.includes('ERR_INTERNET_DISCONNECTED'))) {
+                        // Silently ignore these expected Firestore internal errors
+                        return;
+                    }
+                    // Log all other errors normally
+                    originalConsoleError.apply(console, args);
+                };
+                
+                // Also filter console.warn for completeness
+                const originalConsoleWarn = console.warn;
+                console.warn = function(...args) {
+                    const warnString = args.join(' ');
+                    if (warnString.includes('Firestore/Write/channel') && warnString.includes('TYPE=terminate')) {
+                        return;
+                    }
+                    originalConsoleWarn.apply(console, args);
                 };
             })();
         </script>
