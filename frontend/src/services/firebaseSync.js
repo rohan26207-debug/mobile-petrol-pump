@@ -595,11 +595,29 @@ class FirebaseSyncService {
 
   // Get sync status
   getSyncStatus() {
+    const userId = this.getUserId();
     return {
       enabled: this.syncEnabled,
       deviceId: this.deviceId,
-      initialized: this.initialized
+      initialized: this.initialized,
+      authenticated: !!userId,
+      userId: userId,
+      listenersCount: this.listeners.length
     };
+  }
+
+  // Diagnostic method - call this to check sync status
+  diagnoseSync() {
+    const status = this.getSyncStatus();
+    console.log('=== FIREBASE SYNC DIAGNOSTIC ===');
+    console.log('Sync Enabled:', status.enabled);
+    console.log('Initialized:', status.initialized);
+    console.log('User Authenticated:', status.authenticated);
+    console.log('User ID:', status.userId || 'NOT LOGGED IN');
+    console.log('Device ID:', status.deviceId);
+    console.log('Active Listeners:', status.listenersCount);
+    console.log('================================');
+    return status;
   }
 }
 
