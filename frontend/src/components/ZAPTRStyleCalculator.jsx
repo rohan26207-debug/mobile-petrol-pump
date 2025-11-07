@@ -172,7 +172,12 @@ const ZAPTRStyleCalculator = () => {
     // Listen for Firebase sync updates from other devices
     const handleStorageChange = () => {
       console.log('🔄 Data synced from another device - reloading...');
-      loadData();
+      
+      // Force reload by updating state with fresh data
+      setTimeout(() => {
+        loadData();
+        console.log('✅ UI refreshed with synced data');
+      }, 100); // Small delay to ensure localStorage is updated
     };
 
     window.addEventListener('localStorageChange', handleStorageChange);
