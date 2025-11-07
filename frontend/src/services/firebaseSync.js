@@ -385,13 +385,13 @@ class FirebaseSyncService {
             }
             
             localStorage.setItem('creditData', JSON.stringify(credits));
-            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('localStorageChange'));
           } else if (change.type === 'removed') {
             console.log('📥 Credit sale deleted from another device');
             const credits = localStorageService.getCreditData();
             const filtered = credits.filter(c => c.id !== data.id);
             localStorage.setItem('creditData', JSON.stringify(filtered));
-            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('localStorageChange'));
           }
         });
       },
