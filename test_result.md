@@ -138,6 +138,22 @@ Status: ❌ **BLOCKED BY FIREBASE AUTHENTICATION FAILURE**
 #### ❌ CRITICAL BLOCKING ISSUE:
 
 **Firebase Authentication Complete Failure**
+
+## Test Session: Multi-Device Realtime Sync (Cross-Tab) — Rerun
+Date: November 7, 2025  
+Tester: AI Development Agent  
+Objective: Re-run cross-device sync after possible Firebase console updates.
+
+Planned Steps (same as previous session)
+1. Sign Up/Sign In user in Tab A
+2. Sign In same user in Tab B
+3. Tab A: Add Settlement (321, cash)
+4. Tab B: Verify auto-appear without reload
+5. Tab A: Edit to 345 from All Records
+6. Tab B: Verify auto-update to 345
+
+Status: Pending execution (rerun)
+
 - **Error**: `auth/network-request-failed` with HTTP 400 status
 - **API Endpoint**: `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword`
 - **Impact**: Cannot proceed with any multi-device sync testing
