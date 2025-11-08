@@ -133,9 +133,18 @@ const DeviceLinking = ({ onLinked, toast }) => {
 
     } catch (error) {
       console.error('Error linking device:', error);
+      
+      let errorMessage = "Failed to link device";
+      
+      if (error.code === 'permission-denied') {
+        errorMessage = '🔒 Permission denied. Please update Firestore security rules in Firebase Console. See /app/FIRESTORE_RULES_UPDATE_REQUIRED.md';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to link device",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
