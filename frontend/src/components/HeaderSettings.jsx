@@ -42,6 +42,7 @@ import IncomeExpenseCategories from './IncomeExpenseCategories';
 import SettlementManagement from './SettlementManagement';
 import QRCodeSender from './QRCodeSender';
 import QRCodeScanner from './QRCodeScanner';
+import DeviceLinking from './DeviceLinking';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
