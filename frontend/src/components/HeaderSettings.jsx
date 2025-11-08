@@ -1191,7 +1191,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                 {/* Existing Fuel Types */}
                 <div className="space-y-3">
                   <Label className="text-sm font-medium">Configure Fuel Types</Label>
-                  {Object.entries(fuelSettings).map(([fuelType, config]) => (
+                  {fuelSettings && Object.entries(fuelSettings).map(([fuelType, config]) => (
                     <div key={fuelType} className={`border rounded-lg p-3 ${
                       isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
                     }`}>
