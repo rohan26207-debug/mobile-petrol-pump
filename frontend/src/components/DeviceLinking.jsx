@@ -35,6 +35,8 @@ const DeviceLinking = ({ onLinked, toast }) => {
       const code = generateCode();
       const user = auth.currentUser;
 
+      console.log('🔗 Generating link code...', { code, userId: user?.uid });
+
       if (!user) {
         toast({
           title: "Error",
@@ -45,12 +47,15 @@ const DeviceLinking = ({ onLinked, toast }) => {
       }
 
       // Store code in Firestore with 10-minute expiry
-      await setDoc(doc(db, 'deviceLinks', code), {
+      const linkData = {
         userId: user.uid,
         createdAt: new Date().toISOString(),
         expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(), // 10 minutes
         deviceId: localStorage.getItem('deviceId') || 'primary'
-      });
+      };
+      
+      console.log('📝 Writing to Firestore:', { collection: 'deviceLinks', code, data: linkData });
+      await setDoc(doc(db, 'deviceLinks', code), linkData);
 
       setGeneratedCode(code);
       setIsCodeGenerated(true);
