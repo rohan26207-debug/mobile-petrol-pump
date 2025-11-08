@@ -11,7 +11,7 @@ import time
 import sys
 
 # Base URL from frontend/.env
-BASE_URL = "https://petropump-sync.preview.emergentagent.com/api"
+BASE_URL = "https://mpp-sync-debug.preview.emergentagent.com/api"
 
 # Test results storage
 test_results = []

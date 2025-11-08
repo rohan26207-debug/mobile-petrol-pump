@@ -89,7 +89,7 @@ The date-filtered QR code backup feature is functioning correctly:
 Date: November 7, 2025
 Tester: AI Testing Agent
 Scope: FastAPI backend JWT auth, protected CRUD routes, and sync endpoints
-Base URL: https://petropump-sync.preview.emergentagent.com/api
+Base URL: https://mpp-sync-debug.preview.emergentagent.com/api
 
 ### Test Results: ✅ ALL TESTS PASSED (14/14)
 
@@ -131,7 +131,7 @@ Status: ❌ **BLOCKED BY FIREBASE AUTHENTICATION FAILURE**
 
 ### Test Results Summary
 
-**Test Environment**: https://petropump-sync.preview.emergentagent.com  
+**Test Environment**: https://mpp-sync-debug.preview.emergentagent.com  
 **Test Date**: November 7, 2025  
 **Tester**: AI Testing Agent  
 
@@ -162,7 +162,7 @@ Status: ❌ **CRITICAL FIREBASE AUTHENTICATION FAILURE PERSISTS**
 **Objective**: Test multi-device realtime sync using user-provided credentials (TEST123@GMAIL.COM / 123456)
 
 ### Test Environment
-- **URL**: https://petropump-sync.preview.emergentagent.com
+- **URL**: https://mpp-sync-debug.preview.emergentagent.com
 - **Credentials**: TEST123@GMAIL.COM / 123456
 - **Test Date**: November 7, 2025
 
@@ -354,7 +354,7 @@ The application has transitioned from **"COMPLETELY UNUSABLE"** to **"FULLY FUNC
 
 ### Test Results Summary (Rerun - November 7, 2025)
 
-**Test Environment**: https://petropump-sync.preview.emergentagent.com  
+**Test Environment**: https://mpp-sync-debug.preview.emergentagent.com  
 **Test Date**: November 7, 2025  
 **Tester**: AI Testing Agent  
 
@@ -539,7 +539,7 @@ The application has excellent UI design and appears to have robust realtime sync
 
 ### Test Results Summary
 
-**Test Environment**: https://petropump-sync.preview.emergentagent.com  
+**Test Environment**: https://mpp-sync-debug.preview.emergentagent.com  
 **Test Date**: November 7, 2025  
 **Tester**: AI Testing Agent  
 
@@ -3246,7 +3246,7 @@ useEffect(() => {
 ## Backend API Smoke Test - Rerun
 **Date**: November 7, 2025 21:02:38 UTC  
 **Tester**: AI Testing Agent  
-**Base URL**: https://petropump-sync.preview.emergentagent.com/api  
+**Base URL**: https://mpp-sync-debug.preview.emergentagent.com/api  
 **Test Type**: Full Backend API Smoke Test (Rerun)
 
 ### Test Objective
@@ -3410,7 +3410,7 @@ Status: Pending execution
 10. ✅ All routes correctly prefixed with /api
 
 **Verification Details**:
-- Base URL: https://petropump-sync.preview.emergentagent.com/api
+- Base URL: https://mpp-sync-debug.preview.emergentagent.com/api
 - All routes use /api prefix as required by Kubernetes ingress
 - Authentication uses JWT Bearer tokens
 - All protected endpoints require valid authentication
