@@ -28,7 +28,6 @@ class FirebaseSyncService {
 
   // Get current user ID
   getUserId() {
-    const { auth } = require('./firebase');
     return auth.currentUser?.uid || null;
   }
 
@@ -503,6 +502,7 @@ firebaseSyncService.initialize().catch(err => { console.log('📴 Firebase sync 
 
 // Expose diagnostic globally for debugging
 if (typeof window !== 'undefined') {
+  window.firebaseSyncService = firebaseSyncService;
   window.diagnoseFirebaseSync = () => firebaseSyncService.diagnoseSync();
   window.manualPullFirebase = () => firebaseSyncService.manualPullFromFirebase();
   window.syncAllToFirebase = () => firebaseSyncService.syncAllLocalData();
