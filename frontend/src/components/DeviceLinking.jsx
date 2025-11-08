@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { db, auth } from '../services/firebase';
 import { collection, doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
+import { Card, CardHeader, CardTitle, CardContent } from './ui/card';
 import { Copy, Link2, Smartphone } from 'lucide-react';
 
 /**
