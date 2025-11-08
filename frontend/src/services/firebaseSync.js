@@ -14,6 +14,7 @@ import {
   writeBatch
 } from 'firebase/firestore';
 import { db, auth, getDeviceId, initializeAuth } from './firebase';
+import { onAuthStateChanged } from 'firebase/auth';
 import localStorageService, { setStorageNamespace, clearStorageNamespace } from './localStorage';
 
 class FirebaseSyncService {
