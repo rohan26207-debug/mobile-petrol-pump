@@ -295,6 +295,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   // Android import callback removed - using standard file input for all platforms
 
   const updateNozzleCount = (fuelType, delta) => {
+    if (!fuelSettings || !fuelSettings[fuelType]) return;
+    
     const newSettings = {
       ...fuelSettings,
       [fuelType]: {
