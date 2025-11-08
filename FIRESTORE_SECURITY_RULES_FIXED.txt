@@ -91,6 +91,18 @@ service cloud.firestore {
       allow read, write: if isAuthenticated() && isOwner(userId);
     }
     
+    // Device Links - temporary linking codes (document ID = 6-digit code)
+    match /deviceLinks/{linkCode} {
+      // Anyone authenticated can create a link code
+      allow create: if isAuthenticated();
+      // Anyone authenticated can read (to verify codes)
+      allow read: if isAuthenticated();
+      // Only the owner can delete their link code
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+      // No updates allowed
+      allow update: if false;
+    }
+    
     // Deny all other access
     match /{document=**} {
       allow read, write: if false;
