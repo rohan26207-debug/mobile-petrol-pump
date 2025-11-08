@@ -59,8 +59,6 @@ class FirebaseSyncService {
 
   setupAuthWatcher() {
     try {
-      // Listen to Firebase auth state changes (ESM import)
-      const { onAuthStateChanged } = await import('firebase/auth');
       onAuthStateChanged(auth, (user) => {
         const newUid = user?.uid || null;
         if (newUid === this.currentUserId) return; // No change
