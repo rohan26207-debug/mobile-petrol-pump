@@ -349,6 +349,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   };
 
   const removeFuelType = (fuelType) => {
+    if (!fuelSettings) return;
+    
     const { [fuelType]: removed, ...newSettings } = fuelSettings;
     
     setFuelSettings(newSettings);
