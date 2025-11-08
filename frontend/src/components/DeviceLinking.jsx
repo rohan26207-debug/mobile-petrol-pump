@@ -163,6 +163,27 @@ const DeviceLinking = ({ onLinked, toast }) => {
 
   return (
     <div className="space-y-4">
+      {/* Warning Banner - Firestore Rules Required */}
+      <div className="bg-red-50 border-2 border-red-400 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <div className="text-red-600 font-bold text-2xl">⚠️</div>
+          <div className="flex-1">
+            <h3 className="font-bold text-red-800 mb-2">Firestore Rules Update Required!</h3>
+            <p className="text-sm text-red-700 mb-2">
+              Before using Device Linking, you must update Firestore security rules in Firebase Console.
+            </p>
+            <ol className="text-sm text-red-700 space-y-1 list-decimal list-inside">
+              <li>Go to Firebase Console → Firestore Database → Rules</li>
+              <li>Copy rules from <code className="bg-red-100 px-1 rounded">/app/FIRESTORE_SECURITY_RULES_FIXED.txt</code></li>
+              <li>Paste and click "Publish"</li>
+            </ol>
+            <p className="text-xs text-red-600 mt-2 font-semibold">
+              See detailed instructions: <code className="bg-red-100 px-1 rounded">/app/FIRESTORE_RULES_UPDATE_REQUIRED.md</code>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
