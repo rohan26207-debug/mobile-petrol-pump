@@ -331,7 +331,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     // Use a default price of 100 when adding new fuel type
     // Price will be set in the Price Configuration tab
     const newSettings = {
-      ...fuelSettings,
+      ...(fuelSettings || {}),
       [newFuelType]: {
         price: 100.00, // Default price, will be configured in Price tab
         nozzleCount: 2
