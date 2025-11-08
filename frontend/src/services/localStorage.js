@@ -5,11 +5,11 @@
  * Adds per-user namespacing so different users never see each other's data
  */
 
-// Import Firebase sync service via global to avoid circular deps
+// Import Firebase sync service (lazy below to avoid cycles)
 let firebaseSyncService = null;
 
 // Active namespace prefix: e.g., "mpp:<uid>:"
-let ACTIVE_NAMESPACE = 'mpp:guest:';
+let ACTIVE_NAMESPACE = null;
 
 // Helper to build namespaced key
 const nsKey = (baseKey) => (ACTIVE_NAMESPACE ? `${ACTIVE_NAMESPACE}${baseKey}` : baseKey);
@@ -43,15 +43,16 @@ const LEGACY_MISC_KEYS = [
   'appTheme'
 ];
 
+// Detect and require lazily to avoid circular deps
 const getFirebaseSync = () => {
-  try {
-    if (typeof window !== 'undefined' && window.firebaseSyncService) {
-      return window.firebaseSyncService;
+  if (!firebaseSyncService) {
+    try {
+      firebaseSyncService = require('./firebaseSync').default;
+    } catch (error) {
+      console.log('Firebase sync not available:', error.message);
     }
-  } catch (error) {
-    console.log('Firebase sync not available:', error?.message || error);
   }
-  return null;
+  return firebaseSyncService;
 };
 
 class LocalStorageService {
@@ -72,6 +73,8 @@ class LocalStorageService {
       incomeDescHistory: 'mpump_income_desc_history',
       expenseDescHistory: 'mpump_expense_desc_history'
     };
+
+    // Do not initialize defaults until a namespace is set (guest or user)
   }
 
   // ===== Namespace management =====
@@ -79,7 +82,7 @@ class LocalStorageService {
     const prevNs = ACTIVE_NAMESPACE;
     ACTIVE_NAMESPACE = userId ? `mpp:${userId}:` : 'mpp:guest:';
 
-    // On first set for a logged-in (or anonymous) user, run migration from legacy unscoped/alt keys
+    // On first set for a logged-in user, run migration from legacy unscoped/alt keys
     if (userId) {
       this.migrateLegacyKeys({ deleteAfter: true });
     }
@@ -95,13 +98,17 @@ class LocalStorageService {
     return { prevNs, newNs: ACTIVE_NAMESPACE };
   }
 
-  getNamespace() { return ACTIVE_NAMESPACE; }
+  getNamespace() {
+    return ACTIVE_NAMESPACE;
+  }
 
   clearNamespace() {
     const prevNs = ACTIVE_NAMESPACE;
     ACTIVE_NAMESPACE = 'mpp:guest:';
     this.initializeDefaultData();
-    try { window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId: null, namespace: ACTIVE_NAMESPACE } })); } catch(_){}
+    try {
+      window.dispatchEvent(new CustomEvent('localStorageChange', { detail: { userId: null, namespace: ACTIVE_NAMESPACE } }));
+    } catch (_) {}
     return prevNs;
   }
 
@@ -114,6 +121,7 @@ class LocalStorageService {
       const nsExists = localStorage.getItem(namespaced) !== null;
       if (nsExists) return; // Already migrated for this user
 
+      // 1) Primary legacy (unscoped) key
       const legacyVal = localStorage.getItem(baseKey);
       if (legacyVal !== null) {
         localStorage.setItem(namespaced, legacyVal);
@@ -121,6 +129,7 @@ class LocalStorageService {
         return;
       }
 
+      // 2) Alternate legacy keys used by older builds
       for (const alt of altKeys) {
         const val = localStorage.getItem(alt);
         if (val !== null) {
@@ -131,12 +140,16 @@ class LocalStorageService {
       }
     };
 
+    // Migrate structured data keys
     Object.entries(LEGACY_ALT_KEYS).forEach(([baseKey, alts]) => migrateKey(baseKey, alts));
+
+    // Migrate misc single-value keys
     LEGACY_MISC_KEYS.forEach((k) => migrateKey(k, []));
   }
 
   // ===== Initialization within the current namespace =====
   initializeDefaultData() {
+    // Default fuel settings
     const defaultFuelSettings = {
       'Diesel': { price: 90.46, nozzleCount: 2 },
       'Petrol': { price: 102.50, nozzleCount: 3 },
@@ -145,8 +158,11 @@ class LocalStorageService {
     };
 
     const existingSettings = this.getFuelSettings();
-    if (!existingSettings) { this.setFuelSettings(defaultFuelSettings); }
+    if (!existingSettings) {
+      this.setFuelSettings(defaultFuelSettings);
+    }
 
+    // Initialize empty arrays if not exist
     if (!this.getSalesData()) this.setSalesData([]);
     if (!this.getCreditData()) this.setCreditData([]);
     if (!this.getIncomeData()) this.setIncomeData([]);
@@ -155,6 +171,7 @@ class LocalStorageService {
     if (!this.getPayments()) this.setPayments([]);
     if (!this.getSettlements()) this.setSettlements([]);
 
+    // Initialize default income/expense categories
     if (!this.getIncomeCategories()) {
       this.setIncomeCategories([
         { id: '1', name: 'Other Income' },
@@ -172,6 +189,7 @@ class LocalStorageService {
       ]);
     }
 
+    // Initialize default settlement types
     const existingTypes = this.getItem(this.keys.settlementTypes);
     if (!existingTypes || existingTypes.length === 0) {
       this.setSettlementTypes([
@@ -185,19 +203,559 @@ class LocalStorageService {
 
   // ===== Generic localStorage methods (namespaced) =====
   setItem(key, data) {
-    try { localStorage.setItem(nsKey(key), JSON.stringify(data)); return true; }
-    catch (error) { console.error('Failed to save to localStorage:', error); return false; }
-  }
-  getItem(key) {
-    try { const data = localStorage.getItem(nsKey(key)); return data ? JSON.parse(data) : null; }
-    catch (error) { console.error('Failed to read from localStorage:', error); return null; }
+    try {
+      localStorage.setItem(nsKey(key), JSON.stringify(data));
+      return true;
+    } catch (error) {
+      console.error('Failed to save to localStorage:', error);
+      return false;
+    }
   }
 
-  // ... rest of file unchanged ...
+  getItem(key) {
+    try {
+      const data = localStorage.getItem(nsKey(key));
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Failed to read from localStorage:', error);
+      return null;
+    }
+  }
+
+  // ===== Sales Data Methods =====
+  getSalesData() { return this.getItem(this.keys.salesData) || []; }
+  setSalesData(data) { return this.setItem(this.keys.salesData, data); }
+  addSaleRecord(saleData) {
+    const sales = this.getSalesData();
+    const newSale = {
+      id: Date.now().toString(),
+      date: saleData.date,
+      nozzle: saleData.nozzle,
+      fuelType: saleData.fuelType,
+      startReading: parseFloat(saleData.startReading),
+      endReading: parseFloat(saleData.endReading),
+      liters: parseFloat(saleData.liters),
+      rate: parseFloat(saleData.rate),
+      amount: parseFloat(saleData.amount),
+      type: 'cash',
+      mpp: saleData.mpp || false,
+      timestamp: new Date().toISOString()
+    };
+    sales.push(newSale);
+    this.setSalesData(sales);
+    return newSale;
+  }
+
+  // ===== Credit Data Methods =====
+  getCreditData() { return this.getItem(this.keys.creditData) || []; }
+  setCreditData(data) { return this.setItem(this.keys.creditData, data); }
+  addCreditRecord(creditData) {
+    const credits = this.getCreditData();
+    const newCredit = {
+      id: Date.now().toString(),
+      date: creditData.date,
+      customerId: creditData.customerId,
+      customerName: creditData.customerName,
+      fuelEntries: creditData.fuelEntries || [],
+      incomeEntries: creditData.incomeEntries || [],
+      expenseEntries: creditData.expenseEntries || [],
+      amount: parseFloat(creditData.amount),
+      totalAmount: parseFloat(creditData.amount),
+      vehicleNumber: creditData.vehicleNumber || 'N/A',
+      fuelType: creditData.fuelType || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].fuelType : 'N/A'),
+      liters: creditData.liters || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].liters : 0),
+      rate: creditData.rate || (creditData.fuelEntries && creditData.fuelEntries[0] ? creditData.fuelEntries[0].rate : 0),
+      dueDate: creditData.dueDate || creditData.date,
+      status: creditData.status || 'pending',
+      mpp: creditData.mpp || false,
+      timestamp: new Date().toISOString()
+    };
+    credits.push(newCredit);
+    this.setCreditData(credits);
+    return newCredit;
+  }
+
+  // ===== Income Methods =====
+  getIncomeData() { return this.getItem(this.keys.incomeData) || []; }
+  setIncomeData(data) { return this.setItem(this.keys.incomeData, data); }
+  addIncomeRecord(incomeData) {
+    const income = this.getIncomeData();
+    const newIncome = {
+      id: Date.now().toString(),
+      date: incomeData.date,
+      amount: parseFloat(incomeData.amount),
+      description: incomeData.description || incomeData.category || 'Income',
+      type: 'income',
+      mpp: incomeData.mpp || false,
+      timestamp: new Date().toISOString()
+    };
+    income.push(newIncome);
+    this.setIncomeData(income);
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) firebaseSync.syncIncomeExpense(newIncome, 'add');
+    return newIncome;
+  }
+
+  // ===== Expense Methods =====
+  getExpenseData() { return this.getItem(this.keys.expenseData) || []; }
+  setExpenseData(data) { return this.setItem(this.keys.expenseData, data); }
+  addExpenseRecord(expenseData) {
+    const expenses = this.getExpenseData();
+    const newExpense = {
+      id: Date.now().toString(),
+      date: expenseData.date,
+      amount: parseFloat(expenseData.amount),
+      description: expenseData.description || expenseData.category || 'Expense',
+      type: 'expense',
+      mpp: expenseData.mpp || false,
+      timestamp: new Date().toISOString()
+    };
+    expenses.push(newExpense);
+    this.setExpenseData(expenses);
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) firebaseSync.syncIncomeExpense(newExpense, 'add');
+    return newExpense;
+  }
+
+  // ===== Fuel Settings =====
+  getFuelSettings() { return this.getItem(this.keys.fuelSettings); }
+  setFuelSettings(settings) {
+    const result = this.setItem(this.keys.fuelSettings, settings);
+    const firebaseSync = getFirebaseSync();
+    if (firebaseSync) firebaseSync.syncFuelSettings(settings);
+    return result;
+  }
+
+  updateFuelRate(fuelType, rate, date = null) {
+    if (date) return this.setRateForDate(fuelType, rate, date);
+    const settings = this.getFuelSettings() || {};
+    if (settings[fuelType]) {
+      settings[fuelType].price = parseFloat(rate);
+      this.setFuelSettings(settings);
+      return true;
+    }
+    return false;
+  }
+
+  // ===== Date-specific rates =====
+  getAllRates() { return this.getItem(this.keys.rates) || {}; }
+  setAllRates(rates) { return this.setItem(this.keys.rates, rates); }
+  setRateForDate(fuelType, rate, date) {
+    const rates = this.getAllRates();
+    if (!rates[date]) rates[date] = {};
+    rates[date][fuelType] = parseFloat(rate);
+    return this.setAllRates(rates);
+  }
+  getRatesForDate(date) {
+    const rates = this.getAllRates();
+    if (rates[date]) return rates[date];
+    const allDates = Object.keys(rates).sort().reverse();
+    const previousDate = allDates.find(d => d < date);
+    if (previousDate) return rates[previousDate];
+    return {};
+  }
+  getLastChangedRate(fuelType, beforeDate) {
+    const rates = this.getAllRates();
+    const allDates = Object.keys(rates).filter(d => d < beforeDate).sort().reverse();
+    for (const date of allDates) {
+      if (rates[date][fuelType] !== undefined) return rates[date][fuelType];
+    }
+    return null;
+  }
+
+  // ===== Filtering =====
+  getDataByDate(dataType, date) {
+    let data = [];
+    switch (dataType) {
+      case 'sales': data = this.getSalesData(); break;
+      case 'credit': data = this.getCreditData(); break;
+      case 'income': data = this.getIncomeData(); break;
+      case 'expense': data = this.getExpenseData(); break;
+    }
+    if (!date) return data;
+    return data.filter(item => item.date === date);
+  }
+
+  // ===== Delete helpers =====
+  deleteSaleRecord(id) {
+    const sales = this.getSalesData();
+    const updated = sales.filter(s => s.id !== id);
+    this.setSalesData(updated);
+    return true;
+  }
+  deleteCreditRecord(id) {
+    const credits = this.getCreditData();
+    const updated = credits.filter(c => c.id !== id);
+    this.setCreditData(updated);
+    return true;
+  }
+  deleteIncomeRecord(id) {
+    const income = this.getIncomeData();
+    const rec = income.find(i => i.id === id);
+    const updated = income.filter(i => i.id !== id);
+    this.setIncomeData(updated);
+    if (rec) { const fs = getFirebaseSync(); if (fs) fs.syncIncomeExpense(rec, 'delete'); }
+    return true;
+  }
+  deleteExpenseRecord(id) {
+    const expenses = this.getExpenseData();
+    const rec = expenses.find(e => e.id === id);
+    const updated = expenses.filter(e => e.id !== id);
+    this.setExpenseData(updated);
+    if (rec) { const fs = getFirebaseSync(); if (fs) fs.syncIncomeExpense(rec, 'delete'); }
+    return true;
+  }
+
+  // ===== Combined getter =====
+  getIncomeExpenseData() {
+    const income = this.getIncomeData();
+    const expenses = this.getExpenseData();
+    return [...income, ...expenses];
+  }
+
+  // ===== Update helpers =====
+  updateSaleRecord(id, updatedData) {
+    const sales = this.getSalesData();
+    const idx = sales.findIndex(s => s.id === id);
+    if (idx !== -1) {
+      sales[idx] = { ...sales[idx], ...updatedData };
+      this.setSalesData(sales);
+      return sales[idx];
+    }
+    return null;
+  }
+  updateCreditRecord(id, updatedData) {
+    const credits = this.getCreditData();
+    const idx = credits.findIndex(c => c.id === id);
+    if (idx !== -1) {
+      credits[idx] = { ...credits[idx], ...updatedData };
+      this.setCreditData(credits);
+      return credits[idx];
+    }
+    return null;
+  }
+  updateIncomeRecord(id, updatedData) {
+    const income = this.getIncomeData();
+    const idx = income.findIndex(i => i.id === id);
+    if (idx !== -1) {
+      income[idx] = { ...income[idx], ...updatedData };
+      this.setIncomeData(income);
+      const fs = getFirebaseSync();
+      if (fs) fs.syncIncomeExpense(income[idx], 'update');
+      return income[idx];
+    }
+    return null;
+  }
+  updateExpenseRecord(id, updatedData) {
+    const expenses = this.getExpenseData();
+    const idx = expenses.findIndex(e => e.id === id);
+    if (idx !== -1) {
+      expenses[idx] = { ...expenses[idx], ...updatedData };
+      this.setExpenseData(expenses);
+      const fs = getFirebaseSync();
+      if (fs) fs.syncIncomeExpense(expenses[idx], 'update');
+      return expenses[idx];
+    }
+    return null;
+  }
+
+  // ===== Backup/Export =====
+  exportDataByDate(selectedDate) {
+    const sales = this.getSalesData().filter(s => s.date === selectedDate).map(s => ({
+      i: s.id, d: s.date, n: s.nozzle, f: s.fuelType, sr: s.startReading, er: s.endReading, l: s.liters, r: s.rate, a: s.amount, m: s.mpp
+    }));
+    const credits = this.getCreditData().filter(c => c.date === selectedDate).map(c => ({
+      i: c.id, d: c.date, ci: c.customerId, cn: c.customerName, a: c.amount, m: c.mpp
+    }));
+    const income = this.getIncomeData().filter(i => i.date === selectedDate).map(i => ({
+      i: i.id, d: i.date, ds: i.description, a: i.amount, m: i.mpp
+    }));
+    const expense = this.getExpenseData().filter(e => e.date === selectedDate).map(e => ({
+      i: e.id, d: e.date, ds: e.description, a: e.amount, m: e.mpp
+    }));
+    const pay = this.getPayments().filter(p => p.date === selectedDate).map(p => ({
+      i: p.id, d: p.date, ci: p.customerId, a: p.amount, m: p.mode
+    }));
+    const settle = this.getSettlements().filter(s => s.date === selectedDate).map(s => ({
+      i: s.id, d: s.date, a: s.amount, ds: s.description, m: s.mpp
+    }));
+    const cust = this.getCustomers().map(c => ({ i: c.id, n: c.name, sb: c.startingBalance, mpp: c.isMPP }));
+    const fuel = {};
+    const fullFuel = this.getFuelSettings() || {};
+    Object.keys(fullFuel).forEach(key => { fuel[key] = { p: fullFuel[key].price, n: fullFuel[key].nozzleCount }; });
+    return { s: sales, c: credits, i: income, e: expense, p: pay, st: settle, f: fuel, cu: cust, dt: selectedDate, v: '2.1' };
+  }
+
+  exportAllData() {
+    const stockData = {};
+    const stockKeys = Object.keys(localStorage).filter(key => key.endsWith('StockData'));
+    stockKeys.forEach(key => { stockData[key] = JSON.parse(localStorage.getItem(key) || '{}'); });
+    const contactInfo = localStorage.getItem(nsKey('mpump_contact_info'));
+    const notes = localStorage.getItem(nsKey('mpp_notes'));
+    const onlineUrl = localStorage.getItem(nsKey('mpump_online_url'));
+    const autoBackupSettings = localStorage.getItem(nsKey('mpump_auto_backup_settings'));
+    const weeklyBackupSettings = localStorage.getItem(nsKey('mpump_auto_backup_weekly_settings'));
+    const textSize = localStorage.getItem(nsKey('appTextSize'));
+    const theme = localStorage.getItem(nsKey('appTheme'));
+
+    return {
+      salesData: this.getSalesData(),
+      creditData: this.getCreditData(),
+      incomeData: this.getIncomeData(),
+      expenseData: this.getExpenseData(),
+      fuelSettings: this.getFuelSettings(),
+      customers: this.getCustomers(),
+      payments: this.getPayments(),
+      settlements: this.getSettlements(),
+      settlementTypes: this.getSettlementTypes(),
+      incomeCategories: this.getIncomeCategories(),
+      expenseCategories: this.getExpenseCategories(),
+      stockData,
+      contactInfo: contactInfo ? JSON.parse(contactInfo) : null,
+      notes: notes || '',
+      onlineUrl: onlineUrl || '',
+      autoBackupSettings: autoBackupSettings ? JSON.parse(autoBackupSettings) : null,
+      weeklyBackupSettings: weeklyBackupSettings ? JSON.parse(weeklyBackupSettings) : null,
+      appPreferences: { textSize: textSize || '100', theme: theme || 'light' },
+      exportDate: new Date().toISOString(),
+      version: '2.1'
+    };
+  }
+
+  importAllData(data) {
+    try {
+      if (data.salesData) this.setSalesData(data.salesData);
+      if (data.creditData) this.setCreditData(data.creditData);
+      if (data.incomeData) this.setIncomeData(data.incomeData);
+      if (data.expenseData) this.setExpenseData(data.expenseData);
+      if (data.fuelSettings) this.setFuelSettings(data.fuelSettings);
+      if (data.customers) this.setCustomers(data.customers);
+      if (data.payments) this.setPayments(data.payments);
+      if (data.settlements) this.setSettlements(data.settlements);
+      if (data.settlementTypes) this.setSettlementTypes(data.settlementTypes);
+      if (data.incomeCategories) this.setIncomeCategories(data.incomeCategories);
+      if (data.expenseCategories) this.setExpenseCategories(data.expenseCategories);
+      if (data.stockData) { Object.keys(data.stockData).forEach(key => { localStorage.setItem(nsKey(key), JSON.stringify(data.stockData[key])); }); }
+      if (data.contactInfo) { localStorage.setItem(nsKey('mpump_contact_info'), JSON.stringify(data.contactInfo)); }
+      if (data.notes !== undefined) { localStorage.setItem(nsKey('mpp_notes'), data.notes); }
+      if (data.onlineUrl !== undefined) { localStorage.setItem(nsKey('mpump_online_url'), data.onlineUrl); }
+      if (data.autoBackupSettings) { localStorage.setItem(nsKey('mpump_auto_backup_settings'), JSON.stringify(data.autoBackupSettings)); }
+      if (data.weeklyBackupSettings) { localStorage.setItem(nsKey('mpump_auto_backup_weekly_settings'), JSON.stringify(data.weeklyBackupSettings)); }
+      if (data.appPreferences) {
+        if (data.appPreferences.textSize) localStorage.setItem(nsKey('appTextSize'), data.appPreferences.textSize);
+        if (data.appPreferences.theme) localStorage.setItem(nsKey('appTheme'), data.appPreferences.theme);
+      }
+      return true;
+    } catch (error) {
+      console.error('Failed to import data:', error);
+      return false;
+    }
+  }
+
+  mergeAllData(importedData) {
+    try {
+      const mergeArrays = (existingArray, newArray) => {
+        if (!Array.isArray(existingArray)) existingArray = [];
+        if (!Array.isArray(newArray)) newArray = [];
+        const existingIds = new Set(existingArray.map(item => item.id));
+        const itemsToAdd = newArray.filter(item => !existingIds.has(item.id));
+        return [...existingArray, ...itemsToAdd];
+      };
+
+      if (importedData.salesData) this.setSalesData(mergeArrays(this.getSalesData(), importedData.salesData));
+      if (importedData.creditData) this.setCreditData(mergeArrays(this.getCreditData(), importedData.creditData));
+      if (importedData.incomeData) this.setIncomeData(mergeArrays(this.getIncomeData(), importedData.incomeData));
+      if (importedData.expenseData) this.setExpenseData(mergeArrays(this.getExpenseData(), importedData.expenseData));
+      if (importedData.customers) this.setCustomers(mergeArrays(this.getCustomers(), importedData.customers));
+      if (importedData.payments) this.setPayments(mergeArrays(this.getPayments(), importedData.payments));
+
+      if (importedData.fuelSettings && !this.getFuelSettings()) this.setFuelSettings(importedData.fuelSettings);
+
+      if (importedData.stockData) { Object.keys(importedData.stockData).forEach(key => { if (!localStorage.getItem(nsKey(key))) localStorage.setItem(nsKey(key), JSON.stringify(importedData.stockData[key])); }); }
+
+      if (importedData.contactInfo && !localStorage.getItem(nsKey('mpump_contact_info'))) localStorage.setItem(nsKey('mpump_contact_info'), JSON.stringify(importedData.contactInfo));
+      if (importedData.notes !== undefined && !localStorage.getItem(nsKey('mpp_notes'))) localStorage.setItem(nsKey('mpp_notes'), importedData.notes);
+      if (importedData.onlineUrl !== undefined && !localStorage.getItem(nsKey('mpump_online_url'))) localStorage.setItem(nsKey('mpump_online_url'), importedData.onlineUrl);
+      if (importedData.autoBackupSettings && !localStorage.getItem(nsKey('mpump_auto_backup_settings'))) localStorage.setItem(nsKey('mpump_auto_backup_settings'), JSON.stringify(importedData.autoBackupSettings));
+      if (importedData.weeklyBackupSettings && !localStorage.getItem(nsKey('mpump_auto_backup_weekly_settings'))) localStorage.setItem(nsKey('mpump_auto_backup_weekly_settings'), JSON.stringify(importedData.weeklyBackupSettings));
+
+      if (importedData.appPreferences) {
+        if (importedData.appPreferences.textSize && !localStorage.getItem(nsKey('appTextSize'))) localStorage.setItem(nsKey('appTextSize'), importedData.appPreferences.textSize);
+        if (importedData.appPreferences.theme && !localStorage.getItem(nsKey('appTheme'))) localStorage.setItem(nsKey('appTheme'), importedData.appPreferences.theme);
+      }
+
+      return true;
+    } catch (error) {
+      console.error('Failed to merge data:', error);
+      return false;
+    }
+  }
+
+  // Clear all data in current namespace only
+  clearAllData() {
+    const prefix = ACTIVE_NAMESPACE || '';
+    const keys = Object.keys(localStorage);
+    keys.forEach((k) => { if (k.startsWith(prefix)) localStorage.removeItem(k); });
+    this.initializeDefaultData();
+  }
+
+  // Storage info (current namespace only)
+  getStorageInfo() {
+    const prefix = ACTIVE_NAMESPACE || '';
+    let totalSize = 0;
+    let itemCount = 0;
+    for (const k of Object.keys(localStorage)) {
+      if (k.startsWith(prefix)) {
+        totalSize += (localStorage.getItem(k) || '').length;
+        if (k.includes('mpump_')) itemCount += 1;
+      }
+    }
+    return { totalSize, itemCount, maxSize: 5 * 1024 * 1024, usagePercent: (totalSize / (5 * 1024 * 1024)) * 100 };
+  }
+
+  // ===== Customers =====
+  getCustomers() { return this.getItem(this.keys.customers) || []; }
+  setCustomers(customers) { return this.setItem(this.keys.customers, customers); }
+  addCustomer(name, startingBalance = 0, isMPP = false) {
+    const customers = this.getCustomers();
+    if (isMPP) {
+      const existingMPP = customers.find(c => c.isMPP === true);
+      if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
+    }
+    const newCustomer = { id: Date.now().toString(), name, startingBalance: parseFloat(startingBalance) || 0, isMPP: isMPP || false, created_at: new Date().toISOString() };
+    customers.push(newCustomer);
+    customers.sort((a, b) => a.name.localeCompare(b.name));
+    this.setCustomers(customers);
+    const fs = getFirebaseSync(); if (fs) fs.syncCustomer(newCustomer, 'add');
+    return newCustomer;
+  }
+  deleteCustomer(id) {
+    const customers = this.getCustomers();
+    const customerToDelete = customers.find(c => c.id === id);
+    const updated = customers.filter(c => c.id !== id);
+    this.setCustomers(updated);
+    if (customerToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncCustomer(customerToDelete, 'delete'); }
+    return true;
+  }
+  updateCustomer(id, startingBalance, isMPP) {
+    const customers = this.getCustomers();
+    if (isMPP === true) {
+      const existingMPP = customers.find(c => c.isMPP === true && c.id !== id);
+      if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
+    }
+    const updated = customers.map(c => {
+      if (c.id === id) {
+        const u = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
+        if (isMPP !== undefined) u.isMPP = isMPP;
+        return u;
+      }
+      return c;
+    });
+    this.setCustomers(updated);
+    const updatedCustomer = updated.find(c => c.id === id);
+    if (updatedCustomer) { const fs = getFirebaseSync(); if (fs) fs.syncCustomer(updatedCustomer, 'update'); }
+    return updatedCustomer;
+  }
+
+  // Visibility
+  isMPPVisible() { return this.getCustomers().some(c => c.isMPP === true); }
+
+  // ===== Payments =====
+  getPayments() { return this.getItem(this.keys.payments) || []; }
+  setPayments(payments) { return this.setItem(this.keys.payments, payments); }
+  addPayment(paymentData) {
+    const payments = this.getPayments();
+    const newPayment = { id: Date.now().toString(), customerId: paymentData.customerId, customerName: paymentData.customerName, amount: parseFloat(paymentData.amount), date: paymentData.date, mode: paymentData.mode || 'cash', timestamp: new Date().toISOString(), linkedMPPCreditId: paymentData.linkedMPPCreditId || null, linkedMPPSettlementId: paymentData.linkedMPPSettlementId || null, isAutoMPPTracking: paymentData.isAutoMPPTracking || false, description: paymentData.description || null };
+    payments.push(newPayment);
+    this.setPayments(payments);
+    return newPayment;
+  }
+  updatePayment(id, paymentData) {
+    const payments = this.getPayments();
+    const index = payments.findIndex(p => p.id === id);
+    if (index !== -1) {
+      payments[index] = { ...payments[index], customerId: paymentData.customerId, customerName: paymentData.customerName, amount: parseFloat(paymentData.amount), date: paymentData.date, mode: paymentData.mode || payments[index].mode || 'cash', timestamp: new Date().toISOString() };
+      this.setPayments(payments);
+      return payments[index];
+    }
+    return null;
+  }
+  deletePayment(id) {
+    const payments = this.getPayments();
+    const updated = payments.filter(p => p.id !== id);
+    this.setPayments(updated);
+    return true;
+  }
+
+  // ===== Categories =====
+  getIncomeCategories() { return this.getItem(this.keys.incomeCategories) || []; }
+  setIncomeCategories(categories) { const result = this.setItem(this.keys.incomeCategories, categories); const fs = getFirebaseSync(); if (fs) fs.syncIncomeCategories(categories); return result; }
+  addIncomeCategory(name) { const categories = this.getIncomeCategories(); const newCategory = { id: Date.now().toString(), name }; categories.push(newCategory); categories.sort((a,b)=>a.name.localeCompare(b.name)); this.setIncomeCategories(categories); return newCategory; }
+  deleteIncomeCategory(id) { const categories = this.getIncomeCategories(); const updated = categories.filter(c => c.id !== id); this.setIncomeCategories(updated); return true; }
+  updateIncomeCategory(id, name) { const categories = this.getIncomeCategories(); const updated = categories.map(c => c.id === id ? { ...c, name } : c); updated.sort((a,b)=>a.name.localeCompare(b.name)); this.setIncomeCategories(updated); return updated.find(c => c.id === id); }
+
+  getExpenseCategories() { return this.getItem(this.keys.expenseCategories) || []; }
+  setExpenseCategories(categories) { const result = this.setItem(this.keys.expenseCategories, categories); const fs = getFirebaseSync(); if (fs) fs.syncExpenseCategories(categories); return result; }
+  addExpenseCategory(name) { const categories = this.getExpenseCategories(); const newCategory = { id: Date.now().toString(), name }; categories.push(newCategory); categories.sort((a,b)=>a.name.localeCompare(b.name)); this.setExpenseCategories(categories); return newCategory; }
+  deleteExpenseCategory(id) { const categories = this.getExpenseCategories(); const updated = categories.filter(c => c.id !== id); this.setExpenseCategories(updated); return true; }
+  updateExpenseCategory(id, name) { const categories = this.getExpenseCategories(); const updated = categories.map(c => c.id === id ? { ...c, name } : c); updated.sort((a,b)=>a.name.localeCompare(b.name)); this.setExpenseCategories(updated); return updated.find(c => c.id === id); }
+
+  // ===== Settlements =====
+  getSettlements() { return this.getItem(this.keys.settlements) || []; }
+  setSettlements(settlements) { return this.setItem(this.keys.settlements, settlements); }
+  addSettlement(settlementData) {
+    const settlements = this.getSettlements();
+    const newSettlement = { id: Date.now().toString(), date: settlementData.date, amount: parseFloat(settlementData.amount), description: settlementData.description || '', mpp: settlementData.mpp || false, timestamp: new Date().toISOString() };
+    settlements.push(newSettlement);
+    this.setSettlements(settlements);
+    const fs = getFirebaseSync(); if (fs) fs.syncSettlement(newSettlement, 'add');
+    return newSettlement;
+  }
+  updateSettlement(id, settlementData) {
+    const settlements = this.getSettlements();
+    const index = settlements.findIndex(s => s.id === id);
+    if (index !== -1) {
+      settlements[index] = { ...settlements[index], date: settlementData.date, amount: parseFloat(settlementData.amount), description: settlementData.description || '', mpp: settlementData.mpp !== undefined ? settlementData.mpp : settlements[index].mpp, timestamp: new Date().toISOString() };
+      this.setSettlements(settlements);
+      const fs = getFirebaseSync(); if (fs) fs.syncSettlement(settlements[index], 'update');
+      return settlements[index];
+    }
+    return null;
+  }
+  deleteSettlement(id) {
+    const settlements = this.getSettlements();
+    const toDelete = settlements.find(s => s.id === id);
+    const updated = settlements.filter(s => s.id !== id);
+    this.setSettlements(updated);
+    const fs = getFirebaseSync(); if (fs && toDelete) fs.syncSettlement(toDelete, 'delete');
+    return true;
+  }
+
+  // ===== Settlement Types =====
+  getSettlementTypes() { return this.getItem(this.keys.settlementTypes) || []; }
+  setSettlementTypes(types) { const result = this.setItem(this.keys.settlementTypes, types); const fs = getFirebaseSync(); if (fs) fs.syncSettlementTypes(types); return result; }
+  addSettlementType(name) { const types = this.getSettlementTypes(); const newType = { id: Date.now().toString(), name }; types.push(newType); types.sort((a,b)=>a.name.localeCompare(b.name)); this.setSettlementTypes(types); return newType; }
+  deleteSettlementType(id) { const types = this.getSettlementTypes(); const updated = types.filter(t => t.id !== id); this.setSettlementTypes(updated); return true; }
+  updateSettlementType(id, name) { const types = this.getSettlementTypes(); const updated = types.map(t => t.id === id ? { ...t, name } : t); types.sort((a,b)=>a.name.localeCompare(b.name)); this.setSettlementTypes(updated); return updated.find(t => t.id === id); }
+
+  // ===== Description history =====
+  getIncomeDescHistory() { return JSON.parse(localStorage.getItem(nsKey(this.keys.incomeDescHistory)) || '[]'); }
+  addIncomeDescHistory(description) { if (!description || !description.trim()) return; const history = this.getIncomeDescHistory(); const trimmed = description.trim(); if (history.includes(trimmed)) return; history.unshift(trimmed); if (history.length > 20) history.splice(20); localStorage.setItem(nsKey(this.keys.incomeDescHistory), JSON.stringify(history)); }
+  deleteIncomeDescHistory(description) { const history = this.getIncomeDescHistory(); const updated = history.filter(item => item !== description); localStorage.setItem(nsKey(this.keys.incomeDescHistory), JSON.stringify(updated)); }
+
+  getExpenseDescHistory() { return JSON.parse(localStorage.getItem(nsKey(this.keys.expenseDescHistory)) || '[]'); }
+  addExpenseDescHistory(description) { if (!description || !description.trim()) return; const history = this.getExpenseDescHistory(); const trimmed = description.trim(); if (history.includes(trimmed)) return; history.unshift(trimmed); if (history.length > 20) history.splice(20); localStorage.setItem(nsKey(this.keys.expenseDescHistory), JSON.stringify(history)); }
+  deleteExpenseDescHistory(description) { const history = this.getExpenseDescHistory(); const updated = history.filter(item => item !== description); localStorage.setItem(nsKey(this.keys.expenseDescHistory), JSON.stringify(updated)); }
+
+  // Pro mode
+  isProModeEnabled() { return localStorage.getItem(nsKey('mpump_pro_mode')) === 'true'; }
 }
 
+// Export singleton instance
 export const localStorageService = new LocalStorageService();
 export default localStorageService;
+
+// Export utility + namespace helpers
 export const setStorageNamespace = (userId) => localStorageService.setNamespace(userId);
 export const clearStorageNamespace = () => localStorageService.clearNamespace();
 export const exportAllData = () => localStorageService.exportAllData();
