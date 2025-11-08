@@ -5,13 +5,13 @@ import { getAuth, onAuthStateChanged, signInAnonymously, setPersistence, browser
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBH57yXo3xno_5jpzC_xPB_X_7Yi0KFRbc",
-  authDomain: "manager-petrol-pump-9e452.firebaseapp.com",
-  projectId: "manager-petrol-pump-9e452",
-  storageBucket: "manager-petrol-pump-9e452.firebasestorage.app",
-  messagingSenderId: "180699454459",
-  appId: "1:180699454459:web:ec2859947a4d34c611495e",
-  measurementId: "G-LX3Y4ZQEXL"
+  apiKey: "AIzaSyAHz4e4fQKL3zl9UdyOh83vli9IJ70FPDM",
+  authDomain: "manager-petrol-pump-f55db.firebaseapp.com",
+  projectId: "manager-petrol-pump-f55db",
+  storageBucket: "manager-petrol-pump-f55db.firebasestorage.app",
+  messagingSenderId: "480091504176",
+  appId: "1:480091504176:web:743c51b87adb62a2a977f5",
+  measurementId: "G-T0P6PY2MCJ"
 };
 
 // Initialize Firebase
