@@ -319,7 +319,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
       return;
     }
 
-    if (fuelSettings[newFuelType]) {
+    if (fuelSettings && fuelSettings[newFuelType]) {
       toast({
         title: "Duplicate Fuel Type",
         description: "This fuel type already exists",
