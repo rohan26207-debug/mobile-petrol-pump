@@ -62,9 +62,13 @@ const DeviceLinking = ({ onLinked, toast }) => {
 
     } catch (error) {
       console.error('Error generating code:', error);
+      const errorMessage = error.code === 'permission-denied' 
+        ? 'Firestore rules not updated. Please update security rules in Firebase Console.'
+        : error.message || 'Failed to generate linking code';
+      
       toast({
         title: "Error",
-        description: "Failed to generate linking code",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
