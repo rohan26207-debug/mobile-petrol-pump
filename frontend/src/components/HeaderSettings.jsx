@@ -1262,6 +1262,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                   Reset to Defaults
                 </Button>
               </TabsContent>
+
+              <TabsContent value="devicesync" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
+                <DeviceLinking toast={toast} />
+              </TabsContent>
               
               <TabsContent value="backup" className="p-4 overflow-y-auto" style={{ height: 'calc(100vh - 60px - 48px - 48px)' }}>
                 <div className="space-y-4">
