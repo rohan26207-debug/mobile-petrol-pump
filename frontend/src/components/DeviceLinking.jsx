@@ -95,8 +95,11 @@ const DeviceLinking = ({ onLinked, toast }) => {
     try {
       setLoading(true);
 
+      console.log('🔗 Attempting to link device with code:', linkingCode);
+
       // Retrieve the linking info from Firestore
       const linkDoc = await getDoc(doc(db, 'deviceLinks', linkingCode));
+      console.log('📥 Link document retrieved:', { exists: linkDoc.exists() });
 
       if (!linkDoc.exists()) {
         toast({
