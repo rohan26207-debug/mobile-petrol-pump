@@ -56,6 +56,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   const [showProPasswordDialog, setShowProPasswordDialog] = useState(false);
   const [proPassword, setProPassword] = useState('');
   const { toast } = useToast();
+  const { logout, user } = useAuth();
   
   // Auto-backup weekly hook
   const { toggleAutoBackup, getBackupStatus } = useAutoBackupWeekly(toast);
