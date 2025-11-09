@@ -16,9 +16,20 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
 
   const handleAddCustomer = () => {
     if (newCustomerName.trim()) {
+      // Check for duplicate before calling parent handler
+      const trimmedName = newCustomerName.trim();
+      const isDuplicate = customers.some(c => 
+        c.name.trim().toLowerCase() === trimmedName.toLowerCase()
+      );
+      
+      if (isDuplicate) {
+        setAddError('Duplicate customer name. Please use a unique name');
+        return;
+      }
+      
       const balance = parseFloat(startingBalance) || 0;
-      const result = onAddCustomer(newCustomerName.trim(), balance);
-      // If customer was added successfully (no error thrown), clear the form and error
+      const result = onAddCustomer(trimmedName, balance);
+      // If customer was added successfully (no error thrown), clear the form
       if (result !== null) {
         setNewCustomerName('');
         setStartingBalance('');
