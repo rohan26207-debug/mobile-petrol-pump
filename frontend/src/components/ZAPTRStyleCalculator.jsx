@@ -52,6 +52,8 @@ import SyncStatus from './SyncStatus';
 // Anonymous mode: LoginScreen removed
 import MPPStock from './MPPStock';
 import localStorageService from '../services/localStorage';
+import { useAuth } from '../contexts/AuthContext';
+import { setStorageNamespace } from '../services/localStorage';
 
 const ZAPTRStyleCalculator = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
