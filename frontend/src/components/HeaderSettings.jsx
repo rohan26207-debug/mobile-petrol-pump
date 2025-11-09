@@ -634,7 +634,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
             <div className="flex-1 overflow-hidden">
               <Tabs defaultValue="customer" className="w-full h-full flex flex-col">
                 <TabsList 
-                  className={`grid w-full grid-cols-6 ${
+                  className={`grid w-full grid-cols-5 ${
                     isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
                   }`}
                   style={{ height: '48px', gap: '4px', padding: '4px' }}
@@ -653,11 +653,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     <Fuel className="w-3 h-3 sm:w-4 sm:h-4" />
                     <span className="hidden sm:inline">Fuel Types</span>
                     <span className="sm:hidden">Fuel</span>
-                  </TabsTrigger>
-                  <TabsTrigger value="devicesync" className="flex items-center gap-1 text-xs sm:text-sm px-2">
-                    <Cloud className="w-3 h-3 sm:w-4 sm:h-4" />
-                    <span className="hidden sm:inline">Device Sync</span>
-                    <span className="sm:hidden">Sync</span>
                   </TabsTrigger>
                   <TabsTrigger value="backup" className="flex items-center gap-1 text-xs sm:text-sm px-2">
                     <Download className="w-3 h-3 sm:w-4 sm:h-4" />
