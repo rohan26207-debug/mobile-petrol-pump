@@ -125,51 +125,47 @@ const ZAPTRStyleCalculator = () => {
   // Load data from localStorage
   // Loading state removed per user request
 
-  const loadData = () => {
+  const loadData = async () => {
     try {
-      // Clean up any unnamespaced keys before loading
-      localStorageService.cleanupUnnamedspacedKeys();
+      setLoading(true);
       
-      // Load all data from localStorage
-      const salesData = localStorageService.getSalesData();
-      const creditData = localStorageService.getCreditData();
-      const incomeData = localStorageService.getIncomeData();
-      const expenseData = localStorageService.getExpenseData();
-      const settlementData = localStorageService.getSettlements();
-      const fuelSettings = localStorageService.getFuelSettings();
-      const customers = localStorageService.getCustomers();
-      const payments = localStorageService.getPayments();
+      // Load all data from Firestore for selected date
+      const [
+        salesData,
+        creditData,
+        { income, expenses },
+        payments,
+        settlements,
+        customers,
+        fuelSettings
+      ] = await Promise.all([
+        firestoreDataService.getSalesData(selectedDate),
+        firestoreDataService.getCreditSales(selectedDate),
+        firestoreDataService.getIncomeExpenses(selectedDate),
+        firestoreDataService.getPayments(selectedDate),
+        firestoreDataService.getSettlements(selectedDate),
+        firestoreDataService.getCustomers(),
+        firestoreDataService.getFuelSettings()
+      ]);
 
-      // Set data in component state
       setSalesData(salesData);
       setCreditData(creditData);
-      setIncomeData(incomeData);
-      setExpenseData(expenseData);
-      setSettlementData(settlementData);
-      setFuelSettings(fuelSettings);
-      setCustomers(customers);
+      setIncomeData(income);
+      setExpenseData(expenses);
       setPayments(payments);
+      setSettlements(settlements);
+      setCustomers(customers);
+      setFuelSettings(fuelSettings);
 
     } catch (err) {
-      console.error('Failed to load data from localStorage:', err);
-      
-      // Initialize with empty data if localStorage fails
-      setSalesData([]);
-      setCreditData([]);
-      setIncomeData([]);
-      setExpenseData([]);
-      setCustomers([]);
-      setPayments([]);
-      
-      // Initialize default fuel settings
-      const defaultFuelSettings = {
-        'Petrol': { price: 102.50, nozzleCount: 3 },
-        'Diesel': { price: 89.75, nozzleCount: 2 },
-        'CNG': { price: 75.20, nozzleCount: 2 },
-        'Premium': { price: 108.90, nozzleCount: 1 }
-      };
-      setFuelSettings(defaultFuelSettings);
-      localStorageService.setFuelSettings(defaultFuelSettings);
+      console.error('Error loading data from Firestore:', err);
+      toast({
+        title: "Error Loading Data",
+        description: err.message || "Failed to load data. Please check your internet connection.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
