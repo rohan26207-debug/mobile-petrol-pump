@@ -57,7 +57,7 @@ ls /app/android/app/src/main/res/mipmap-xxxhdpi/
 **Issue:** Code references backend URLs:
 ```javascript
 const API_BASE_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://mpp-sync-debug.preview.emergentagent.com';
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'https://petrolsync-app.preview.emergentagent.com';
 ```
 **Impact:** If app tries to call these APIs, it will fail offline
 **Check Needed:** Verify if ZAPTRStyleCalculator component actually uses these APIs

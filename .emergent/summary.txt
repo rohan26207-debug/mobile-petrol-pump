@@ -1,22 +1,23 @@
 <analysis>
-The previous AI engineer’s work involved addressing critical Firebase authentication and data synchronization issues, starting from a base of UI/UX improvements. Initial efforts focused on resolving cross-device data syncing, which was achieved by implementing a  and  props for forced UI re-renders, along with fixing Firebase security rules and event dispatching. The subsequent trajectory dealt with persistent Firebase authentication failures on deployed environments (Vercel, preview domains), which blocked all in-app testing. After successfully resolving authentication using provided credentials, a major data isolation issue arose: different users logging into the same browser saw swapped data due to unscoped . The engineer implemented a user-scoped  namespace, data migration, and adapted Firebase listener management to user auth states. Concurrently, a new user request to switch to anonymous authentication mode was implemented, which then triggered multiple blank page errors, tracing back to dynamic  syntax issues and circular dependencies in the frontend build. The work is currently focused on debugging these blank screen issues related to Firebase initialization and module imports in the context of anonymous authentication.
+The previous AI engineer's work primarily focused on stabilizing the M.Petrol Pump application's data synchronization and authentication. Key issues tackled included blank screens due to corrupted  and webpack caching, leading to extensive debugging and file restoration. A  component bug with undefined  was resolved with null checks. The engineer then addressed cross-device data sync, initially attempting a Device Linking feature for anonymous users, which exposed complex Firestore security rule conflicts with custom  clauses. This path was abandoned when the user requested a switch to traditional Email/Password authentication for seamless multi-device login.
+
+Subsequently, the focus shifted to ensuring  consistently used user-scoped namespaces, fixing  persistence, and rectifying direct  calls bypassing the namespacing. A critical bug in Firebase delete synchronization was identified and resolved by ensuring consistent Firestore document IDs via  operations and correctly processing 'removed' events from the same device. Finally, a Clear All Data feature, restricted to Pro Mode, was implemented. The current task is to prevent duplicate customer name additions.
 </analysis>
 
 <product_requirements>
-The M.Petrol Pump application aims to manage petrol pump operations with robust data management and a user-friendly interface, primarily for offline Android WebView use. Core functionalities include MPP Cash calculations, comprehensive reporting (Bank Settlement, PDF), credit sales, and standardized data entry with dynamic dialogs. UI/UX improvements cover sales window management, scroll preservation, responsive layouts, and critical visibility fixes (e.g., Logout button). Data synchronization is crucial, leveraging Firebase Firestore for real-time cloud sync with offline capabilities, secure authentication, and user-specific security rules.
+The M.Petrol Pump app aims to manage petrol pump operations, including MPP Cash calculations, comprehensive reporting (Bank Settlement, PDF), credit sales, and standardized data entry. It emphasizes a user-friendly interface, primarily for offline Android WebView use. Core requirements include robust UI/UX (sales window management, scroll preservation, responsive layouts, visibility fixes) and critical data synchronization. The application leverages Firebase Firestore for real-time cloud sync with offline capabilities, secure authentication, and user-specific security rules.
 
-So far, UI/UX tasks like the Logout button and app renaming are complete. Firebase initialization, data object errors, , and dynamic UI updates after sync for 10 data collections (customers, sales, credit sales, payments, settlements, income/expenses, fuel settings, settlement types, income categories, expense categories) are addressed. Security rules are refined for user-specific data isolation. Recent work involved enabling anonymous authentication and preventing data leakage between users on the same browser by implementing user-scoped  and refining the auth lifecycle.
+So far, the app has evolved from initial UI/UX fixes and basic Firebase integration to a stable state. Firebase authentication transitioned from anonymous with device linking (which was problematic and removed) to a standard Email/Password system for seamless cross-device login. Robust user-scoped  ensures data isolation and persistence, and comprehensive Firebase sync logic now handles additions, updates, and deletions correctly across devices. A Clear All Data function for Pro Mode has been implemented.
 </product_requirements>
 
 <key_technical_concepts>
--   **React.js (Frontend):** Primary UI framework.
--   **Firebase Firestore:** NoSQL cloud database for real-time and offline data sync.
--   **Firebase Authentication:** Handles user auth, including Email/Password and Anonymous sign-in.
--   **Local Storage ():** Client-side data persistence, now with user-scoped namespaces.
--   **Android WebView:** Integrates web app into Android.
--   **Data Synchronization Logic:** Custom  and  services.
--   **Firestore Security Rules:** Server-side rules for data access and ownership.
--   **Vercel:** Deployment platform for the frontend.
+-   **React.js**: Frontend UI development.
+-   **Firebase Firestore**: Real-time NoSQL cloud database for data persistence and synchronization.
+-   **Firebase Authentication**: User authentication (initially Anonymous, now Email/Password).
+-   **Local Storage ()**: Client-side data persistence with user-scoped namespaces.
+-   **Firestore Security Rules**: Server-side rules for user-specific data access control.
+-   **Webpack**: Frontend module bundler.
+-   **Supervisor**: Process control system for frontend/backend.
 </key_technical_concepts>
 
 <code_architecture>
@@ -25,74 +26,170 @@ The application utilizes a monorepo structure with , , , , and  directories.
 
 
 -   
-    -   **Importance:** Manages client-side data persistence, abstracting  interactions.
+    -   **Importance:** Core service for client-side data persistence. Manages user-scoped  to prevent data leakage.
     -   **Changes:**
-        -   Refactored to introduce user-scoped namespaces (e.g., ) to prevent data leakage between different users on the same device.
-        -   Added logic for safe migration of legacy unscoped keys to the new user-specific namespaces during the first login.
-        -   Modified data modification methods (e.g., , ) to use the new scoped storage.
-        -   Ensured  and  correctly handle namespaced and legacy data.
-        -   Updated to use a window global reference for  to avoid circular import issues.
+        -   Restored from a corrupted state via commit 8f8739621cd76dd48573c9f4d2216b992d893529
+Author: emergent-agent-e1 <github@emergent.sh>
+Date:   Sun Nov 9 08:26:57 2025 +0000
+
+    auto-commit for cc51dcc4-4830-4266-bfcf-95ac55dbc8c9
+
+diff --git a/frontend/src/components/HeaderSettings.jsx b/frontend/src/components/HeaderSettings.jsx
+index bc51f1b..48625a2 100644
+--- a/frontend/src/components/HeaderSettings.jsx
++++ b/frontend/src/components/HeaderSettings.jsx
+@@ -1248,6 +1248,66 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers,
+                     </div>
+                   </div>
+ 
++                  {/* Clear All Data Section - Pro Mode Only */}
++                  {proMode && (
++                    <>
++                      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
++                      
++                      <div className={`border-2 rounded-lg p-4 ${
++                        isDarkMode ? 'border-red-600 bg-red-900/20' : 'border-red-500 bg-red-50'
++                      }`}>
++                        <div className="space-y-3">
++                          <div className="flex items-center gap-2">
++                            <Trash2 className="w-5 h-5 text-red-600" />
++                            <h4 className={`font-bold ${
++                              isDarkMode ? 'text-red-400' : 'text-red-700'
++                            }`}>
++                              ⚠️ Danger Zone
++                            </h4>
++                          </div>
++                          
++                          <p className={`text-sm ${
++                            isDarkMode ? 'text-red-300' : 'text-red-700'
++                          }`}>
++                            <strong>Pro Mode Only:</strong> Permanently delete all data from this account.
++                          </p>
++                          
++                          <div className={`text-xs space-y-1 ${
++                            isDarkMode ? 'text-red-200' : 'text-red-600'
++                          }`}>
++                            <p>This will delete:</p>
++                            <ul className="list-disc list-inside pl-2">
++                              <li>All sales, credit sales, payments</li>
++                              <li>All customers and settlements</li>
++                              <li>All income and expenses</li>
++                              <li>All fuel settings and categories</li>
++                              <li>Data from localStorage AND Firestore</li>
++                            </ul>
++                          </div>
++
++                          <div className={`p-3 rounded ${
++                            isDarkMode ? 'bg-red-800/30' : 'bg-red-100'
++                          }`}>
++                            <p className={`text-xs font-bold ${
++                              isDarkMode ? 'text-red-300' : 'text-red-700'
++                            }`}>
++                              ⚠️ This action CANNOT be undone!
++                            </p>
++                          </div>
++                          
++                          <Button 
++                            variant="destructive"
++                            className="w-full bg-red-600 hover:bg-red-700"
++                            onClick={handleClearAllData}
++                          >
++                            <Trash2 className="w-4 h-4 mr-2" />
++                            Clear All Data
++                          </Button>
++                        </div>
++                      </div>
++                    </>
++                  )}
++
+                   {/* Logout Section */}
+                   <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                   .
+        -   Introduced  to clear old, non-namespaced data on user login/app load.
+        -   Updated  to also clear legacy stock data keys.
+        -    and  ensure all data is stored with  prefix.
 
 -   
-    -   **Importance:** Initializes Firebase and exposes authentication () and Firestore () instances.
+    -   **Importance:** Initializes Firebase and manages core authentication.
     -   **Changes:**
-        -   Updated  multiple times, first for  and  (Chat 50), then for a completely new Firebase project (, Chat 156).
-        -   Integrated  with  as the default authentication method, removing the explicit login flow.
-        -   Ensured  API is correctly used.
+        -   Configured for  project.
+        -   Switched from  to Email/Password authentication.
+        -   Removed  related logic for .
 
 -   
-    -   **Importance:** Handles all Firebase Firestore data synchronization, including real-time listeners and event dispatching for UI updates.
+    -   **Importance:** Handles all Firebase Firestore data synchronization, real-time listeners, and event dispatching.
     -   **Changes:**
-        -   Modified listeners to dispatch a  event with  detail after updating scoped .
-        -   Implemented  and  to be called during authentication state changes (login/logout/anonymous sign-in) to ensure correct user data context.
-        -   Fixed  by replacing dynamic  with a static import.
-        -   Adjusted to ensure anonymous-auth initialization runs before starting listeners.
-        -   Uses a window global for  to break circular dependencies.
+        -   Refactored all data sync functions (e.g., , ) to exclusively use  for consistent document ID management, with  as a primary attempt and  in  for new documents. This fixed ID mismatch issues during deletes.
+        -   Removed  import and usage.
+        -   Critical fix: Removed  from all 10 Firebase listeners. This ensures that changes (especially deletions) originating from the same device are correctly processed and reflected in , resolving data reappearance on refresh.
+        -   Removed  logic following the switch to Email/Password auth.
 
 -   
-    -   **Importance:** Central application component, responsible for main UI rendering and integrating core services.
+    -   **Importance:** Main application component for UI rendering and integrating services.
     -   **Changes:**
-        -   Integrated .
-        -   Introduced  state and passed it as  props to child components to force re-renders on  events.
-        -   Removed conditional rendering for , allowing direct access to the app UI in anonymous mode.
-        -   Patches proposed (Chat 164) to replace  with ESM imports and add safe Firestore fallback.
+        -   Updated to load  from  and save it on change for persistence.
+        -   Integrated  in a  hook to ensure the user namespace is set *before* data loading.
+        -   Integrated  on mount/user change.
+        -   Modified  to depend on  from  to trigger reloads on user change.
+        -   Removed conditional rendering for  related to anonymous mode; now relies on .
+        -   (Temporary) Modified for Firestore-only storage, then reverted.
 
 -   
-    -   **Importance:** Handled user login/signup.
-    -   **Changes:** Removed from the main application flow as the app transitioned to anonymous mode.
+    -   **Importance:** Handles user authentication.
+    -   **Changes:** Re-integrated into the main application flow for Email/Password authentication, utilizing existing email/password login logic.
 
 -   
-    -   **Importance:** Manages settings, including logout.
-    -   **Changes:** The logout button is still present, though its utility in anonymous mode might be diminished or require user confirmation for removal.
+    -   **Importance:** Manages settings, including user-related options and app configuration.
+    -   **Changes:**
+        -   Added null/undefined safety checks around  prop usage to prevent crashes.
+        -   Removed the Device Sync tab and its content following the switch from anonymous auth to email/password.
+        -   Updated  function to use .
+        -   Added a Clear All Data button and functionality, accessible only in Pro Mode, which clears all user-scoped data from  and Firestore.
+        -   Integrated  direct localStorage calls to use .
+        -   Added display for the current logged-in user in the Contact tab.
 
 -   
-    -   **Importance:** Main entry point for the React application.
-    -   **Changes:** Edits were made to resolve blank page issues (details not fully specified in trajectory, but implies build configuration or initial rendering logic adjustments).
+    -   **Importance:** Provides authentication state and functions to the React component tree.
+    -   **Changes:** Rewritten to integrate with Firebase Email/Password authentication, providing , , , , , .
+
+-    (Created, then effectively deprecated)
+    -   **Importance:** Originally provided UI and logic for linking anonymous Firebase accounts across devices.
+    -   **Changes:** Created to generate/link 6-digit codes. Enhanced with better error handling and a warning banner for unconfigured Firestore rules. Its functionality became redundant after the switch to Email/Password authentication.
+
+-   
+    -   **Importance:** Manages fuel stock data.
+    -   **Changes:** Refactored to use  methods (, ) instead of direct  calls to ensure namespaced data handling.
+
+-    (Conceptual updates, several new related files)
+    -   **Importance:** Defines data access and security for Firestore collections.
+    -   **Changes:** Iterated through multiple versions (including , ). The final version simplifies  rules to  and relies on the app's client-side  clauses, while , , ,  rules enforce strict ownership (, ). Includes rules for all main data collections and the  (though the feature is now deprecated).
+
+-    (New)
+    -   **Importance:** Documents the updated Firestore sync strategy.
+    -   **Summary:** Confirms that all Firebase operations use the -only pattern for consistency.
 </code_architecture>
 
 <pending_tasks>
--   Verify application loading and functionality on  or  after the latest proposed patches and Vercel deployment.
--   Confirm if Logout option should be removed from the Settings UI in anonymous mode.
--   Consider implementing a Link Device flow for anonymous account sync across multiple devices.
--   Determine whether to keep Firebase Analytics enabled or disable it.
+-   Don't allow customer duplicate name addition. (Current task)
+-   Confirm if Logout option should be removed from the Settings UI (though functional with Email/Password auth, its presence in a single-user context might be questioned).
+-   Consider if any components related to Device Linking (e.g.,  file) should be fully removed from the codebase since the feature is no longer in use.
 </pending_tasks>
 
 <current_work>
-Immediately before this summary request, the AI engineer was working on resolving a persistent blank screen issue on the deployed frontend () after implementing anonymous authentication and multiple Firebase configuration changes.
+Immediately before this summary request, the AI engineer was tasked with implementing a Clear All Data feature in the application's settings. This feature allows users to delete all their data from both  and Firebase Firestore, facilitating a fresh start. The functionality is restricted to Pro Mode to prevent accidental data loss for regular users.
 
-The problem symptoms: The application fails to load, displaying only a blank page. This issue recurred after previous attempts to fix similar blank screen problems, including addressing an Unexpected reserved word await syntax error caused by dynamic imports in .
+The implementation involved:
+1.  **Modifying **:
+    *   A new function  was added to manage the data clearing process.
+    *   UI elements (a button and confirmation dialog) were integrated into the Contact tab within , positioned between the Pro Mode Section and Logout Section.
+    *   A check  was added to ensure the button is only visible and actionable when Pro Mode is active.
+    *   This function calls  and then proceeds to delete all user-specific collections in Firestore.
+2.  **Modifying **:
+    *   A new function  was added to remove all keys prefixed with  from , ensuring a clean local state.
 
-The AI engineer's current approach (proposed in Chat Message 164) involves:
-1.  **Requesting specific debugging information:** The user is asked to provide the first red error line from the browser's developer console (F12) to diagnose the runtime error accurately.
-2.  **Proposing a new set of patches:**
-    *   **Replace  usage with proper ESM imports in :** This aims to prevent further bundler or runtime crashes caused by mixed module syntax.
-    *   **Add safe Firestore fallback:** If persistent local cache (e.g.,  or ) fails (e.g., in Safari Private Mode or Incognito), the app will fall back to using memory cache. This ensures the application still loads and functions, albeit without persistent offline capabilities in such scenarios.
-    *   **Defer sync start until auth is ready:** The Firebase sync listeners will be initialized only after the anonymous sign-in process is complete and an authenticated user (even anonymous) is available. This prevents listeners from attempting to start with a null or uninitialized user, which could lead to errors.
-3.  **Re-confirming Firebase console setup:** The engineer reiterates the critical Firebase console settings for the *active* project (), specifically: Anonymous sign-in enabled, default Firestore database ready, and  added to Authorized domains.
-
-The immediate work is to get the blank page issue resolved, which is critical for any further testing or feature development.
+The work for this feature is complete, and a screenshot confirmed the login screen is showing, and the functionality has been summarized. The user's new request is to prevent duplicate customer name additions.
 </current_work>
 
 <optional_next_step>
-Apply the proposed patches (ESM imports, Firestore fallback, deferred sync start) once the user provides the console error.
+Implement duplicate customer name validation when adding or updating customer records.
 </optional_next_step>

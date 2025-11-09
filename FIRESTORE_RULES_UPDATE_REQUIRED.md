@@ -137,7 +137,7 @@ service cloud.firestore {
 
 ## ✅ Verify It Works
 
-1. Go back to your app: https://mpp-sync-debug.preview.emergentagent.com
+1. Go back to your app: https://petrolsync-app.preview.emergentagent.com
 2. Open Settings → Device Sync tab
 3. Click **"Generate Link Code"**
 4. You should see a **6-digit code** appear! 🎉
