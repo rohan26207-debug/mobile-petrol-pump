@@ -335,8 +335,12 @@ class FirebaseSyncService {
             if (idx >= 0) settlements[idx] = data; else settlements.push(data);
             localStorageService.setSettlements(settlements);
           } else if (change.type === 'removed') {
+            console.log('🗑️ Settlement removed:', data.id);
+            const beforeCount = settlements.length;
             const filtered = settlements.filter(s => s.id !== data.id);
+            console.log(`Filtered settlements: ${beforeCount} → ${filtered.length}`);
             localStorageService.setSettlements(filtered);
+            console.log('✅ Settlements updated in localStorage');
           }
           uidDetailEvent();
         });
