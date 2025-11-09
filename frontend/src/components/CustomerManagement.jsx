@@ -17,10 +17,20 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
   const handleAddCustomer = () => {
     if (newCustomerName.trim()) {
       const balance = parseFloat(startingBalance) || 0;
-      onAddCustomer(newCustomerName.trim(), balance);
-      setNewCustomerName('');
-      setStartingBalance('');
+      const result = onAddCustomer(newCustomerName.trim(), balance);
+      // If customer was added successfully (no error thrown), clear the form and error
+      if (result !== null) {
+        setNewCustomerName('');
+        setStartingBalance('');
+        setAddError('');
+      }
     }
+  };
+  
+  const handleNameChange = (e) => {
+    setNewCustomerName(e.target.value);
+    // Clear error when user starts typing
+    if (addError) setAddError('');
   };
 
   const handleKeyPress = (e) => {
