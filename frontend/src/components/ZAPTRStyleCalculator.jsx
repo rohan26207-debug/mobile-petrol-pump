@@ -198,6 +198,9 @@ const ZAPTRStyleCalculator = () => {
   useEffect(() => {
     loadData();
     
+    // Save selected date to localStorage for persistence across refreshes
+    localStorage.setItem('mpump_operating_date', selectedDate);
+    
     // Reset all forms when date changes to prevent adding old data to new date
     resetAllForms();
   }, [selectedDate]);
