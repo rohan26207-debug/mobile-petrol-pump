@@ -56,6 +56,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { setStorageNamespace } from '../services/localStorage';
 
 const ZAPTRStyleCalculator = () => {
+  const { user } = useAuth();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [textSize, setTextSize] = useState(100); // Default 100% (normal size)
   const [parentTab, setParentTab] = useState('today'); // Parent tab: 'today' or 'outstanding'
