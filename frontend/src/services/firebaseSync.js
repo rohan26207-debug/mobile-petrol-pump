@@ -319,7 +319,7 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           const credits = localStorageService.getCreditData();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = credits.findIndex(c => c.id === data.id);
@@ -345,7 +345,7 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           const payments = localStorageService.getPayments();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = payments.findIndex(p => p.id === data.id);
@@ -371,7 +371,7 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           const settlements = localStorageService.getSettlements();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = settlements.findIndex(s => s.id === data.id);
@@ -397,7 +397,7 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           const sales = localStorageService.getSalesData();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = sales.findIndex(s => s.id === data.id);
@@ -423,7 +423,7 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           const records = localStorageService.getIncomeExpenseData();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = records.findIndex(r => r.id === data.id);
@@ -448,7 +448,7 @@ class FirebaseSyncService {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           localStorageService.setFuelSettings(data.settings);
           uidDetailEvent();
         }
@@ -462,7 +462,7 @@ class FirebaseSyncService {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           localStorageService.setSettlementTypes(data.types);
           uidDetailEvent();
         }
@@ -476,7 +476,7 @@ class FirebaseSyncService {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           localStorageService.setIncomeCategories(data.categories);
           uidDetailEvent();
         }
@@ -490,7 +490,7 @@ class FirebaseSyncService {
       (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.data();
-          if (data.deviceId === this.deviceId) return;
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
           localStorageService.setExpenseCategories(data.categories);
           uidDetailEvent();
         }
