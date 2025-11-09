@@ -140,8 +140,13 @@ class FirebaseSyncService {
       const userId = this.getUserId(); if (!userId) return;
       const paymentData = { ...payment, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        await updateDoc(doc(db, 'payments', payment.id), paymentData).catch(() => addDoc(collection(db, 'payments'), { ...paymentData, id: payment.id }));
-      } else if (operation === 'delete') { await deleteDoc(doc(db, 'payments', payment.id)); }
+        await updateDoc(doc(db, 'payments', payment.id), paymentData).catch(async () => {
+          await setDoc(doc(db, 'payments', payment.id), paymentData);
+        });
+      } else if (operation === 'delete') { 
+        await deleteDoc(doc(db, 'payments', payment.id));
+        console.log('🗑️ Payment deleted from Firestore:', payment.id);
+      }
       console.log('✅ Payment synced:', payment.customerName);
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
