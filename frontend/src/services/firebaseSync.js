@@ -361,8 +361,12 @@ class FirebaseSyncService {
             if (idx >= 0) sales[idx] = data; else sales.push(data);
             localStorageService.setSalesData(sales);
           } else if (change.type === 'removed') {
+            console.log('🗑️ Sale removed:', data.id);
+            const beforeCount = sales.length;
             const filtered = sales.filter(s => s.id !== data.id);
+            console.log(`Filtered sales: ${beforeCount} → ${filtered.length}`);
             localStorageService.setSalesData(filtered);
+            console.log('✅ Sales updated in localStorage');
           }
           uidDetailEvent();
         });
