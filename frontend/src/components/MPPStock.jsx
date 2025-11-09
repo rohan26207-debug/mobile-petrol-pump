@@ -5,6 +5,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Package, Plus, TrendingUp, TrendingDown, Box, Fuel } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import localStorageService from '../services/localStorage';
 
 const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, onStockSaved }) => {
   const [selectedFuelType, setSelectedFuelType] = useState('');
