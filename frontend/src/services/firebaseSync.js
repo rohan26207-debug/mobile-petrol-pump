@@ -123,8 +123,13 @@ class FirebaseSyncService {
       const userId = this.getUserId(); if (!userId) return;
       const creditData = { ...credit, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        await updateDoc(doc(db, 'creditSales', credit.id), creditData).catch(() => addDoc(collection(db, 'creditSales'), { ...creditData, id: credit.id }));
-      } else if (operation === 'delete') { await deleteDoc(doc(db, 'creditSales', credit.id)); }
+        await updateDoc(doc(db, 'creditSales', credit.id), creditData).catch(async () => {
+          await setDoc(doc(db, 'creditSales', credit.id), creditData);
+        });
+      } else if (operation === 'delete') { 
+        await deleteDoc(doc(db, 'creditSales', credit.id));
+        console.log('🗑️ Credit sale deleted from Firestore:', credit.id);
+      }
       console.log('✅ Credit sale synced:', credit.customerName);
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
