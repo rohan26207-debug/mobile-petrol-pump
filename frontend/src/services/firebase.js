@@ -31,7 +31,6 @@ console.log('✅ Firebase offline persistence enabled (new cache API)');
 const auth = getAuth(app);
 
 // Email/password authentication (no auto-login)
-let authInitialized = false;
 
 // Initialize authentication with email/password
 const initializeAuth = async () => {
