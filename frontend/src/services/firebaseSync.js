@@ -157,8 +157,13 @@ class FirebaseSyncService {
       const userId = this.getUserId(); if (!userId) return;
       const settlementData = { ...settlement, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
-        await updateDoc(doc(db, 'settlements', settlement.id), settlementData).catch(() => addDoc(collection(db, 'settlements'), { ...settlementData, id: settlement.id }));
-      } else if (operation === 'delete') { await deleteDoc(doc(db, 'settlements', settlement.id)); }
+        await updateDoc(doc(db, 'settlements', settlement.id), settlementData).catch(async () => {
+          await setDoc(doc(db, 'settlements', settlement.id), settlementData);
+        });
+      } else if (operation === 'delete') { 
+        await deleteDoc(doc(db, 'settlements', settlement.id));
+        console.log('🗑️ Settlement deleted from Firestore:', settlement.id);
+      }
       console.log('✅ Settlement synced');
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
