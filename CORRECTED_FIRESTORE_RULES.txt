@@ -1,0 +1,117 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper function to check if user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Helper function to check if user owns the document
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    // Helper function to check if user is creating their own doc
+    function isCreatingOwn(userId) {
+      return request.auth.uid == userId;
+    }
+
+    // --- User Data Collections ---
+    
+    match /customers/{customerId} {
+      // List: user can ONLY query their OWN documents
+      allow list: if isAuthenticated();
+      
+      // Get: user can read a document if they own it
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      
+      // Create: user can create if they set themselves as owner
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      
+      // Update/Delete: user can modify their own documents
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    match /creditSales/{saleId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    match /payments/{paymentId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    match /settlements/{settlementId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    match /sales/{saleId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+    
+    match /incomeExpenses/{recordId} {
+      allow list: if isAuthenticated();
+      allow get: if isAuthenticated() && isOwner(resource.data.userId);
+      allow create: if isAuthenticated() && isCreatingOwn(request.resource.data.userId);
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    // --- User Settings Collections ---
+    
+    match /fuelSettings/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    match /settlementTypes/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    match /incomeCategories/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    match /expenseCategories/{userId} {
+      allow read, write: if isAuthenticated() && isOwner(userId);
+    }
+    
+    // --- Device Links (SECURE) ---
+    
+    match /deviceLinks/{linkCode} {
+      // Anyone authenticated can create a link code (setDoc operation)
+      // Must set their own userId
+      allow create: if isAuthenticated() && 
+                      isCreatingOwn(request.resource.data.userId);
+      
+      // Anyone authenticated can read a specific link code (getDoc)
+      // Needed for 2nd device to verify the code
+      allow get: if isAuthenticated();
+      
+      // NO queries allowed (privacy & security)
+      allow list: if false;
+      
+      // Only the owner can delete their code
+      allow delete: if isAuthenticated() && isOwner(resource.data.userId);
+      
+      // No updates allowed (codes are one-time use)
+      allow update: if false;
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
