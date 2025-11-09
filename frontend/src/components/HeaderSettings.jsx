@@ -41,8 +41,6 @@ import localStorageService, { exportAllData, importAllData, mergeAllData } from 
 import CustomerManagement from './CustomerManagement';
 import IncomeExpenseCategories from './IncomeExpenseCategories';
 import SettlementManagement from './SettlementManagement';
-import QRCodeSender from './QRCodeSender';
-import QRCodeScanner from './QRCodeScanner';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
