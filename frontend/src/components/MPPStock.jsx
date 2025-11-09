@@ -138,7 +138,7 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
       date: selectedDate
     };
     
-    localStorage.setItem(storageKey, JSON.stringify(allStockData));
+    localStorageService.setItem(storageKey, allStockData);
     
     // Notify parent that stock was saved (to trigger re-render of STOCK summary)
     if (onStockSaved) {
@@ -179,7 +179,7 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
       date: selectedDate
     };
     
-    localStorage.setItem(storageKey, JSON.stringify(allStockData));
+    localStorageService.setItem(storageKey, allStockData);
     
     // Notify parent that stock was saved (to trigger re-render of STOCK summary)
     if (onStockSaved) {
