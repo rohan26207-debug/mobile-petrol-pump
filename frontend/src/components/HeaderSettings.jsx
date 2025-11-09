@@ -1654,60 +1654,6 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                         >
                           📊 Check Storage Usage
                         </Button>
-
-                        <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
-
-                        {/* QR Code Transfer Buttons */}
-                        <div className="space-y-3">
-                          {/* Send via QR Row with Date Selector */}
-                          <div className="flex gap-2 items-center">
-                            <div className="flex-1">
-                              <Label className={`text-xs mb-1 block ${isDarkMode ? 'text-gray-300' : 'text-slate-600'}`}>
-                                Select Date
-                              </Label>
-                              <Input
-                                type="date"
-                                value={backupDate}
-                                onChange={(e) => setBackupDate(e.target.value)}
-                                className={`${isDarkMode ? 'bg-gray-600 border-gray-500 text-white' : ''}`}
-                              />
-                            </div>
-                            <div className="flex-1 self-end">
-                              <Button 
-                                variant="outline" 
-                                className="w-full bg-green-600 hover:bg-green-700 text-white border-green-600"
-                                onClick={() => {
-                                  const backupData = localStorageService.exportDataByDate(backupDate);
-                                  const dataSize = new Blob([JSON.stringify(backupData)]).size;
-                                  console.log('Backup data size:', dataSize, 'bytes');
-                                  if (dataSize > 3000) {
-                                    toast({
-                                      title: "Warning",
-                                      description: `Data size is ${(dataSize / 1024).toFixed(2)} KB. QR code may be difficult to scan.`,
-                                      variant: "destructive"
-                                    });
-                                  }
-                                  setShowQRSender(true);
-                                }}
-                              >
-                                📤 Send via QR
-                              </Button>
-                            </div>
-                          </div>
-
-                          {/* Receive via QR Row */}
-                          <div>
-                            <Button 
-                              variant="outline" 
-                              className="w-full bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
-                              onClick={() => {
-                                setShowQRScanner(true);
-                              }}
-                            >
-                              📥 Receive via QR
-                            </Button>
-                          </div>
-                        </div>
                       </div>
                     </div>
                   </div>
