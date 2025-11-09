@@ -61,9 +61,8 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
   useEffect(() => {
     const loadStockData = () => {
       const storageKey = `${selectedFuelType.toLowerCase()}StockData`;
-      const savedData = localStorage.getItem(storageKey);
-      if (savedData) {
-        const allStockData = JSON.parse(savedData);
+      const allStockData = localStorageService.getItem(storageKey);
+      if (allStockData) {
         const dateData = allStockData[selectedDate];
         
         if (dateData) {
@@ -83,9 +82,8 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
 
     const loadPreviousDayEndStock = () => {
       const storageKey = `${selectedFuelType.toLowerCase()}StockData`;
-      const savedData = localStorage.getItem(storageKey);
-      if (savedData) {
-        const allStockData = JSON.parse(savedData);
+      const allStockData = localStorageService.getItem(storageKey);
+      if (allStockData) {
         
         // Get previous date
         const currentDate = new Date(selectedDate);
