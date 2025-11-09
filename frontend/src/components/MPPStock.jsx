@@ -129,8 +129,7 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
 
     // Save to localStorage with fuel-type specific key
     const storageKey = `${selectedFuelType.toLowerCase()}StockData`;
-    const savedData = localStorage.getItem(storageKey);
-    const allStockData = savedData ? JSON.parse(savedData) : {};
+    const allStockData = localStorageService.getItem(storageKey) || {};
     
     allStockData[selectedDate] = {
       fuelType: selectedFuelType,
@@ -171,8 +170,7 @@ const MPPStock = ({ isDarkMode, selectedDate, salesData, fuelSettings, onClose, 
 
     // Save to localStorage with fuel-type specific key
     const storageKey = `${selectedFuelType.toLowerCase()}StockData`;
-    const savedData = localStorage.getItem(storageKey);
-    const allStockData = savedData ? JSON.parse(savedData) : {};
+    const allStockData = localStorageService.getItem(storageKey) || {};
     
     allStockData[selectedDate] = {
       fuelType: selectedFuelType,
