@@ -728,8 +728,10 @@ class LocalStorageService {
   }
   deletePayment(id) {
     const payments = this.getPayments();
+    const paymentToDelete = payments.find(p => p.id === id);
     const updated = payments.filter(p => p.id !== id);
     this.setPayments(updated);
+    if (paymentToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncPayment(paymentToDelete, 'delete'); }
     return true;
   }
 
