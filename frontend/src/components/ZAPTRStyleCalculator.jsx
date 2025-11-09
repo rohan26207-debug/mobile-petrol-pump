@@ -122,6 +122,9 @@ const ZAPTRStyleCalculator = () => {
 
   const loadData = () => {
     try {
+      // Clean up any unnamespaced keys before loading
+      localStorageService.cleanupUnnamedspacedKeys();
+      
       // Load all data from localStorage
       const salesData = localStorageService.getSalesData();
       const creditData = localStorageService.getCreditData();
