@@ -77,6 +77,7 @@ const ZAPTRStyleCalculator = () => {
   const [mppTransferState, setMppTransferState] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [payments, setPayments] = useState([]);
+  const [loading, setLoading] = useState(false);
   
   // Dialog states for edit functionality
   const [salesDialogOpen, setSalesDialogOpen] = useState(false);
