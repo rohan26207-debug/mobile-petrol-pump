@@ -208,7 +208,9 @@ class FirebaseSyncService {
     if (!this.syncEnabled) return; try {
       const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping fuel settings sync');
       const settingsData = { settings, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
-      await updateDoc(doc(db, 'fuelSettings', userId), settingsData).catch(() => addDoc(collection(db, 'fuelSettings'), { ...settingsData, id: userId }));
+      await updateDoc(doc(db, 'fuelSettings', userId), settingsData).catch(async () => {
+        await setDoc(doc(db, 'fuelSettings', userId), settingsData);
+      });
       console.log('✅ Fuel settings synced');
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
