@@ -109,11 +109,19 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
                 id="customerName"
                 type="text"
                 value={newCustomerName}
-                onChange={(e) => setNewCustomerName(e.target.value)}
+                onChange={handleNameChange}
                 onKeyPress={handleKeyPress}
                 placeholder="Enter customer name"
-                className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''}`}
+                className={`mt-1 ${isDarkMode ? 'bg-gray-700 border-gray-600 text-white' : ''} ${
+                  addError ? 'border-red-500 focus:border-red-500' : ''
+                }`}
               />
+              {addError && (
+                <div className="flex items-center gap-1 mt-1 text-red-500 text-sm">
+                  <AlertTriangle className="w-4 h-4" />
+                  <span>{addError}</span>
+                </div>
+              )}
             </div>
             
             <div>
