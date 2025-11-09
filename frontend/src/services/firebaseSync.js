@@ -290,7 +290,10 @@ class FirebaseSyncService {
       (snapshot) => {
         snapshot.docChanges().forEach((change) => {
           const data = change.doc.data();
-          if (data.deviceId === this.deviceId) return;
+          
+          // Don't skip deletes from same device - they need to persist
+          if (data.deviceId === this.deviceId && change.type !== 'removed') return;
+          
           const customers = localStorageService.getCustomers();
           if (change.type === 'added' || change.type === 'modified') {
             const idx = customers.findIndex(c => c.id === data.id);
