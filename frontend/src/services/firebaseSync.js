@@ -309,8 +309,12 @@ class FirebaseSyncService {
             if (idx >= 0) payments[idx] = data; else payments.push(data);
             localStorageService.setPayments(payments);
           } else if (change.type === 'removed') {
+            console.log('🗑️ Payment removed:', data.id);
+            const beforeCount = payments.length;
             const filtered = payments.filter(p => p.id !== data.id);
+            console.log(`Filtered payments: ${beforeCount} → ${filtered.length}`);
             localStorageService.setPayments(filtered);
+            console.log('✅ Payments updated in localStorage');
           }
           uidDetailEvent();
         });
