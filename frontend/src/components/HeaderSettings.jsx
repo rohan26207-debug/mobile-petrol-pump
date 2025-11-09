@@ -35,6 +35,7 @@ import {
   ArrowRightLeft
 } from 'lucide-react';
 import { useToast } from '../hooks/use-toast';
+import { useAuth } from '../contexts/AuthContext';
 import { useAutoBackupWeekly } from '../hooks/use-auto-backup-weekly';
 import localStorageService, { exportAllData, importAllData, mergeAllData } from '../services/localStorage';
 import CustomerManagement from './CustomerManagement';
@@ -42,7 +43,6 @@ import IncomeExpenseCategories from './IncomeExpenseCategories';
 import SettlementManagement from './SettlementManagement';
 import QRCodeSender from './QRCodeSender';
 import QRCodeScanner from './QRCodeScanner';
-import DeviceLinking from './DeviceLinking';
 
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
