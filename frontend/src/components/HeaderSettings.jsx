@@ -45,9 +45,6 @@ import SettlementManagement from './SettlementManagement';
 const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, onAddCustomer, onDeleteCustomer, onUpdateCustomer }) => {
   const [newFuelType, setNewFuelType] = useState('');
   const [settingsOpen, setSettingsOpen] = useState(false); // For Sheet open state
-  const [showQRSender, setShowQRSender] = useState(false);
-  const [showQRScanner, setShowQRScanner] = useState(false);
-  const [backupDate, setBackupDate] = useState(new Date().toISOString().split('T')[0]);
   const [proMode, setProMode] = useState(() => {
     return localStorage.getItem('mpump_pro_mode') === 'true';
   });
