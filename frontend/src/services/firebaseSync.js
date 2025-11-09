@@ -26,13 +26,8 @@ class FirebaseSyncService {
     this.currentUserId = null;
   }
 
-  // Get current user ID (uses linked user ID if device is linked)
+  // Get current user ID
   getUserId() {
-    // Check if this device is linked to another account
-    const linkedUserId = localStorage.getItem('linkedUserId');
-    if (linkedUserId) {
-      return linkedUserId;
-    }
     return auth.currentUser?.uid || null;
   }
 
