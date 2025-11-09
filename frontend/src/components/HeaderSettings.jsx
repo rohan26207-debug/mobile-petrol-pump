@@ -1044,9 +1044,11 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                               
                               // Delete stock data for date range
                               let deletedStockRecords = 0;
-                              const stockKeys = Object.keys(localStorage).filter(key => key.endsWith('StockData'));
+                              const stockKeys = Object.keys(localStorage).filter(key => key.includes('StockData'));
                               stockKeys.forEach(key => {
-                                const stockData = JSON.parse(localStorage.getItem(key) || '{}');
+                                // Extract the base key (without namespace prefix)
+                                const baseKey = key.includes(':') ? key.split(':').pop() : key;
+                                const stockData = localStorageService.getItem(baseKey) || {};
                                 
                                 // Filter stock data by date
                                 Object.keys(stockData).forEach(date => {
@@ -1057,7 +1059,7 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                                 });
                                 
                                 // Update stock data in localStorage
-                                localStorage.setItem(key, JSON.stringify(stockData));
+                                localStorageService.setItem(baseKey, stockData);
                               });
                               
                               const totalDeleted = deletedSales + deletedCredits + deletedIncome + deletedExpenses + deletedPayments + deletedStockRecords;
