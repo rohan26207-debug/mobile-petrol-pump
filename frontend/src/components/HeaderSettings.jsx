@@ -75,6 +75,106 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
     setSettlementTypes(localStorageService.getSettlementTypes());
   }, []);
 
+  // Clear All Data handler
+  const handleClearAllData = async () => {
+    try {
+      const confirmClear = window.confirm(
+        '⚠️ WARNING: This will DELETE ALL DATA!\n\n' +
+        '• All sales, customers, payments\n' +
+        '• All income, expenses, settlements\n' +
+        '• All fuel settings and categories\n' +
+        '• Data from localStorage AND Firestore\n\n' +
+        'This action CANNOT be undone!\n\n' +
+        'Type "DELETE ALL" to confirm:'
+      );
+      
+      if (!confirmClear) return;
+      
+      const finalConfirm = window.prompt('Type "DELETE ALL" to confirm:');
+      
+      if (finalConfirm !== 'DELETE ALL') {
+        toast({
+          title: "Cancelled",
+          description: "Data deletion cancelled.",
+        });
+        return;
+      }
+
+      // Clear localStorage
+      const keysToRemove = Object.keys(localStorage).filter(key => 
+        key.startsWith('mpp:') || 
+        key.includes('mpump') || 
+        key.includes('stock') ||
+        key.includes('Stock')
+      );
+      
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      console.log('✅ localStorage cleared:', keysToRemove.length, 'keys');
+
+      // Clear Firestore data
+      const { collection, query, where, getDocs, deleteDoc, doc } = 
+        await import('firebase/firestore');
+      const { db, auth } = await import('../services/firebase');
+      
+      const userId = auth.currentUser?.uid;
+      if (!userId) {
+        throw new Error('User not authenticated');
+      }
+
+      const collections = [
+        'customers', 'sales', 'creditSales', 'payments', 
+        'settlements', 'incomeExpenses'
+      ];
+      
+      let totalDeleted = 0;
+      
+      for (const collName of collections) {
+        const q = query(collection(db, collName), where('userId', '==', userId));
+        const snapshot = await getDocs(q);
+        
+        for (const document of snapshot.docs) {
+          await deleteDoc(doc(db, collName, document.id));
+          totalDeleted++;
+        }
+      }
+      
+      // Also clear settings collections (document ID = userId)
+      const settingsCollections = [
+        'fuelSettings', 'settlementTypes', 
+        'incomeCategories', 'expenseCategories'
+      ];
+      
+      for (const collName of settingsCollections) {
+        try {
+          await deleteDoc(doc(db, collName, userId));
+          totalDeleted++;
+        } catch (e) {
+          // Document might not exist, that's ok
+        }
+      }
+
+      console.log('✅ Firestore cleared:', totalDeleted, 'documents');
+
+      toast({
+        title: "All Data Cleared! 🗑️",
+        description: `Deleted ${totalDeleted} Firestore documents and ${keysToRemove.length} localStorage keys.`,
+      });
+
+      // Reload page to reset state
+      setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+
+    } catch (error) {
+      console.error('❌ Clear data error:', error);
+      toast({
+        title: "Error Clearing Data",
+        description: error.message || "Failed to clear all data.",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Logout handler
   const handleLogout = async () => {
     try {
