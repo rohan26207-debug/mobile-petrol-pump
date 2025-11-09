@@ -12,6 +12,7 @@ const CustomerManagement = ({ customers, onAddCustomer, onDeleteCustomer, onUpda
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, customer: null });
   const [editDialog, setEditDialog] = useState({ show: false, customer: null, balance: '' });
   const [searchTerm, setSearchTerm] = useState('');
+  const [addError, setAddError] = useState('');
 
   const handleAddCustomer = () => {
     if (newCustomerName.trim()) {
