@@ -787,8 +787,8 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
               </TabsContent>
               
               <TabsContent value="contact" className="p-0">
-                <ScrollArea className="h-[calc(100vh-150px)] px-4 py-4">
-                <div className="space-y-4 pb-6">
+                <ScrollArea className="h-[calc(100vh-200px)] px-4 py-4">
+                <div className="space-y-4 pb-20">
                   {/* Logged-in User Info */}
                   {user && (
                     <div className={`border-2 rounded-lg p-4 ${
