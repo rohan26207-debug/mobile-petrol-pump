@@ -65,7 +65,11 @@ const ZAPTRStyleCalculator = () => {
   const [incomeData, setIncomeData] = useState([]);
   const [settlementData, setSettlementData] = useState([]);
   const [fuelSettings, setFuelSettings] = useState({});
-  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState(() => {
+    // Load saved operating date from localStorage, or default to today
+    const saved = localStorage.getItem('mpump_operating_date');
+    return saved || new Date().toISOString().split('T')[0];
+  });
   const [mppTransferState, setMppTransferState] = useState(null);
   const [customers, setCustomers] = useState([]);
   const [payments, setPayments] = useState([]);
