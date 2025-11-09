@@ -218,7 +218,9 @@ class FirebaseSyncService {
     if (!this.syncEnabled) return; try {
       const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping settlement types sync');
       const typesData = { types, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
-      await updateDoc(doc(db, 'settlementTypes', userId), typesData).catch(() => addDoc(collection(db, 'settlementTypes'), { ...typesData, id: userId }));
+      await updateDoc(doc(db, 'settlementTypes', userId), typesData).catch(async () => {
+        await setDoc(doc(db, 'settlementTypes', userId), typesData);
+      });
       console.log('✅ Settlement types synced');
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
