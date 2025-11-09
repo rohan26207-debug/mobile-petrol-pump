@@ -171,6 +171,14 @@ const ZAPTRStyleCalculator = () => {
     }
   };
 
+  // Set namespace when user is available
+  useEffect(() => {
+    if (user?.uid) {
+      console.log('🔑 Setting storage namespace for user:', user.uid);
+      setStorageNamespace(user.uid);
+    }
+  }, [user]);
+
   // Load data on mount
   useEffect(() => {
     loadData();
