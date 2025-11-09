@@ -257,8 +257,12 @@ class FirebaseSyncService {
             if (idx >= 0) customers[idx] = data; else customers.push(data);
             localStorageService.setCustomers(customers);
           } else if (change.type === 'removed') {
+            console.log('🗑️ Customer removed:', data.id);
+            const beforeCount = customers.length;
             const filtered = customers.filter(c => c.id !== data.id);
+            console.log(`Filtered customers: ${beforeCount} → ${filtered.length}`);
             localStorageService.setCustomers(filtered);
+            console.log('✅ Customers updated in localStorage');
           }
           uidDetailEvent();
         });
