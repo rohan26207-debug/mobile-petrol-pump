@@ -1248,6 +1248,66 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     </div>
                   </div>
 
+                  {/* Clear All Data Section - Pro Mode Only */}
+                  {proMode && (
+                    <>
+                      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
+                      
+                      <div className={`border-2 rounded-lg p-4 ${
+                        isDarkMode ? 'border-red-600 bg-red-900/20' : 'border-red-500 bg-red-50'
+                      }`}>
+                        <div className="space-y-3">
+                          <div className="flex items-center gap-2">
+                            <Trash2 className="w-5 h-5 text-red-600" />
+                            <h4 className={`font-bold ${
+                              isDarkMode ? 'text-red-400' : 'text-red-700'
+                            }`}>
+                              ⚠️ Danger Zone
+                            </h4>
+                          </div>
+                          
+                          <p className={`text-sm ${
+                            isDarkMode ? 'text-red-300' : 'text-red-700'
+                          }`}>
+                            <strong>Pro Mode Only:</strong> Permanently delete all data from this account.
+                          </p>
+                          
+                          <div className={`text-xs space-y-1 ${
+                            isDarkMode ? 'text-red-200' : 'text-red-600'
+                          }`}>
+                            <p>This will delete:</p>
+                            <ul className="list-disc list-inside pl-2">
+                              <li>All sales, credit sales, payments</li>
+                              <li>All customers and settlements</li>
+                              <li>All income and expenses</li>
+                              <li>All fuel settings and categories</li>
+                              <li>Data from localStorage AND Firestore</li>
+                            </ul>
+                          </div>
+
+                          <div className={`p-3 rounded ${
+                            isDarkMode ? 'bg-red-800/30' : 'bg-red-100'
+                          }`}>
+                            <p className={`text-xs font-bold ${
+                              isDarkMode ? 'text-red-300' : 'text-red-700'
+                            }`}>
+                              ⚠️ This action CANNOT be undone!
+                            </p>
+                          </div>
+                          
+                          <Button 
+                            variant="destructive"
+                            className="w-full bg-red-600 hover:bg-red-700"
+                            onClick={handleClearAllData}
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Clear All Data
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
                   {/* Logout Section */}
                   <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
                   
