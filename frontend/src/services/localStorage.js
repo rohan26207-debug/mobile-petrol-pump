@@ -155,12 +155,14 @@ class LocalStorageService {
     if (!ACTIVE_NAMESPACE) return;
     
     console.log('🧹 Cleaning up unnamespaced keys...');
+    let cleanedCount = 0;
     
     // Remove all unnamespaced data keys
     Object.keys(LEGACY_ALT_KEYS).forEach(baseKey => {
       if (localStorage.getItem(baseKey) !== null) {
         console.log(`🗑️ Removing unnamespaced key: ${baseKey}`);
         localStorage.removeItem(baseKey);
+        cleanedCount++;
       }
     });
     
@@ -169,10 +171,22 @@ class LocalStorageService {
       if (localStorage.getItem(altKey) !== null) {
         console.log(`🗑️ Removing alternate key: ${altKey}`);
         localStorage.removeItem(altKey);
+        cleanedCount++;
       }
     });
     
-    console.log('✅ Cleanup complete');
+    // Remove unnamespaced stock data keys (dieselStockData, petrolStockData, etc.)
+    const allKeys = Object.keys(localStorage);
+    allKeys.forEach(key => {
+      // Check if it's a stock data key without namespace
+      if (key.toLowerCase().includes('stockdata') && !key.includes(':')) {
+        console.log(`🗑️ Removing unnamespaced stock key: ${key}`);
+        localStorage.removeItem(key);
+        cleanedCount++;
+      }
+    });
+    
+    console.log(`✅ Cleanup complete - removed ${cleanedCount} unnamespaced keys`);
   }
 
   // ===== Initialization within the current namespace =====
