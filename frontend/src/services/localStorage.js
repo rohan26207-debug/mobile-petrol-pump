@@ -145,6 +145,34 @@ class LocalStorageService {
 
     // Migrate misc single-value keys
     LEGACY_MISC_KEYS.forEach((k) => migrateKey(k, []));
+    
+    // CRITICAL: Always clean up any stray unnamespaced keys that might have been created
+    this.cleanupUnnamedspacedKeys();
+  }
+  
+  // Clean up any unnamespaced data keys (force cleanup on every load)
+  cleanupUnnamedspacedKeys() {
+    if (!ACTIVE_NAMESPACE) return;
+    
+    console.log('🧹 Cleaning up unnamespaced keys...');
+    
+    // Remove all unnamespaced data keys
+    Object.keys(LEGACY_ALT_KEYS).forEach(baseKey => {
+      if (localStorage.getItem(baseKey) !== null) {
+        console.log(`🗑️ Removing unnamespaced key: ${baseKey}`);
+        localStorage.removeItem(baseKey);
+      }
+    });
+    
+    // Remove alternate legacy keys
+    Object.values(LEGACY_ALT_KEYS).flat().forEach(altKey => {
+      if (localStorage.getItem(altKey) !== null) {
+        console.log(`🗑️ Removing alternate key: ${altKey}`);
+        localStorage.removeItem(altKey);
+      }
+    });
+    
+    console.log('✅ Cleanup complete');
   }
 
   // ===== Initialization within the current namespace =====
