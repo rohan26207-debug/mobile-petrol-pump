@@ -1096,153 +1096,157 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
                     </>
                   )}
 
-                  {/* Delete Data Section (moved from Online tab) */}
-                  <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
-                  
-                  <div className={`border rounded-lg p-4 ${
-                    isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
-                  }`}>
-                    <div className="space-y-3">
-                      <h4 className={`font-medium ${
-                        isDarkMode ? 'text-white' : 'text-slate-800'
-                      }`}>
-                        Delete Data
-                      </h4>
+                  {/* Delete Data Section - Pro Mode Only */}
+                  {proMode && (
+                    <>
+                      <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
                       
-                      {/* Date Range Row */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium">From Date</Label>
-                          <Input
-                            type="date"
-                            id="delete-from-date"
-                            className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500' : ''}`}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-xs font-medium">To Date</Label>
-                          <Input
-                            type="date"
-                            id="delete-to-date"
-                            className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500' : ''}`}
-                          />
+                      <div className={`border rounded-lg p-4 ${
+                        isDarkMode ? 'border-gray-600 bg-gray-700' : 'border-slate-200 bg-slate-50'
+                      }`}>
+                        <div className="space-y-3">
+                          <h4 className={`font-medium ${
+                            isDarkMode ? 'text-white' : 'text-slate-800'
+                          }`}>
+                            Delete Data
+                          </h4>
+                          
+                          {/* Date Range Row */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium">From Date</Label>
+                              <Input
+                                type="date"
+                                id="delete-from-date"
+                                className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500' : ''}`}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label className="text-xs font-medium">To Date</Label>
+                              <Input
+                                type="date"
+                                id="delete-to-date"
+                                className={`text-sm ${isDarkMode ? 'bg-gray-600 border-gray-500' : ''}`}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Permanent Delete Button */}
+                          <Button 
+                            variant="outline" 
+                            className="w-full bg-red-600 hover:bg-red-700 text-white border-red-600"
+                            onClick={() => {
+                              const fromDateInput = document.getElementById('delete-from-date');
+                              const toDateInput = document.getElementById('delete-to-date');
+                              const fromDate = fromDateInput.value;
+                              const toDate = toDateInput.value;
+                              
+                              // Validate dates
+                              if (!fromDate || !toDate) {
+                                toast({
+                                  title: "Invalid Date Range",
+                                  description: "Please select both from and to dates",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              
+                              if (fromDate > toDate) {
+                                toast({
+                                  title: "Invalid Date Range",
+                                  description: "From date cannot be after To date",
+                                  variant: "destructive",
+                                });
+                                return;
+                              }
+                              
+                              // Confirm deletion - check Pro Mode
+                              const confirmDelete = localStorageService.isProModeEnabled() || 
+                                window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis includes:\n- Stock Data\n- Reading Sales Data\n- Credit Sales Data\n- Income/Expense Data\n- Receipt Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`);
+                              
+                              if (confirmDelete) {
+                                try {
+                                  // Get all data
+                                  const salesData = localStorageService.getSalesData();
+                                  const creditData = localStorageService.getCreditData();
+                                  const incomeData = localStorageService.getIncomeData();
+                                  const expenseData = localStorageService.getExpenseData();
+                                  const payments = localStorageService.getPayments();
+                                  
+                                  // Filter out data within the date range (keep data outside range)
+                                  const filteredSales = salesData.filter(item => item.date < fromDate || item.date > toDate);
+                                  const filteredCredits = creditData.filter(item => item.date < fromDate || item.date > toDate);
+                                  const filteredIncome = incomeData.filter(item => item.date < fromDate || item.date > toDate);
+                                  const filteredExpenses = expenseData.filter(item => item.date < fromDate || item.date > toDate);
+                                  const filteredPayments = payments.filter(item => item.date < fromDate || item.date > toDate);
+                                  
+                                  // Calculate deleted counts
+                                  const deletedSales = salesData.length - filteredSales.length;
+                                  const deletedCredits = creditData.length - filteredCredits.length;
+                                  const deletedIncome = incomeData.length - filteredIncome.length;
+                                  const deletedExpenses = expenseData.length - filteredExpenses.length;
+                                  const deletedPayments = payments.length - filteredPayments.length;
+                                  
+                                  // Delete stock data for date range
+                                  let deletedStockRecords = 0;
+                                  const stockKeys = Object.keys(localStorage).filter(key => key.includes('StockData'));
+                                  stockKeys.forEach(key => {
+                                    // Extract the base key (without namespace prefix)
+                                    const baseKey = key.includes(':') ? key.split(':').pop() : key;
+                                    const stockData = localStorageService.getItem(baseKey) || {};
+                                    
+                                    // Filter stock data by date
+                                    Object.keys(stockData).forEach(date => {
+                                      if (date >= fromDate && date <= toDate) {
+                                        deletedStockRecords++;
+                                        delete stockData[date];
+                                      }
+                                    });
+                                    
+                                    // Update stock data in localStorage
+                                    localStorageService.setItem(baseKey, stockData);
+                                  });
+                                  
+                                  const totalDeleted = deletedSales + deletedCredits + deletedIncome + deletedExpenses + deletedPayments + deletedStockRecords;
+                                  
+                                  // Update localStorage
+                                  localStorageService.setSalesData(filteredSales);
+                                  localStorageService.setCreditData(filteredCredits);
+                                  localStorageService.setIncomeData(filteredIncome);
+                                  localStorageService.setExpenseData(filteredExpenses);
+                                  localStorageService.setPayments(filteredPayments);
+                                  
+                                  // Show success message
+                                  toast({
+                                    title: "Data Deleted Successfully",
+                                    description: `Deleted ${totalDeleted} records (Stock: ${deletedStockRecords}, Sales: ${deletedSales}, Credits: ${deletedCredits}, Income: ${deletedIncome}, Expenses: ${deletedExpenses}, Receipts: ${deletedPayments}). Refreshing...`,
+                                  });
+                                  
+                                  // Clear date inputs
+                                  fromDateInput.value = '';
+                                  toDateInput.value = '';
+                                  
+                                  // Refresh page after 3 seconds
+                                  setTimeout(() => {
+                                    window.location.reload();
+                                  }, 3000);
+                                } catch (error) {
+                                  console.error('Delete error:', error);
+                                  toast({
+                                    title: "Delete Failed",
+                                    description: "Failed to delete data. Please try again.",
+                                    variant: "destructive",
+                                  });
+                                }
+                              }
+                            }}
+                          >
+                            🗑️ Permanent Delete
+                          </Button>
                         </div>
                       </div>
-                      
-                      {/* Permanent Delete Button */}
-                      <Button 
-                        variant="outline" 
-                        className="w-full bg-red-600 hover:bg-red-700 text-white border-red-600"
-                        onClick={() => {
-                          const fromDateInput = document.getElementById('delete-from-date');
-                          const toDateInput = document.getElementById('delete-to-date');
-                          const fromDate = fromDateInput.value;
-                          const toDate = toDateInput.value;
-                          
-                          // Validate dates
-                          if (!fromDate || !toDate) {
-                            toast({
-                              title: "Invalid Date Range",
-                              description: "Please select both from and to dates",
-                              variant: "destructive",
-                            });
-                            return;
-                          }
-                          
-                          if (fromDate > toDate) {
-                            toast({
-                              title: "Invalid Date Range",
-                              description: "From date cannot be after To date",
-                              variant: "destructive",
-                            });
-                            return;
-                          }
-                          
-                          // Confirm deletion - check Pro Mode
-                          const confirmDelete = localStorageService.isProModeEnabled() || 
-                            window.confirm(`⚠️ WARNING: This will PERMANENTLY delete all data from ${fromDate} to ${toDate}.\n\nThis includes:\n- Stock Data\n- Reading Sales Data\n- Credit Sales Data\n- Income/Expense Data\n- Receipt Data\n\nThis action CANNOT be undone!\n\nAre you absolutely sure you want to continue?`);
-                          
-                          if (confirmDelete) {
-                            try {
-                              // Get all data
-                              const salesData = localStorageService.getSalesData();
-                              const creditData = localStorageService.getCreditData();
-                              const incomeData = localStorageService.getIncomeData();
-                              const expenseData = localStorageService.getExpenseData();
-                              const payments = localStorageService.getPayments();
-                              
-                              // Filter out data within the date range (keep data outside range)
-                              const filteredSales = salesData.filter(item => item.date < fromDate || item.date > toDate);
-                              const filteredCredits = creditData.filter(item => item.date < fromDate || item.date > toDate);
-                              const filteredIncome = incomeData.filter(item => item.date < fromDate || item.date > toDate);
-                              const filteredExpenses = expenseData.filter(item => item.date < fromDate || item.date > toDate);
-                              const filteredPayments = payments.filter(item => item.date < fromDate || item.date > toDate);
-                              
-                              // Calculate deleted counts
-                              const deletedSales = salesData.length - filteredSales.length;
-                              const deletedCredits = creditData.length - filteredCredits.length;
-                              const deletedIncome = incomeData.length - filteredIncome.length;
-                              const deletedExpenses = expenseData.length - filteredExpenses.length;
-                              const deletedPayments = payments.length - filteredPayments.length;
-                              
-                              // Delete stock data for date range
-                              let deletedStockRecords = 0;
-                              const stockKeys = Object.keys(localStorage).filter(key => key.includes('StockData'));
-                              stockKeys.forEach(key => {
-                                // Extract the base key (without namespace prefix)
-                                const baseKey = key.includes(':') ? key.split(':').pop() : key;
-                                const stockData = localStorageService.getItem(baseKey) || {};
-                                
-                                // Filter stock data by date
-                                Object.keys(stockData).forEach(date => {
-                                  if (date >= fromDate && date <= toDate) {
-                                    deletedStockRecords++;
-                                    delete stockData[date];
-                                  }
-                                });
-                                
-                                // Update stock data in localStorage
-                                localStorageService.setItem(baseKey, stockData);
-                              });
-                              
-                              const totalDeleted = deletedSales + deletedCredits + deletedIncome + deletedExpenses + deletedPayments + deletedStockRecords;
-                              
-                              // Update localStorage
-                              localStorageService.setSalesData(filteredSales);
-                              localStorageService.setCreditData(filteredCredits);
-                              localStorageService.setIncomeData(filteredIncome);
-                              localStorageService.setExpenseData(filteredExpenses);
-                              localStorageService.setPayments(filteredPayments);
-                              
-                              // Show success message
-                              toast({
-                                title: "Data Deleted Successfully",
-                                description: `Deleted ${totalDeleted} records (Stock: ${deletedStockRecords}, Sales: ${deletedSales}, Credits: ${deletedCredits}, Income: ${deletedIncome}, Expenses: ${deletedExpenses}, Receipts: ${deletedPayments}). Refreshing...`,
-                              });
-                              
-                              // Clear date inputs
-                              fromDateInput.value = '';
-                              toDateInput.value = '';
-                              
-                              // Refresh page after 3 seconds
-                              setTimeout(() => {
-                                window.location.reload();
-                              }, 3000);
-                            } catch (error) {
-                              console.error('Delete error:', error);
-                              toast({
-                                title: "Delete Failed",
-                                description: "Failed to delete data. Please try again.",
-                                variant: "destructive",
-                              });
-                            }
-                          }
-                        }}
-                      >
-                        🗑️ Permanent Delete
-                      </Button>
-                    </div>
-                  </div>
+                    </>
+                  )}
 
                   {/* Pro Mode Section */}
                   <Separator className={isDarkMode ? 'bg-gray-600' : 'bg-slate-200'} />
