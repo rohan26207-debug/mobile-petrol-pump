@@ -179,8 +179,11 @@ const ZAPTRStyleCalculator = () => {
     }
   }, [user]);
 
-  // Load data on mount
+  // Load data on mount and when user changes
   useEffect(() => {
+    // Wait for namespace to be set before loading
+    if (!user?.uid) return;
+    
     loadData();
     // Load notes (not date-specific)
     const savedNotes = localStorage.getItem('mpp_notes');
@@ -206,7 +209,7 @@ const ZAPTRStyleCalculator = () => {
     return () => {
       window.removeEventListener('localStorageChange', handleStorageChange);
     };
-  }, []);
+  }, [user]);
 
   // Reload data when date changes (to reflect any new data)
   useEffect(() => {
