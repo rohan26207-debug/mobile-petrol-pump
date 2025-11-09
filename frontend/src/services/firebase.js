@@ -33,39 +33,24 @@ const auth = getAuth(app);
 // Email/password authentication (no auto-login)
 let authInitialized = false;
 
+// Initialize authentication with email/password
 const initializeAuth = async () => {
-  if (authInitialized) return Promise.resolve();
-
   try {
+    // Set persistence to local (survives browser restart)
     await setPersistence(auth, browserLocalPersistence);
-  } catch (e) {
-    console.log('Auth persistence setup warning:', e?.message || e);
+    
+    console.log('✅ Firebase auth initialized with email/password support');
+    
+    // Return current user if already signed in
+    return auth.currentUser;
+  } catch (error) {
+    console.error('❌ Auth initialization error:', error);
+    throw error;
   }
-
-  return new Promise((resolve) => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      unsubscribe();
-      try {
-        if (!user) {
-          // Anonymous mode: sign in silently
-          const cred = await signInAnonymously(auth);
-          user = cred.user;
-          console.log('🕶️ Anonymous user signed in:', user.uid);
-        }
-        console.log('✅ User authenticated:', user.email || user.uid);
-        authInitialized = true;
-        resolve(user);
-      } catch (err) {
-        console.error('Anonymous sign-in failed:', err);
-        authInitialized = true;
-        resolve(null);
-      }
-    });
-  });
 };
 
-// Initialize auth (doesn't auto-login)
-initializeAuth();
+// Initialize auth (but don't auto-login)
+initializeAuth().catch(console.error);
 
 // Get device ID for tracking which device made changes
 const getDeviceId = () => {
