@@ -693,8 +693,21 @@ class LocalStorageService {
     if (customerToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncCustomer(customerToDelete, 'delete'); }
     return true;
   }
-  updateCustomer(id, startingBalance, isMPP) {
+  updateCustomer(id, startingBalance, isMPP, newName) {
     const customers = this.getCustomers();
+    const currentCustomer = customers.find(c => c.id === id);
+    
+    // Check for duplicate name if name is being changed (case-insensitive, trimmed)
+    if (newName !== undefined) {
+      const trimmedNewName = newName.trim();
+      const isDuplicate = customers.some(c => 
+        c.id !== id && c.name.trim().toLowerCase() === trimmedNewName.toLowerCase()
+      );
+      if (isDuplicate) {
+        throw new Error('Duplicate customer name. Please use a unique name');
+      }
+    }
+    
     if (isMPP === true) {
       const existingMPP = customers.find(c => c.isMPP === true && c.id !== id);
       if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
@@ -703,6 +716,7 @@ class LocalStorageService {
       if (c.id === id) {
         const u = { ...c, startingBalance: parseFloat(startingBalance) || 0 };
         if (isMPP !== undefined) u.isMPP = isMPP;
+        if (newName !== undefined) u.name = newName.trim();
         return u;
       }
       return c;
