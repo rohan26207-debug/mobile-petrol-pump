@@ -78,15 +78,10 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
   // Logout handler
   const handleLogout = async () => {
     try {
-      const { signOut } = require('firebase/auth');
-      const { auth } = require('../services/firebase');
-      
       const confirmLogout = window.confirm('Are you sure you want to logout?');
       
       if (confirmLogout) {
-        await signOut(auth);
-        console.log('✅ User logged out successfully');
-        // Firebase will automatically redirect to login screen
+        await logout();
         toast({
           title: "Logged Out",
           description: "You have been logged out successfully.",
