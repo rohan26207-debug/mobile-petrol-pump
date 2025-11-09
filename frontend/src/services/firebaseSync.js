@@ -283,8 +283,12 @@ class FirebaseSyncService {
             if (idx >= 0) credits[idx] = data; else credits.push(data);
             localStorageService.setCreditData(credits);
           } else if (change.type === 'removed') {
+            console.log('🗑️ Credit sale removed:', data.id);
+            const beforeCount = credits.length;
             const filtered = credits.filter(c => c.id !== data.id);
+            console.log(`Filtered credits: ${beforeCount} → ${filtered.length}`);
             localStorageService.setCreditData(filtered);
+            console.log('✅ Credits updated in localStorage');
           }
           uidDetailEvent();
         });
