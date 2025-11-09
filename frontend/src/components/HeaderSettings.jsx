@@ -689,6 +689,36 @@ const HeaderSettings = ({ isDarkMode, fuelSettings, setFuelSettings, customers, 
               <TabsContent value="contact" className="p-0">
                 <ScrollArea className="h-[calc(100vh-150px)] px-4 py-4">
                 <div className="space-y-4 pb-6">
+                  {/* Logged-in User Info */}
+                  {user && (
+                    <div className={`border-2 rounded-lg p-4 ${
+                      isDarkMode ? 'border-green-600 bg-green-900/20' : 'border-green-500 bg-green-50'
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full">
+                          <User className="w-6 h-6 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <div className={`text-xs font-medium ${
+                            isDarkMode ? 'text-green-400' : 'text-green-700'
+                          }`}>
+                            Logged in as
+                          </div>
+                          <div className={`font-semibold break-all ${
+                            isDarkMode ? 'text-white' : 'text-slate-800'
+                          }`}>
+                            {user.email}
+                          </div>
+                          <div className={`text-xs ${
+                            isDarkMode ? 'text-gray-400' : 'text-slate-600'
+                          }`}>
+                            User ID: {user.uid.substring(0, 8)}...
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  
                   {/* Contact Information Display */}
                   <div className="text-center mb-4">
                     <div className="flex items-center justify-center w-16 h-16 mx-auto mb-3 bg-blue-100 rounded-full">
