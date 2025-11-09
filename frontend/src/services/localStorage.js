@@ -664,11 +664,21 @@ class LocalStorageService {
   setCustomers(customers) { return this.setItem(this.keys.customers, customers); }
   addCustomer(name, startingBalance = 0, isMPP = false) {
     const customers = this.getCustomers();
+    
+    // Check for duplicate name (case-insensitive, trimmed)
+    const trimmedName = name.trim();
+    const isDuplicate = customers.some(c => 
+      c.name.trim().toLowerCase() === trimmedName.toLowerCase()
+    );
+    if (isDuplicate) {
+      throw new Error('Duplicate customer name. Please use a unique name');
+    }
+    
     if (isMPP) {
       const existingMPP = customers.find(c => c.isMPP === true);
       if (existingMPP) throw new Error('A Manager Petrol Pump customer already exists. Only one MPP customer is allowed.');
     }
-    const newCustomer = { id: Date.now().toString(), name, startingBalance: parseFloat(startingBalance) || 0, isMPP: isMPP || false, created_at: new Date().toISOString() };
+    const newCustomer = { id: Date.now().toString(), name: trimmedName, startingBalance: parseFloat(startingBalance) || 0, isMPP: isMPP || false, created_at: new Date().toISOString() };
     customers.push(newCustomer);
     customers.sort((a, b) => a.name.localeCompare(b.name));
     this.setCustomers(customers);
