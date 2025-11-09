@@ -228,7 +228,9 @@ class FirebaseSyncService {
     if (!this.syncEnabled) return; try {
       const userId = this.getUserId(); if (!userId) return console.log('📴 User not authenticated, skipping income categories sync');
       const data = { categories, userId, deviceId: this.deviceId, syncedAt: serverTimestamp() };
-      await updateDoc(doc(db, 'incomeCategories', userId), data).catch(() => addDoc(collection(db, 'incomeCategories'), { ...data, id: userId }));
+      await updateDoc(doc(db, 'incomeCategories', userId), data).catch(async () => {
+        await setDoc(doc(db, 'incomeCategories', userId), data);
+      });
       console.log('✅ Income categories synced');
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
