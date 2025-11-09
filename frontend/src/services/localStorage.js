@@ -421,14 +421,18 @@ class LocalStorageService {
   // ===== Delete helpers =====
   deleteSaleRecord(id) {
     const sales = this.getSalesData();
+    const saleToDelete = sales.find(s => s.id === id);
     const updated = sales.filter(s => s.id !== id);
     this.setSalesData(updated);
+    if (saleToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncSale(saleToDelete, 'delete'); }
     return true;
   }
   deleteCreditRecord(id) {
     const credits = this.getCreditData();
+    const creditToDelete = credits.find(c => c.id === id);
     const updated = credits.filter(c => c.id !== id);
     this.setCreditData(updated);
+    if (creditToDelete) { const fs = getFirebaseSync(); if (fs) fs.syncCreditSale(creditToDelete, 'delete'); }
     return true;
   }
   deleteIncomeRecord(id) {
