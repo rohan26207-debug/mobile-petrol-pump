@@ -106,8 +106,13 @@ class FirebaseSyncService {
       const customerData = { ...customer, userId, deviceId: this.deviceId, syncedAt: serverTimestamp(), operation };
       if (operation === 'add' || operation === 'update') {
         const docRef = doc(db, 'customers', customer.id);
-        await updateDoc(docRef, customerData).catch(() => addDoc(collection(db, 'customers'), { ...customerData, id: customer.id }));
-      } else if (operation === 'delete') { await deleteDoc(doc(db, 'customers', customer.id)); }
+        await updateDoc(docRef, customerData).catch(async () => {
+          await setDoc(doc(db, 'customers', customer.id), customerData);
+        });
+      } else if (operation === 'delete') { 
+        await deleteDoc(doc(db, 'customers', customer.id));
+        console.log('🗑️ Customer deleted from Firestore:', customer.id);
+      }
       console.log('✅ Customer synced:', customer.name);
     } catch (e) { console.log('📴 Will sync when online:', e.message); }
   }
