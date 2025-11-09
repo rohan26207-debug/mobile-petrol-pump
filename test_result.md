@@ -5,6 +5,133 @@ This document tracks testing activities and results for the Manager Petrol Pump 
 
 ---
 
+## Test Session: Duplicate Customer Name Prevention
+**Date**: November 9, 2025  
+**Developer**: AI Development Agent  
+**Feature**: Duplicate Customer Name Validation
+
+### Feature Request
+Prevent adding duplicate customer names in the Customer Management section.
+
+### Requirements Confirmed
+1. ✅ Case-insensitive check: "John Doe" = "john doe"
+2. ✅ Trimmed spaces check: "John  Doe" = "John Doe" and "  John Doe  " = "John Doe"
+3. ✅ Error message: "Duplicate customer name. Please use a unique name"
+4. ✅ Edit behavior: Allow saving customer with same name when editing (don't flag as duplicate)
+
+### Changes Implemented
+
+#### 1. localStorage.js - Core Validation Logic
+
+**File**: `/app/frontend/src/services/localStorage.js`
+
+**addCustomer Method** (line 665-685):
+- Added duplicate name check before adding customer
+- Compares trimmed, lowercase names against all existing customers
+- Throws error if duplicate found: "Duplicate customer name. Please use a unique name"
+- Store trimmed name in database
+
+**updateCustomer Method** (line 686-705):
+- Added optional `newName` parameter for future name updates
+- Checks for duplicates when name is being changed
+- Excludes current customer (by id) from duplicate check
+- Allows editing customer details without triggering duplicate error for own name
+
+#### 2. CustomerManagement.jsx - UI Enhancement
+
+**File**: `/app/frontend/src/components/CustomerManagement.jsx`
+
+**State Addition** (line 15):
+- Added `addError` state for inline error display
+
+**Validation Before Submit** (line 16-35):
+- Added `handleAddCustomer` function with duplicate check
+- Validates name against existing customers before calling parent handler
+- Shows inline error if duplicate detected
+- Clears form only on successful addition
+
+**UI Updates**:
+- Added `handleNameChange` to clear error when user types
+- Added red border styling to input when error present
+- Added error message display with AlertTriangle icon below name input
+
+### Expected Behavior
+
+**Scenario 1: Add Duplicate Name**
+1. User enters existing customer name (e.g., "John Doe")
+2. Clicks "Add Customer"
+3. ❌ Error message appears: "Duplicate customer name. Please use a unique name"
+4. Input field shows red border
+5. Customer is NOT added
+6. User can correct the name and try again
+
+**Scenario 2: Case-Insensitive Check**
+1. Existing customer: "John Doe"
+2. User tries to add: "john doe" or "JOHN DOE"
+3. ❌ Error: Duplicate detected (case-insensitive match)
+4. Customer is NOT added
+
+**Scenario 3: Trimmed Spaces Check**
+1. Existing customer: "John Doe"
+2. User tries to add: "John  Doe" (extra space) or "  John Doe  " (leading/trailing)
+3. ❌ Error: Duplicate detected (trimmed match)
+4. Customer is NOT added
+
+**Scenario 4: Edit Existing Customer**
+1. User edits customer "John Doe" to change balance
+2. Keeps name as "John Doe"
+3. ✅ Update succeeds (own name not flagged as duplicate)
+4. Balance updated successfully
+
+**Scenario 5: Successful Add**
+1. User enters unique name: "Jane Smith"
+2. Clicks "Add Customer"
+3. ✅ Customer added successfully
+4. Form clears
+5. Error message cleared
+6. Customer appears in list
+
+### Code Implementation Details
+
+**Duplicate Check Logic**:
+```javascript
+const trimmedName = newCustomerName.trim();
+const isDuplicate = customers.some(c => 
+  c.name.trim().toLowerCase() === trimmedName.toLowerCase()
+);
+
+if (isDuplicate) {
+  setAddError('Duplicate customer name. Please use a unique name');
+  return;
+}
+```
+
+**Error Display**:
+```jsx
+{addError && (
+  <div className="flex items-center gap-1 mt-1 text-red-500 text-sm">
+    <AlertTriangle className="w-4 h-4" />
+    <span>{addError}</span>
+  </div>
+)}
+```
+
+### Testing Status
+⏳ **PENDING VERIFICATION** - Ready for comprehensive testing
+
+### Test Plan
+1. Test adding duplicate names (exact match)
+2. Test case-insensitive duplicates
+3. Test trimmed space duplicates
+4. Test editing existing customer without name change
+5. Test adding unique names
+6. Test error message display and clearing
+7. Test Firebase sync with validation
+
+---
+
+
+
 ## Test Session: Date-Filtered QR Code Backup Verification
 **Date**: November 5, 2025  
 **Tester**: AI Development Agent  
