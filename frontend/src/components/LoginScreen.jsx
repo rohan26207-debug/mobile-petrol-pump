@@ -244,6 +244,25 @@ const LoginScreen = ({ isDarkMode }) => {
               )}
             </div>
 
+            {/* Pending Approval Success Message */}
+            {pendingApproval && !error && (
+              <div className={`p-3 rounded-lg flex items-start gap-2 ${
+                isDarkMode 
+                  ? 'bg-yellow-900/20 border border-yellow-800' 
+                  : 'bg-yellow-50 border border-yellow-200'
+              }`}>
+                <Clock className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className={`text-sm font-medium ${isDarkMode ? 'text-yellow-400' : 'text-yellow-700'}`}>
+                    Account Pending Approval
+                  </p>
+                  <p className={`text-xs mt-1 ${isDarkMode ? 'text-yellow-300' : 'text-yellow-600'}`}>
+                    Your account has been created successfully. An administrator will review and approve your account shortly. You will be able to login once approved.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Error Message */}
             {error && (
               <div className={`p-3 rounded-lg flex items-start gap-2 ${
