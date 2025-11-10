@@ -21,9 +21,32 @@ const LoginScreen = ({ isDarkMode }) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setPendingApproval(false);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Check if user is approved in Firestore
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        if (!userData.approved) {
+          // User not approved - sign them out and show pending message
+          await signOut(auth);
+          setPendingApproval(true);
+          setError('Your account is pending approval. You will be notified once approved.');
+          return;
+        }
+      } else {
+        // User document doesn't exist - this shouldn't happen but handle it
+        await signOut(auth);
+        setError('Account setup incomplete. Please contact support.');
+        return;
+      }
+      
       // Login successful - user will be redirected by AuthContext
     } catch (error) {
       console.error('Login error:', error);
