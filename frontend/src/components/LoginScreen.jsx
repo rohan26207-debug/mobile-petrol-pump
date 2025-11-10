@@ -83,6 +83,7 @@ const LoginScreen = ({ isDarkMode }) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
+    setPendingApproval(false);
 
     // Validate password
     if (password.length < 6) {
@@ -92,8 +93,36 @@ const LoginScreen = ({ isDarkMode }) => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      // Sign up successful - user will be logged in automatically
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Create user document in Firestore with approval status
+      await setDoc(doc(db, 'users', user.uid), {
+        uid: user.uid,
+        email: user.email,
+        approved: false,
+        createdAt: serverTimestamp(),
+        approvedAt: null,
+        approvedBy: null
+      });
+      
+      // Create a notification document for admin (this triggers Firebase Extension email)
+      await setDoc(doc(db, 'notifications', user.uid), {
+        type: 'new_signup',
+        userEmail: user.email,
+        userId: user.uid,
+        createdAt: serverTimestamp(),
+        adminEmail: 'rohan.26207@gmail.com',
+        status: 'pending'
+      });
+      
+      // Sign out the user immediately since they need approval
+      await signOut(auth);
+      
+      // Show pending approval message
+      setPendingApproval(true);
+      setError('');
+      
     } catch (error) {
       console.error('Sign up error:', error);
       
