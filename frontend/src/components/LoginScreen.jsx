@@ -15,6 +15,7 @@ const LoginScreen = ({ isDarkMode }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isSignUp, setIsSignUp] = useState(false);
+  const [pendingApproval, setPendingApproval] = useState(false);
 
   const handleLogin = async (e) => {
     e.preventDefault();
